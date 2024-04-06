@@ -17,10 +17,11 @@ call print_str
 
 call load_kernel
 
-mov bx, SWITCH_MSG
-call print_str
+;call clear_screen_real
 
-call clear_screen_real
+mov al, 0x3
+int 0x10
+
 call switch_to_pm ; bye!
 
 jmp $ ;jump forever
@@ -29,6 +30,7 @@ jmp $ ;jump forever
 %include "16bit/screen/print_str_rm.asm"
 %include "16bit/screen/print_hex_rm.asm"
 %include "16bit/screen/clear_screen_rm.asm"
+%include "16bit/disk/disk_load.asm"
 
 %include "pm/gdt.asm"
 %include "pm/mode_switch.asm"
@@ -42,7 +44,11 @@ load_kernel:
     call print_str
 
     mov bx, KERNEL_OFFSET
-    mov dh, 15
+    mov dh, 15 ; we want the first 15 sectors (minus boot sector) from boot disk 
+                ; boot disk should be our kernel code
+    mov dl, [BOOT_DRIVE]
+    call disk_load
+    ret
     
 
 [bits 32]
@@ -54,17 +60,20 @@ BEGIN_PM:
 
 
 
+
+
+; strings for logs and error messages
 BOOT_MSG    db 'Entered 16-bit Real Mode',0
 LOAD_MSG    db 'Loading Kernel...',0
-SWITCH_MSG db 'Entering 32-bit protected mode, it has been real',0
-
-PROT_MODE_MSG db 'Welcome to protected mode, do you feel safe?',0
+PROT_MODE_MSG db 'bootstrapping',0
 
 
 
 
 
+; global stuff
 
+BOOT_DRIVE: db 0
 
 
 
