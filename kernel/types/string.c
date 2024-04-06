@@ -17,5 +17,6 @@ char* itoa(int val, int base){
 
 char* htoa(int val)
 {
+	//append 0x //TODO
     return itoa(val, 16);
 }

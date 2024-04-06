@@ -7,10 +7,33 @@
 
 
 #define CLR_WHITEONBLK 0x0F
-
+#define CLR
 
 #define REG_SCREEN_CTRL 0x3D4
 #define REG_SCREEN_DATA 0x3D5
+
+enum text_colors {
+    clr_black = 0,
+    clr_blue,
+    clr_green,
+    clr_cyan,
+    clr_red,
+    clr_magenta,
+    clr_brown,
+    clr_gray,
+    clr_gray_dark,
+    clr_lblue,
+    clr_lgreen,
+    clr_lcyan,
+    clr_lred,
+    clr_lmagenta,
+    clr_yellow,
+    clr_white
+};
+
+static inline uint8_t get_color(uint8_t fg, uint8_t bg){ //for text
+    return (bg << 4) | (fg & 0x0f);
+}
 
 struct screen_char_t {
     uint8_t chr;
