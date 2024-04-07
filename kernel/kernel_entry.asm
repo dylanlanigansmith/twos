@@ -5,6 +5,9 @@
 
 [extern main]
 call main 
+;if kernel comes back
+cli
+hlt
 jmp $
 
 

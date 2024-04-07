@@ -5,14 +5,14 @@ gdt_null:
     dd 0x0 ; dd == define double word (4 bytes)
     dd 0x0
 gdt_code: ; code segment descriptor
-    dw 0xffff
+    dw 0xfffff
     dw 0x0
     db 0x0
     db 10011010b ; type flags
     db 11001111b ; limit flags
     db 0x0 ; base
 gdt_data:
-    dw 0xffff
+    dw 0xfffff ;okay bro u should really rewrite this in c
     dw 0x0
     db 0x0
     db 10010010b

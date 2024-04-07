@@ -30,3 +30,7 @@ kernel.bin: kernel/kernel_entry.o ${OBJ}
 clean:
 	rm -rf *.bin *.dis *.o os-image
 	rm -rf kernel/*.o boot/*.bin drivers/*.o
+
+
+
+#objdump -D -Mintel,i38 

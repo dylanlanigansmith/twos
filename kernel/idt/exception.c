@@ -7,9 +7,7 @@ __attribute__((noreturn))
 void exception_handler(void);
 
 void exception_handler() {
-    uint16_t irr = pic_get_irr();
-    print(itoa(irr, 10));
-    print("ex");
+    print("exception!");
     __asm__ volatile ("cli; hlt"); // Completely hangs the computer
 }
 
