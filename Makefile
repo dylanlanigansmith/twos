@@ -19,7 +19,7 @@ kernel.bin: kernel/kernel_entry.o ${OBJ}
 #-m elf_i386 for 32 bit
 
 %.o : %.c ${HEADERS}
-	gcc -m32 -masm=intel -ffreestanding -fno-pie -c $< -o $@
+	gcc -m32 -masm=intel -ffreestanding -fno-pie -fno-stack-protector -c $< -o $@
 
 %.o : %.asm
 	nasm $< -f elf -o $@

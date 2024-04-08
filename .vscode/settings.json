@@ -2,6 +2,9 @@
     "files.associations": {
         "string.h": "c",
         "video.h": "c",
-        "*.tcc": "c"
+        "*.tcc": "c",
+        "idt.h": "c",
+        "memory.h": "c",
+        "isr.h": "c"
     }
 }

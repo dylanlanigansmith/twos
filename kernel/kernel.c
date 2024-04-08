@@ -5,17 +5,11 @@
 #include "idt/isr.h"
 #include "pic/pic.h"
 #include "timer/timer.h"
-
+#include "../drivers/input/keyboard.h"
+#include "util/memory.h"
 extern void panic();
 
-static void keydown_isr(registers_t* regs){
 
-    uint8_t scan = port_byte_in(0x60);
-    print("keydown");
-    print(itoa(scan, 10));
-    //lets fucking go
-    
-}
 void main()
 {
    
@@ -23,26 +17,26 @@ void main()
    
     PIC_init();
     init_idt();
-    
+    //TODO: make a nicer c based GDT 
+
     //register isr
-    register_interupt_handler(0x21, (isr_t)keydown_isr);
+    keyboard_init();
     timer_init(10);
-    //init pic and remap
-     //PIC_enable();
-    ///  __asm__ volatile ("cli");
-   // port_byte_out(PIC1_DATA, 0xFE);
-   // port_byte_out(PIC2_DATA, 0xFF);
+   
    
      __asm__ volatile ("sti");
+
+     /*
+     Issues:
+     our stack is a hack
+     bootloader sector reading is uh
+     a wild guess that works
+     */
     print("Kernel Main \n");
     //init IDT
     print("this is some random text so i know shit aint broke\n");
-    print("itrp");
-  
-
-   // __asm__ volatile("sti");
-
-   
+    print("you got no memory \n");
+    print("you got a short stack \n"); 
     for(;;) __asm__ volatile("hlt;");
 
       
@@ -53,9 +47,7 @@ void main()
     } 
     __builtin_unreachable();
     
-    //get interupts working [x]
-        //- get isrs working 
-    //get keyboard driver working
+    //get keyboard driver working[x]
     //holy shit we can write a kernel sorta
     //get malloc
     //restart in proper gfx mode

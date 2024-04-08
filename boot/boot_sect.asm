@@ -44,7 +44,7 @@ load_kernel:
     call print_str
 
     mov bx, KERNEL_OFFSET
-    mov dh, 15 ; we want the first 15 sectors (minus boot sector) from boot disk 
+    mov dh, 48 ; we want the first 15 sectors (minus boot sector) from boot disk 
                 ; boot disk should be our kernel code
     mov dl, [BOOT_DRIVE]
     call disk_load
