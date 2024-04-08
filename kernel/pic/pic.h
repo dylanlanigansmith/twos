@@ -1,5 +1,5 @@
 #pragma once
-#include "../types/stdint.h"
+#include "../stdlib/stdint.h"
 
 #define PIC1_REMAP_OFFSET 0x20
 #define PIC2_REMAP_OFFSET 0x28

@@ -1,7 +1,7 @@
 #include "timer.h"
 
 #include "../idt/isr.h"
-#include "../../drivers/video/video.h"
+#include "../../drivers/video/console.h"
 #include "../../drivers/port/port.h"
 
 uint32_t tick = 0;
@@ -9,9 +9,12 @@ uint32_t tick = 0;
 static void timer_handler(registers_t* reg){
     tick++;
     uint16_t old_cursor = get_cursor();
-    set_cursor(0,SCREEN_H - 2);
+   
+   #ifdef VGA_MODE_CHAR
+    set_cursor(0,CONSOLE_H - 2);
     print(itoa(tick, 10));
     set_cursor_offset(old_cursor);
+    #endif
 }
 void timer_init(uint32_t freq)
 {

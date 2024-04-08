@@ -19,7 +19,8 @@ call load_kernel
 
 ;call clear_screen_real
 
-mov al, 0x3
+;set wanted graphics mode for kernel
+mov al, 0x13 ;0x3 for text 13 for gfx
 int 0x10
 
 call switch_to_pm ; bye!
@@ -53,8 +54,9 @@ load_kernel:
 
 [bits 32]
 BEGIN_PM:
-    mov ebx, PROT_MODE_MSG
-    call print_str_pm
+    ;if in console gfx print otherwise no!
+   ; mov ebx, PROT_MODE_MSG
+   ; call print_str_pm
     call KERNEL_OFFSET
     jmp $
 

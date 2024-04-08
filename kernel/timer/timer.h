@@ -1,5 +1,5 @@
 #pragma once
-#include "../types/stdint.h"
+#include "../stdlib/stdint.h"
 
 #define TIMER_CLOCK_IN 1193180
 

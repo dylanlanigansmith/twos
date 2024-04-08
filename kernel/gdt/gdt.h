@@ -1,5 +1,5 @@
 #pragma once
-#include "../types/stdint.h"
+#include "../stdlib/stdint.h"
 
 
 typedef struct

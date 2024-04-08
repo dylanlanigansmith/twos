@@ -1,5 +1,5 @@
 #pragma once
-#include "../types/stdint.h"
+#include "../stdlib/stdint.h"
 #define IRQ0 32
 #define IRQ1 33
 #define IRQ15 47

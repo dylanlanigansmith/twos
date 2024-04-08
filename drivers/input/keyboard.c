@@ -1,10 +1,10 @@
 #include "keyboard.h"
 
-#include "../../kernel/types/stdint.h"
-#include "../../kernel/util/memory.h"
+#include "../../kernel/stdlib/stdint.h"
+#include "../../kernel/stdlib/memory.h"
 #include "../../kernel/idt/isr.h"
-
-#include "../video/video.h"
+#include "../port/port.h"
+#include "../video/gfx.h"
 
 //https://blog.igorw.org/2015/03/04/scancode-to-ascii/
 #define SCANCODE2ASCII_TABLE /*
@@ -32,12 +32,23 @@ uint8_t shouldScan = 1;
 
 static void keydown_isr(registers_t* regs){
     if(!shouldScan) return;
-    uint8_t ascii;
-    uint8_t scan = port_byte_in(0x60);
-    if(scan == 0xff || scan > 127) return; //error! 
-  
-    if(sc2ascii[scan] != 0x00)
-      put_char(sc2ascii[scan]);
+    uint8_t scan = port_byte_in(0x60); 
+    if(scan == 0 || scan == 0xff || scan == 0x9d) return;
+    char c = 0;
+    
+    //gfx_print(htoa(scan));
+    
+    switch (scan){
+        case 0xe:
+            gfx_delc(); return;
+        case 0x1c: //Enter
+            c = '\n';
+            break;
+        default:
+            c = sc2ascii[scan];
+    }
+    if(c == 0) return; //error! 
+    gfx_putc(c);
 
 
  

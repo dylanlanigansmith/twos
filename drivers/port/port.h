@@ -1,5 +1,5 @@
 #pragma once
-#include "../../kernel/types/stdint.h"
+#include "../../kernel/stdlib/stdint.h"
 
 uint8_t port_byte_in(uint16_t port);
 

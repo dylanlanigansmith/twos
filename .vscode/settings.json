@@ -1,7 +1,6 @@
 {
     "files.associations": {
-        "string.h": "c",
-        "video.h": "c",
+        "*.h": "c",
         "*.tcc": "c",
         "idt.h": "c",
         "memory.h": "c",

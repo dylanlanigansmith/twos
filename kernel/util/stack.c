@@ -1,5 +1,5 @@
-#include "../types/stdint.h"
-#include "../../drivers/video/video.h"
+#include "../stdlib/stdint.h"
+#include "../../drivers/video/console.h"
 #define STACK_CHK_GUARD 0xe2dee396
 uintptr_t __stack_chk_guard = STACK_CHK_GUARD;
 

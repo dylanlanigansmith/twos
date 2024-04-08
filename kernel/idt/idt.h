@@ -1,5 +1,5 @@
 #pragma once
-#include "../types/stdint.h"
+#include "../stdlib/stdint.h"
 
 
 #define IDT_MAX_DESCRIPTORS 255
@@ -25,3 +25,10 @@ void init_idt();
 void idt_set_descriptor(uint8_t vector, void* isr, uint8_t flags);
 
 
+static inline void enable_interupts(){
+	__asm__ volatile("sti");
+}
+
+static inline void disable_interupts(){
+	__asm__ volatile("cli");
+}

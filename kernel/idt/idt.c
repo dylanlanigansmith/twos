@@ -1,5 +1,5 @@
 #include "idt.h"
-#include "../util/memory.h"
+#include "../stdlib/memory.h"
 #include "isr.h"
 extern void* isr_stub_table[]; //in asm/idt.asm
 

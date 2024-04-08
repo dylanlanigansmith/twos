@@ -1,33 +1,33 @@
 #include "isr.h"
 
-#include "../types/string.h"
-#include "../../drivers/video/video.h"
+#include "../stdlib/string.h"
+#include "../../drivers/video/console.h"
 #include "../pic/pic.h"
-#include "../util/memory.h"
+#include "../stdlib/memory.h"
 
 isr_t interupt_handlers[256];
 
-#define DEBUG
-static inline isr_log(uint32_t int_no, uint32_t err_code){
+//#define DEBUG
+static inline void isr_log(uint32_t int_no, uint32_t err_code){
     //make hex
     uint16_t old_cursor = get_cursor();
-   // set_cursor(50,SCREEN_H - 1);
-    print_str("isr #[", 0);
-    print(itoa(int_no, 10));
-    print("] err[");
-    print(itoa(err_code, 10));
-    print("]\n");
+   // set_cursor(50,CONSOLE_H - 1);
+    console_print_str("isr #[", 0);
+    console_print(itoa(int_no, 10));
+    console_print("] err[");
+    console_print(itoa(err_code, 10));
+    console_print("]\n");
    // set_cursor_offset(old_cursor);
 }
-static inline irq_log(uint32_t int_no, uint32_t err_code){
+static inline void irq_log(uint32_t int_no, uint32_t err_code){
     //make hex
     uint16_t old_cursor = get_cursor();
-    set_cursor(0,SCREEN_H - 1);
-    print_str("irq #[", 0);
-    print(itoa(int_no, 10));
-    print("] err[");
-    print(itoa(err_code, 10));
-    print("]\n");
+    set_cursor(0,CONSOLE_H - 1);
+    console_print_str("irq #[", 0);
+    console_print(itoa(int_no, 10));
+    console_print("] err[");
+    console_print(itoa(err_code, 10));
+    console_print("]\n");
     set_cursor_offset(old_cursor);
 }
 
