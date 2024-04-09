@@ -3,11 +3,12 @@
 
 #include "video.h"
 
-#define SCREEN_W 320
-#define SCREEN_H 200
+#define SCREEN_W 1024
+#define SCREEN_H 768
 
-#define FB_ADDR 0xA0000
-#define FB_SIZE (size_t)(SCREEN_W * SCREEN_H + SCREEN_W)
+#define FB_ADDR 0xfc000000 
+#define FB_BPP 32
+#define FB_SIZE (size_t)(SCREEN_W * SCREEN_H + SCREEN_W) * 4 
 #define FB_END_ADDR (FB_ADDR + FB_SIZE)
 
 typedef struct{

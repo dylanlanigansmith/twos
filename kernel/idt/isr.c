@@ -13,11 +13,13 @@ static inline void isr_log(uint32_t int_no, uint32_t err_code)
     // make hex
     uint16_t old_cursor = get_cursor();
     // set_cursor(50,CONSOLE_H - 1);
-    console_print_str("isr #[", 0);
-    console_print(itoa(int_no, 10));
-    console_print("] err[");
-    console_print(htoa(err_code));
-    console_print("]\n");
+    serial_print("isr #[");
+    serial_print(itoa(int_no, 10));
+    serial_print("] err[");
+    serial_print(htoa(err_code));
+    serial_print("]\n");
+
+
     // set_cursor_offset(old_cursor);
 }
 static inline void irq_log(uint32_t int_no, uint32_t err_code)

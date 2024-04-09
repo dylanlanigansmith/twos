@@ -47,3 +47,26 @@ void serial_print(const char *str)
     for(int c = 0; str[c] != 0; ++c)
         serial_write(str[c]);
 }
+
+void serial_println(const char *str)
+{
+    serial_print(str);
+    serial_write('\n');
+}
+
+
+void serial_printi(const char *str, int64_t i)
+{
+    serial_print(str);
+    serial_print(": ");
+    serial_print(lltoa(i, 10));
+    serial_print(" \n");
+}
+
+void serial_printh(const char *str, int64_t i)
+{
+    serial_print(str);
+    serial_print(": 0x");
+    serial_print(lltoa(i, 16));
+    serial_print(" \n");
+}

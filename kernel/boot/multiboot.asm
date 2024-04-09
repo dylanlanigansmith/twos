@@ -13,15 +13,15 @@ mb_header_start:
     dd mb_header_end - mb_header_start
 
     dd 0x100000000 - (MB_MAGIC + MB_ARCH + (mb_header_end - mb_header_start)) ;checksum
-;align 8
-;framebuffer_tag_start:
-;    dw 5 ; mb2 header tag framebuf
-;    dw 1 ; header tag optional
-;    dd framebuffer_tag_end - framebuffer_tag_start
-;    dd 1024
-;    dd 768
-;    dd 32
-;framebuffer_tag_end:
+align 8
+framebuffer_tag_start:
+    dw 5 ; mb2 header tag framebuf
+    dw 1 ; header tag optional
+    dd framebuffer_tag_end - framebuffer_tag_start
+    dd 640
+    dd 400
+    dd 8
+framebuffer_tag_end:
 align 8
     dw 0; mb header tag end
     dw 0; flags
@@ -68,7 +68,7 @@ start:
     mov [p2_table + ecx * 8], eax
 
     inc ecx
-    cmp ecx, 512
+    cmp ecx, 512 ; map 512 * 2mib of memory = 1gib total
     jne .map_p2_table
 
     ; move page table address to cr3
@@ -121,11 +121,11 @@ section .bss
         resb 16384 
     stack_top:
 
-    p4_table:
+    p4_table: ;page map table
         resb 4096
-    p3_table:
+    p3_table: ;page directory pointer table
         resb 4096
-    p2_table:
+    p2_table: ; page directory table
         resb 4096
 
 section .rodata

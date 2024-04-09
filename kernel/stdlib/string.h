@@ -4,6 +4,7 @@
 #include "stdint.h"
 
 char* itoa(int val, int base);
+char* lltoa(uint64_t val, int base);
 
 char* htoa(int val); 
 

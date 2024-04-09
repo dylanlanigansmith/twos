@@ -42,71 +42,101 @@ console_print("WE ARE SO FUCKING BACK");
         //  console_print("magic num ok!");
       // serial_print(" mb header ok\n");
     }
-    /*
-    if(0){
-
     
-        serial_print(" testing out fb stuff");
-        struct multiboot_tag *tag;
-        void *fb = 0;
-        struct multiboot_tag_framebuffer *tagfb;
+    
 
-        struct multiboot_tag_vbe * tagvbe;
+    serial_init();
+    serial_printh("multiboot addr",  addr);
+    
+    struct multiboot_tag *tag;
+    void *fb = 0;
+    struct multiboot_tag_framebuffer *tagfb;
 
-        for (tag = (struct multiboot_tag *)(addr + 8); tag->type != MULTIBOOT_TAG_TYPE_END;
-            tag = (struct multiboot_tag *)((multiboot_uint8_t *)tag + ((tag->size + 7) & ~7)))
+    struct multiboot_tag_vbe * tagvbe;
+
+    for (tag = (struct multiboot_tag *)(addr + 8); tag->type != MULTIBOOT_TAG_TYPE_END;
+        tag = (struct multiboot_tag *)((multiboot_uint8_t *)tag + ((tag->size + 7) & ~7)))
+    {
+        if (tag->type = MULTIBOOT_TAG_TYPE_FRAMEBUFFER)
         {
-            if (tag->type = MULTIBOOT_TAG_TYPE_FRAMEBUFFER)
-            {
-                tagfb = (struct multiboot_tag_framebuffer *)tag;
-                fb = (void *)(unsigned long)tagfb->common.framebuffer_addr;
-                serial_print("\n found framebuffer tag");
-            }   
-            if(tag->type = MULTIBOOT_TAG_TYPE_VBE){
-                tagvbe = ( struct multiboot_tag_vbe *)tag;
-                serial_print("found VBE\n");
-            }
-        }
-        if (fb != 0) //dump fb 
-        {
-            serial_print("framebuffer is not 0\n");
-            serial_print(htoa((uintptr_t)fb));
-            serial_print("frame buffer data:\n");
-            serial_print("height \n");
-            serial_print(itoa(tagfb->common.framebuffer_height, 10));
-            serial_print("width \n");
-            serial_print(itoa(tagfb->common.framebuffer_width, 10));
-            serial_print("bpp \n");
-            serial_print(itoa(tagfb->common.framebuffer_bpp, 10));
-            serial_print("type \n");
-            serial_print(itoa(tagfb->common.framebuffer_type, 10));
+            tagfb = (struct multiboot_tag_framebuffer *)tag;
+            fb = (void *)(unsigned long)tagfb->common.framebuffer_addr;
+            serial_print("\n found framebuffer tag");
+           
+            serial_print("START Frame Buffer Dump\n");
+            serial_printi("tagfb->common.type",  tagfb->common.type);
+            serial_printi("tagfb->common.size",  tagfb->common.size);
+            serial_printh("tagfb->common.framebuffer_addr",  tagfb->common.framebuffer_addr);
+            serial_printi("tagfb->common.framebuffer_pitch",  tagfb->common.framebuffer_pitch);
+            serial_printi("tagfb->common.framebuffer_width",  tagfb->common.framebuffer_width);
+            serial_printi("tagfb->common.framebuffer_height",  tagfb->common.framebuffer_height);
+            serial_printi("tagfb->common.framebuffer_bpp",  tagfb->common.framebuffer_bpp);
+            serial_printi("tagfb->common.framebuffer_type",  tagfb->common.framebuffer_type);
+            serial_printi("tagfb->common.reserved",  tagfb->common.reserved);
 
-            serial_print("\n end frame buf dump");
+            serial_print("END Frame Buffer Dump\n");
+                
+            
+        }   
+        if(tag->type = MULTIBOOT_TAG_TYPE_VBE){
+            tagvbe = ( struct multiboot_tag_vbe *)tag;
+            serial_print("found VBE\n");
         }
-
-        if(tagvbe){
-            vbe_mode_info_t* vbe = (vbe_mode_info_t*)tagvbe->vbe_mode_info.external_specification;
-            serial_print("VBE Info\n");
-            serial_print(htoa((uintptr_t)vbe->framebuffer));
-            serial_print("\nframe buffer data:\n");
-            serial_print("height \n");
-            serial_print(itoa(vbe->height, 10));
-            serial_print("width \n");
-            serial_print(itoa(vbe->width, 10));
-            serial_print("bpp \n");
-            serial_print(itoa(vbe->bpp, 10));
-            serial_print("pitch \n");
-            serial_print(itoa(vbe->pitch, 10));
-
-            serial_print("\n end VBE \n");
-
-            serial_print("other shit \n");
-            serial_print(itoa(tagvbe->size, 10));
-        }
-        gfx_init(clr_blue);
-        }
+    }
+    /**
+     * we find many a frame buffer
+     * the one we asked for is there!
+     * it is at 0xfc000000 
+     * we GET A PAGE FAULT when we go for it
+     * 
+     * SO
+     * we need paging
+     * how?
+     * idk
+     * but we gotta figure out how to do it from C
+     * then we can malloc and oml
+     * 32 bit color
     */
+
+    if(tagvbe && 0){
+        vbe_mode_info_t* vbe = (vbe_mode_info_t*)tagvbe->vbe_mode_info.external_specification;
+        serial_printi("vbe->attributes", vbe->attributes);
+        serial_printi("vbe->window_a", vbe->window_a);
+        serial_printi("vbe->window_b", vbe->window_b);
+        serial_printi("vbe->granularity", vbe->granularity);
+        serial_printi("vbe->window_size", vbe->window_size);
+        serial_printi("vbe->segment_a", vbe->segment_a);
+        serial_printi("vbe->segment_b", vbe->segment_b);
+        serial_printi("vbe->win_func_ptr", vbe->win_func_ptr);
+        serial_printi("vbe->pitch", vbe->pitch);
+        serial_printi("vbe->width", vbe->width);
+        serial_printi("vbe->height", vbe->height);
+        serial_printi("vbe->w_char", vbe->w_char);
+        serial_printi("vbe->y_char", vbe->y_char);
+        serial_printi("vbe->planes", vbe->planes);
+        serial_printi("vbe->bpp", vbe->bpp);
+        serial_printi("vbe->banks", vbe->banks);
+        serial_printi("vbe->memory_model", vbe->memory_model);
+        serial_printi("vbe->bank_size", vbe->bank_size);
+        serial_printi("vbe->image_pages", vbe->image_pages);
+        serial_printi("vbe->reserved0", vbe->reserved0);
+        serial_printi("vbe->red_mask", vbe->red_mask);
+        serial_printi("vbe->red_position", vbe->red_position);
+        serial_printi("vbe->green_mask", vbe->green_mask);
+        serial_printi("vbe->green_position", vbe->green_position);
+        serial_printi("vbe->blue_mask", vbe->blue_mask);
+        serial_printi("vbe->blue_position", vbe->blue_position);
+        serial_printi("vbe->reserved_mask", vbe->reserved_mask);
+        serial_printi("vbe->reserved_position", vbe->reserved_position);
+        serial_printi("vbe->direct_color_attributes", vbe->direct_color_attributes);
+        serial_printh("vbe->framebuffer", vbe->framebuffer);
+        serial_printi("vbe->off_screen_mem_off", vbe->off_screen_mem_off);
+        serial_printi("vbe->off_screen_mem_size", vbe->off_screen_mem_size);
+// Note: Printing reserved1, which is an array, might not provide useful information in debug prints
+
+    }
     
+    gfx_init(clr_red);
   console_print("\n 1 init ok");
    __asm__("sti");
    clear_screen();
