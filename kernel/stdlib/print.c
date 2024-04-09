@@ -7,7 +7,7 @@ void print(const char* str){
     #ifdef VGA_MODE_GFX
         gfx_print(str);
     #else
-        console_print(str)
+        console_print(str);
     #endif
 }
 

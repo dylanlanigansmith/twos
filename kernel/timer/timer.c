@@ -12,7 +12,7 @@ static void timer_handler(registers_t* reg){
    
    #ifdef VGA_MODE_CHAR
     set_cursor(0,CONSOLE_H - 2);
-    print(itoa(tick, 10));
+    console_print(itoa(tick, 10));
     set_cursor_offset(old_cursor);
     #endif
 }

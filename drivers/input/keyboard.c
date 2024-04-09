@@ -5,7 +5,7 @@
 #include "../../kernel/idt/isr.h"
 #include "../port/port.h"
 #include "../video/gfx.h"
-
+#include "../video/console.h"
 //https://blog.igorw.org/2015/03/04/scancode-to-ascii/
 #define SCANCODE2ASCII_TABLE /*
        0     1     2     3     4     5     6     7     8     9     A     B     C     D     E     F
@@ -48,7 +48,11 @@ static void keydown_isr(registers_t* regs){
             c = sc2ascii[scan];
     }
     if(c == 0) return; //error! 
-    gfx_putc(c);
+   
+    static char b[2] = {0,0};
+    b[0] = c;
+    console_print(b);
+   // gfx_putc(c);
 
 
  

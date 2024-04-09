@@ -5,12 +5,12 @@
 #define IRQ15 47
 
 typedef struct {
-    uint32_t ds;
+    uint64_t ds;
     // Pushed by pusha.
-    uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
-    uint32_t int_no, err_code;
+    uint64_t edi, esi, ebp, esp, ebx, edx, ecx, int_no;
+    uint64_t err_code, eax_idfk;
     // Pushed by the processor automatically.
-    uint32_t eip, cs, eflags, useresp, ss;
+    uint64_t eip, cs, eflags, useresp, ss;
 }  __attribute__((packed)) registers_t;
 
 //64 

@@ -7,66 +7,123 @@
 #include "timer/timer.h"
 #include "../drivers/input/keyboard.h"
 #include "../drivers/video/gfx.h"
+#include "../drivers/video/vbe.h"
 
-extern void panic();
+#include "../drivers/sound/sound.h"
+#include "boot/multiboot2.h"
 
+#include "../drivers/serial/serial.h"
 
-void main()
+extern unsigned long GDT_CODE_OFFSET;
+void main(void *addr, void *magic)
 {
-   /*
-     Issues:
-     our stack is a hack
-     bootloader sector reading is uh
-     a wild guess that works
-     */
-    clear_screen();
-   
+    disable_interupts();
     PIC_init();
-    init_idt();
-    //TODO: make a nicer c based GDT & maybe multiboot
-    //we can drop down to real mode again before init PIC/idts and all will be ok
-
-    //register irq handlers
-    keyboard_init();
-    timer_init(10);
    
- 
-    enable_interupts();
+    init_idt();
+    // disable_interupts();
     
-    gfx_init(clr_white);
+    // register irq handlers
+    keyboard_init();
+    timer_init(50);
 
-    gfx_print("kernel:\n");
-    gfx_print("hey man \n"); // i was wondering if this was gonna work and if i might see the eclipse today or not thanks let me know");
-
-     
-    gfx_print("what what what");
-
-
-    for(;;) __asm__ volatile("hlt;"); //wait for interupts
-
-      
-    
-    
-    //get keyboard driver working[x]
-    //holy shit we can write a kernel sorta
-    //get malloc [NAHHHHH]
-    //restart in proper gfx mode
-    //see how ass fonts are
  
 
-    //video lib
 
-    //ray caster
+console_print("WE ARE SO FUCKING BACK");
+    console_print("\nIN 64 FUCKIN BITS BABY");
 
-    //(get grub compat after standalone)
+  
+ 
+    console_print(itoa(GDT_CODE_OFFSET, 10));
 
-    //end result: sick project
+    if (magic == MULTIBOOT2_BOOTLOADER_MAGIC)
+    {
+        //  console_print("magic num ok!");
+      // serial_print(" mb header ok\n");
+    }
+    /*
+    if(0){
+
     
+        serial_print(" testing out fb stuff");
+        struct multiboot_tag *tag;
+        void *fb = 0;
+        struct multiboot_tag_framebuffer *tagfb;
+
+        struct multiboot_tag_vbe * tagvbe;
+
+        for (tag = (struct multiboot_tag *)(addr + 8); tag->type != MULTIBOOT_TAG_TYPE_END;
+            tag = (struct multiboot_tag *)((multiboot_uint8_t *)tag + ((tag->size + 7) & ~7)))
+        {
+            if (tag->type = MULTIBOOT_TAG_TYPE_FRAMEBUFFER)
+            {
+                tagfb = (struct multiboot_tag_framebuffer *)tag;
+                fb = (void *)(unsigned long)tagfb->common.framebuffer_addr;
+                serial_print("\n found framebuffer tag");
+            }   
+            if(tag->type = MULTIBOOT_TAG_TYPE_VBE){
+                tagvbe = ( struct multiboot_tag_vbe *)tag;
+                serial_print("found VBE\n");
+            }
+        }
+        if (fb != 0) //dump fb 
+        {
+            serial_print("framebuffer is not 0\n");
+            serial_print(htoa((uintptr_t)fb));
+            serial_print("frame buffer data:\n");
+            serial_print("height \n");
+            serial_print(itoa(tagfb->common.framebuffer_height, 10));
+            serial_print("width \n");
+            serial_print(itoa(tagfb->common.framebuffer_width, 10));
+            serial_print("bpp \n");
+            serial_print(itoa(tagfb->common.framebuffer_bpp, 10));
+            serial_print("type \n");
+            serial_print(itoa(tagfb->common.framebuffer_type, 10));
+
+            serial_print("\n end frame buf dump");
+        }
+
+        if(tagvbe){
+            vbe_mode_info_t* vbe = (vbe_mode_info_t*)tagvbe->vbe_mode_info.external_specification;
+            serial_print("VBE Info\n");
+            serial_print(htoa((uintptr_t)vbe->framebuffer));
+            serial_print("\nframe buffer data:\n");
+            serial_print("height \n");
+            serial_print(itoa(vbe->height, 10));
+            serial_print("width \n");
+            serial_print(itoa(vbe->width, 10));
+            serial_print("bpp \n");
+            serial_print(itoa(vbe->bpp, 10));
+            serial_print("pitch \n");
+            serial_print(itoa(vbe->pitch, 10));
+
+            serial_print("\n end VBE \n");
+
+            serial_print("other shit \n");
+            serial_print(itoa(tagvbe->size, 10));
+        }
+        gfx_init(clr_blue);
+        }
+    */
+    
+  console_print("\n 1 init ok");
+   __asm__("sti");
+   clear_screen();
+    console_print("init ok");
+    __asm__("int 7");
+
+    for(;;){
+        __asm__("hlt");
+    }
+
+
 
     // kernel ends, we can return to entry pt which hangs or just do it here for transparency while we develop
     __asm__("cli");
-    for(;;){
+    for (;;)
+    {
         __asm__("hlt");
-    } 
+    }
     __builtin_unreachable();
 }

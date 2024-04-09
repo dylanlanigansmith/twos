@@ -1,35 +1,43 @@
 
 C_SOURCES = $(wildcard kernel/*.c kernel/**/*.c drivers/*.c drivers/**/*.c)
 HEADERS = $(wildcard kernel/*.h kernel/**/*.h drivers/**/*.h)
+
+ASM =  $(wildcard kernel/asm/**.asm kernel/boot/*.asm)
 #should Make sources dep on all header files
 OBJ = ${C_SOURCES:.c=.o}
+ASM_OBJ = ${ASM:.asm=.o}
 
 
-all: os-image
+all: iso
 
 run: clean all
-	qemu-system-i386 -drive file=os-image,format=raw,index=0,if=floppy -device VGA,xres=720,yres=400
+	qemu-system-x86_64 -cdrom os.iso -device VGA,vgamem_mb=32 -audiodev pa,id=speaker -machine pcspk-audiodev=speaker -serial file:com1.log
+rund: clean all
+	qemu-system-x86_64 -s -S -cdrom os.iso -device VGA,vgamem_mb=32 -audiodev pa,id=speaker -machine pcspk-audiodev=speaker -serial file:com1.log
+clean:
+	rm -rf *.bin *.dis *.o *.iso
+	rm -rf kernel/*.o boot/*.bin drivers/*.o
+	rm -rf iso/kernel.bin
 
+iso: kernel.bin
+	cp kernel.bin iso/boot/
+	grub-mkrescue -o os.iso iso
 
-os-image: boot/boot_sect.bin kernel.bin
-	cat $^ > os-image
-
-kernel.bin: kernel/kernel_entry.o ${OBJ}
-	ld  -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
-#-m elf_i386 for 32 bit
-
-%.o : %.c ${HEADERS}
-	gcc -m32 -masm=intel -ffreestanding -fno-pie -fno-stack-protector -c $< -o $@
+kernel.bin: ${OBJ} ${ASM_OBJ}
+	ld --nmagic -no-pie -o $@ --script=linker.ld $^
 
 %.o : %.asm
-	nasm $< -f elf -o $@
+	nasm $< -f elf64 -o $@
 
-%.bin : %.asm
-	nasm $< -f bin -I './boot/' -o $@
+#%.o : ${ASM}
+#	nasm $< -f elf64 -o $@
 
-clean:
-	rm -rf *.bin *.dis *.o os-image
-	rm -rf kernel/*.o boot/*.bin drivers/*.o
+%.o : %.c ${HEADERS}
+	gcc -masm=intel -ffreestanding -fno-pie -fno-stack-protector -mno-shstk  -c $< -o $@
+
+	
+
+
 
 
 
