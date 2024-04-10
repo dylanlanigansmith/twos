@@ -5,6 +5,9 @@
 #include "../pic/pic.h"
 #include "../stdlib/memory.h"
 #include "../../drivers/serial/serial.h"
+
+#include "exception.h"
+
 isr_t interupt_handlers[256];
 
 //#define DEBUG
@@ -35,12 +38,6 @@ static inline void irq_log(uint32_t int_no, uint32_t err_code)
     set_cursor_offset(old_cursor);
 }
 
-void itp_handler()
-{
-    clear_screen();
-    set_cursor(0, 0);
-    console_print("itp");
-}
 
 void dump_regs(registers_t regs)
 {
@@ -80,20 +77,69 @@ void dump_regs(registers_t regs)
     console_print(" ");
 }
 
+
+#define EXCEPTION_PRINTI(str, num) serial_printi(str, num)
+#define EXCEPTION_PRINTH(str, num) serial_printh(str, num)
+#define EXCEPTION_PRINTLN(str) serial_println(str)
+void handle_error_generic(int num, int err){
+    EXCEPTION_PRINTLN("=======");
+    if( 0 <= num && num < 32){
+        EXCEPTION_PRINTI(exception_names[num], num);
+        if(err){
+            EXCEPTION_PRINTI("Non-Zero Error Code", 0);
+        }
+    }
+    else{
+         EXCEPTION_PRINTI("ISR_Unknown", num);
+    }
+    EXCEPTION_PRINTLN("=======");
+}
+
+
+int num_pfs = 0;
+void handle_pagefault(registers_t* regs){
+    uint64_t cr2 = 0;
+    __asm__ volatile ("movq %0, cr2" : "=r" (cr2) );
+    EXCEPTION_PRINTLN("== PAGE FAULT ==");
+    EXCEPTION_PRINTH("Error: ", regs->err_code);
+    EXCEPTION_PRINTH("At Address [CR2]: ", cr2);
+    EXCEPTION_PRINTLN(  (regs->err_code & 0b100) ? "USER" : "KERNEL");
+    EXCEPTION_PRINTLN(  (regs->err_code & 0b10) ? "WRITE" : "READ");
+    EXCEPTION_PRINTLN(  (regs->err_code & 0b01) ? "PAGE-PROTECTION VIOLATION" : "PAGE NOT PRESENT");
+
+    if(regs->err_code & 0b1000)    EXCEPTION_PRINTLN("CAUSE = RESERVED WRITE");
+    if(regs->err_code & 0b10000)   EXCEPTION_PRINTLN("CAUSE = INSTRUCTION FETCH");
+    if(regs->err_code & 0b100000)  EXCEPTION_PRINTLN("CAUSE = PROTECTION KEY VIOLATION");
+    if(regs->err_code & 0b1000000) EXCEPTION_PRINTLN("CAUSE = SHADOW STACK ACCESS");
+
+    EXCEPTION_PRINTLN("==============");
+    num_pfs++;
+
+    if(num_pfs > 10)
+        for(;;){
+            __asm__("hlt");
+        }
+   
+}
+
 void isr_handler(uint64_t rdi, registers_t regs)
 { // really should get a pointer to stack where regs struct is instead of pass by ref
-
+#ifdef DEBUG
     if (regs.err_code != 0)
         isr_log(regs.int_no, regs.err_code);
-#ifdef DEBUG
+
     else
         isr_log(regs.int_no, regs.err_code);
 #endif
 
     switch (regs.int_no)
     {
-    case 6:
-        // for(;;) { __asm__ volatile("hlt");}
+    case ISR_PageFault:
+        handle_pagefault(&regs);
+        break;
+    default: 
+        handle_error_generic(regs.int_no, regs.err_code); break;
+
     }
 }
 

@@ -14,6 +14,8 @@
 
 #include "../drivers/serial/serial.h"
 
+#include "mem/page.h"
+
 extern unsigned long GDT_CODE_OFFSET;
 void main(void *addr, void *magic)
 {
@@ -61,6 +63,8 @@ console_print("WE ARE SO FUCKING BACK");
         {
             tagfb = (struct multiboot_tag_framebuffer *)tag;
             fb = (void *)(unsigned long)tagfb->common.framebuffer_addr;
+
+            if(tagfb->common.framebuffer_width != 1024) continue;
             serial_print("\n found framebuffer tag");
            
             serial_print("START Frame Buffer Dump\n");
@@ -136,13 +140,30 @@ console_print("WE ARE SO FUCKING BACK");
 
     }
     
-    gfx_init(clr_red);
+  
   console_print("\n 1 init ok");
    __asm__("sti");
    clear_screen();
     console_print("init ok");
-    __asm__("int 7");
 
+    make_page_struct();
+    serial_println("trying out memory!");
+   // serial_printh("map = ", *(uint64_t*)(VIRTMAP)); 
+  
+   color cyan;
+
+   cyan.r = 0;
+   cyan.g = 0xff;
+   cyan.b = 0xff;
+   cyan.a = 0xff;
+  
+   
+
+
+   
+     gfx_init(cyan);
+
+     gfx_print("no fucking way");
     for(;;){
         __asm__("hlt");
     }

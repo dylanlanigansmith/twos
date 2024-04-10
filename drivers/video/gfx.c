@@ -32,13 +32,18 @@ void __gfx_debug_v2(const vec2 dbg1, const vec2 dbg2){
 
 gfx_state_t gfx_state;
 
-void gfx_clear( const vga_clr clr)
+void gfx_clear( const color clr)
 {
-    memset((void*)(FB_ADDR), clr, FB_SIZE);
+     for (int w = 0; w < SCREEN_W; w++){
+        for(int h = 0; h < SCREEN_H; h++){
+            set_pixel(v2(w,h), clr );
+        }
+   }
+   // memset((void*)(FB_ADDR), clr, FB_SIZE);
     gfx_state.clear_color = clr;
 }
 
-void gfx_init(const vga_clr clear_clr)
+void gfx_init(const color clear_clr)
 {
     GFX_STATE_SET_DEFAULTS(gfx_state);
     gfx_clear(clear_clr);
@@ -46,14 +51,14 @@ void gfx_init(const vga_clr clear_clr)
     gfx_state.has_init = True;
 }
 
-void gfx_fill_rect(const vec2 pos, const vec2 size, const vga_clr clr)
+void gfx_fill_rect(const vec2 pos, const vec2 size, const color clr)
 {
     for(int x = 0; x < size.x; ++x)
         for(int y = 0; y < size.y; ++y)
             set_pixel(v2(pos.x + x, pos.y + y), clr);
 }
 
-void gfw_fill_rect_fast(const vec2 pos, const vec2 size, const vga_clr clr)
+void gfw_fill_rect_fast(const vec2 pos, const vec2 size, const color clr)
 {
 
 }
@@ -68,7 +73,7 @@ void make_new_line(vec2* pos){
     
 }
 
-void gfx_draw_str(const char *str, vec2 pos, const vga_clr clr)
+void gfx_draw_str(const char *str, vec2 pos, const color clr)
 {
     for (int c = 0; str[c] != 0; ++c){
         if (str[c] == '\n'){
@@ -87,7 +92,7 @@ void gfx_draw_str(const char *str, vec2 pos, const vga_clr clr)
 
 
 
-void gfx_draw_char(const char* font_char, const vec2 pos, const vga_clr clr)
+void gfx_draw_char(const char* font_char, const vec2 pos, const color clr)
 {
     int cx, cy;
     int mask[8] = {1,2,4,8,16,32,64,128};
@@ -113,7 +118,7 @@ void gfx_print_at(const char *str, const vec2 pos)
     gfx_draw_str(str, pos, gfx_state.draw_color);
 }
 
-void gfx_printclr(const char *str, const vga_clr clr)
+void gfx_printclr(const char *str, const color clr)
 {
     gfx_draw_str(str, last_draw, clr);
 }

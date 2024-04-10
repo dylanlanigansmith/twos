@@ -58,6 +58,10 @@ start:
     mov eax, p2_table
     or eax, 0b11
     mov dword [p3_table + 0], eax
+    
+   ; mov eax, p2_table2
+   ; or eax, 0b11
+   ; mov dword [p3_table + 8], eax
 
     ; point each page table level two entry to a page
     mov ecx, 0         ; counter variable
@@ -71,13 +75,30 @@ start:
     cmp ecx, 512 ; map 512 * 2mib of memory = 1gib total
     jne .map_p2_table
 
+
+   
+;
+;   mov ecx, 0         ; counter variable
+;.map_p2_table2:
+;    mov eax, 0x200000  ; 2MiB
+;    mul ecx
+;    or eax, 0b10000011
+;    mov [p2_table + ecx * 8], eax;
+
+;    inc ecx
+;    cmp ecx, 512 ; map 512 * 2mib of memory = 1gib total
+;    jne .map_p2_table2
+
+
     ; move page table address to cr3
     mov eax, p4_table
     mov cr3, eax
 
     ; enable PAE
     mov eax, cr4
-    or eax, 1 << 5
+   
+    or eax, 1 << 4 ;pse
+    or eax, 1 << 5 ; pae
     mov cr4, eax
 
     ; set the long mode bit
@@ -113,6 +134,7 @@ section .data
     GDT_DATA_OFFSET dd data_offset
 
 global p2_table
+global p2_table2
 global p3_table
 global p4_table
 section .bss
@@ -121,11 +143,18 @@ section .bss
         resb 16384 
     stack_top:
 
+    reserved:
+        resb 8192
+    align 4096
     p4_table: ;page map table
         resb 4096
     p3_table: ;page directory pointer table
         resb 4096
     p2_table: ; page directory table
+        resb 4096
+
+    align 4096
+    p2_table2:
         resb 4096
 
 section .rodata

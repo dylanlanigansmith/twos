@@ -20,7 +20,7 @@
 %endmacro
 extern isr_handler
 extern irq_handler
-extern exception_handler ; c handler
+
 
 
 
@@ -120,16 +120,7 @@ isr_stub_table:
 %assign i i+1 
 %endrep
 
-extern itp_handler
 
-isr_shared_stub2:
-irq_shared_stub2:
-    pushAll
-    call itp_handler
-    popAll
-    add rsp, byte 16
-    sti
-    iretq
 
 
 isr_shared_stub:

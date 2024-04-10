@@ -51,8 +51,8 @@ static void keydown_isr(registers_t* regs){
    
     static char b[2] = {0,0};
     b[0] = c;
-    console_print(b);
-   // gfx_putc(c);
+   // console_print(b);
+    gfx_putc(c);
 
 
  
