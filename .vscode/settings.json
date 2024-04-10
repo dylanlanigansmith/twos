@@ -4,6 +4,8 @@
         "*.tcc": "c",
         "idt.h": "c",
         "memory.h": "c",
-        "isr.h": "c"
+        "isr.h": "c",
+        "ratio": "c",
+        "sstream": "c"
     }
 }

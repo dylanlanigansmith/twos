@@ -4,8 +4,8 @@
 What Graphics Mode Is Set In Real Mode ?
 */
 
-#define VGA_MODE_CHAR
-//#define VGA_MODE_GFX
+//#define VGA_MODE_CHAR
+#define VGA_MODE_GFX
 
 typedef uint8_t vga_clr;
 

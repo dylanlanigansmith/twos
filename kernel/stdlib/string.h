@@ -6,7 +6,7 @@
 char* itoa(int val, int base);
 char* lltoa(uint64_t val, int base);
 
-char* htoa(int val); 
+char* htoa(uint64_t val); 
 
 char* strcpy(char* dest, const char* src);
 

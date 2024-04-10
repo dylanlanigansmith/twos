@@ -1,6 +1,6 @@
 #include "string.h"
 #include "memory.h"
-
+#include "print.h"
 //from: https://www.strudel.org.uk/itoa/
 char* itoa(int val, int base){
 	
@@ -24,7 +24,7 @@ char* itoa(int val, int base){
 }
 char* lltoa(uint64_t val, int base){
 	
-	static char buf[32] = {0};
+	static char buf[62] = {0};
 	
 	//weird bug
 	if(val == 0){
@@ -33,7 +33,7 @@ char* lltoa(uint64_t val, int base){
 		return &buf[0];
 	}
 
-	int i = 30;
+	int i = 60;
 	
 	for(; val && i ; --i, val /= base)
 	
@@ -42,25 +42,34 @@ char* lltoa(uint64_t val, int base){
 	return &buf[i+1];
 	
 }
-char* htoa(int val)
+char* htoa(uint64_t val)
 {
-	//untested and bad
 	const char prefix[2] = {"0x"};
-	static char buf[34] = {0};
+	static char buf[64] = {0};
 	buf[0] = prefix[0];
 	buf[1] = prefix[1];
 	buf[2] = 0;
-	return strcat(buf, itoa(val, 16));
+
+	
+	return strcat(buf, lltoa(val, 16));
 }
 
 char* strcpy(char* dest, const char* src)
 {
+	if(!dest || !src) return nullptr; 
+
+	size_t src_len = strlen(src);
 	return memcpy(dest, src, strlen(src) + 1); //add one for null term
 }
 
+
 char* strcat(char* dest, const char* src)
 {
-	strcpy(dest + strlen(dest), src);
+	if(!dest || !src) return nullptr; 
+
+
+	size_t dest_len = strlen(dest);
+	strcpy(dest + dest_len, src);
 	return dest; 
 }
 

@@ -13,6 +13,11 @@ heap_t heap ={
     .size = HEAP_SIZE //
 };
 /*
+Things hardcoded heap needs
+    - physical memory manager
+    holy shit we are doing it 
+
+
 For Heap:
 
 for each page 2mb 
@@ -22,9 +27,25 @@ for each page 2mb
 -no empty spot???
     -add another page! 
 
+we need a data structure
 
+the search can be somewaht bst if we split into pages (2mib)
+
+what happens if malloc > 2mib?
+    -> i guess alloc pages and pretend they arent different
+
+    -> cant do that it gets stoopid fast
+
+just do a map thing
+with entries (alloced) vs (empty)
+
+JUST NEED A MAP! 
 
 */
+
+typedef struct {
+
+} heap_page_t;
 
 uintptr_t resize_heap(){
     serial_println("resizing heap. HA YOU WISH");

@@ -1,4 +1,4 @@
-multiboot addr: 0x116f88 
+multiboot addr: 0x1181b0 
 
  found framebuffer tagSTART Frame Buffer Dump
 tagfb->common.type: 8 
@@ -13,11 +13,11 @@ tagfb->common.reserved: 0
 END Frame Buffer Dump
 found VBE
 enabled interupts
-cr3 = : 0x111000 
-address p4 = : 0x111000 
-address p4real = : 0x111000 
-address p3 = : 0x112000 
-address p3 via p4[0] = : 0x112023 
+cr3 = : 0x112000 
+address p4 = : 0x112000 
+address p4real = : 0x112000 
+address p3 = : 0x113000 
+address p3 via p4[0] = : 0x113023 
 idx for VA : 0xfc000000 
 p4 idx : 0 
 p3 idx : 3 
@@ -30,8 +30,8 @@ mapped : 0xfc000000
 to physical addresss: 0xfc000000 
 ==flushed TLB==
 invalidated: 0xfc000000 
-0 > p4 : 0x112023 
-cr3 = : 0x111000 
+0 > p4 : 0x113023 
+cr3 = : 0x112000 
 idx for VA : 0xdeadbeef00000000 
 p4 idx : 381 
 p3 idx : 444 
@@ -48,3 +48,75 @@ mapped frame buffer
 init gfx
 kmalloced : 0xffffbeef00000000 
 freeing. HA YOU WISH
+our heap is at 
+i am printing!
+our heap is at 
+len is : 15 
+chars:
+our heap is at 0xffffbeef00000000
+i am printing!
+0xffffbeef00000000
+len is : 18 
+chars:
+0xffffbeef00000000before ++ c = : 17 
+ and btw 
+i am printing!
+ and btw 
+len is : 9 
+chars:
+ and btw I JUST MALLOCED
+i am printing!
+I JUST MALLOCED
+len is : 15 
+chars:
+I JUST MALLOCEDbefore ++ c = : 28 
+ from it
+i am printing!
+ from it
+len is : 8 
+chars:
+ from itour heap is at 
+i am printing!
+our heap is at 
+len is : 15 
+chars:
+our heap is at 0xffffbeef00000000
+i am printing!
+0xffffbeef00000000
+len is : 18 
+chars:
+0xffffbeef00000000before ++ c = : 17 
+ and btw 
+i am printing!
+ and btw 
+len is : 9 
+chars:
+ and btw I JUST MALLOCED
+i am printing!
+I JUST MALLOCED
+len is : 15 
+chars:
+I JUST MALLOCEDbefore ++ c = : 28 
+
+i am printing!
+
+len is 0
+len is : 0 
+chars:
+our heap is at 
+i am printing!
+our heap is at 
+len is : 15 
+chars:
+our heap is at 0xffffbeef00000000
+i am printing!
+0xffffbeef00000000
+len is : 18 
+chars:
+0xffffbeef00000000before ++ c = : 17 
+
+i am printing!
+
+len is 0
+len is : 0 
+chars:

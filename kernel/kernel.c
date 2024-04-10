@@ -142,10 +142,11 @@ void main(void *addr, void *magic)
 
     strcpy(noway, "I JUST MALLOCED");
 
-    gfx_print(noway);
+   // gfx_print(noway);
 
     kfree(noway);
-    
+
+   
    
     for(;;){
         __asm__("hlt");
@@ -153,18 +154,23 @@ void main(void *addr, void *magic)
     /*
         now what?
 
-        kernel heap
+        kernel heap //in progress//
         at least get a malloc
 
-        c++ ?
-        cross compiler ?
+            then we gotta figure out page api
+            then we can do fork/tasks
+            then jump to user mode 
+
+            goal: game in USER MODE 
+                also lets write game in cpp please
+
+                 c++ ?
+                 cross compiler ?
         user mode ?
 
-        files ?
 
-        could make wolf3d rn 
+        FILES = RAM DISK
 
-        gonna need double buffering tho >:(
     
     */
 
