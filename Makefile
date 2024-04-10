@@ -11,7 +11,7 @@ ASM_OBJ = ${ASM:.asm=.o}
 all: iso
 
 run: clean all
-	qemu-system-x86_64 -cdrom os.iso -device VGA,vgamem_mb=32 -audiodev pa,id=speaker -machine pcspk-audiodev=speaker -serial file:com1.log
+	qemu-system-x86_64 -cdrom os.iso -device VGA,vgamem_mb=32 -audiodev pa,id=speaker -machine pcspk-audiodev=speaker -serial file:com1.log -m 8G
 rund: clean all
 	qemu-system-x86_64 -s -S -cdrom os.iso -device VGA,vgamem_mb=32 -audiodev pa,id=speaker -machine pcspk-audiodev=speaker -serial file:com1.log
 clean:
