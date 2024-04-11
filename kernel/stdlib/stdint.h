@@ -1,7 +1,9 @@
 #pragma once
 
 #define nullptr 0
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 typedef unsigned char uint8_t;
 typedef char int8_t;
 
@@ -19,4 +21,8 @@ typedef unsigned long long uint64_t;
 typedef long long int64_t;
 typedef uint64_t uintptr_t;
 
-typedef uintptr_t size_t; 
+typedef unsigned long  size_t; 
+
+#ifdef __cplusplus
+}
+#endif

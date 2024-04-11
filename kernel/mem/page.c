@@ -108,8 +108,8 @@ void map_to_physical_new(page_table_t* p2, page_table_t* p3, page_table_t* p4, u
     }
 
     //check for existing entries where we want: 
-    if(p3->entries[ids.pdpt3] != 0){
-                serial_printi("overlap in p3 @", ids.pdpt3); return; }
+    if(p3->entries[ids.pdpt3] != 0 && p3->entries[ids.pdpt3] != ((uint64_t)(p2)) | 0b11){
+                serial_printi("conflicting overlap in p3 @", ids.pdpt3); return; }
    // if(p4->entries[ids.p4] != 0) {
    //     serial_printi("overlap in p4 @", ids.p4); return; }
 
@@ -150,6 +150,7 @@ void init_heap()
     page_table_t* p4 = (page_table_t*)(cr3);
     map_to_physical_new(&p2_heap, &p3_heap, p4, HEAP_PHYS, HEAP_VIRT, HEAP_SIZE);
 
+    alloc_init();
 }
 
 void make_page_struct()
@@ -191,4 +192,26 @@ void make_page_struct()
     init_heap();
    // dump_pt(p3);
 
+}
+
+size_t expand_heap(void* heap_ptr, size_t size_to_add)
+{
+    heap_t* heap = (heap_t*)(heap_ptr);
+    int num_pages = calc_num_pages(size_to_add);
+    printf("expanding heap by %lx, adding %i pages\n", size_to_add, num_pages);
+
+    //should we turn off itrps ? 
+    //god paging code is bad 
+    
+    uintptr_t cr3 = get_cr3();   
+    page_table_t* p4 = (page_table_t*)(cr3);
+    size_t new_heap_size = heap->size + (num_pages * PAGE_SIZE);
+    if(new_heap_size > HEAP_MAX_SIZE){
+        return 0; 
+    }
+    map_to_physical_new(&p2_heap, &p3_heap, p4, HEAP_PHYS, HEAP_VIRT, new_heap_size);
+    flush_tlb();
+    heap->size = new_heap_size;
+
+    return heap->size;
 }

@@ -173,6 +173,10 @@ data_offset equ $ - gdt64
 
 section .text
 [bits 64]
+[extern _init:function]
+[extern _fini:function]
+
+
 long_mode_start:
    
     ;mov rax, 0x2f592f412f4b2f4f
@@ -182,12 +186,20 @@ long_mode_start:
     mov rbp, stack_top
     mov rsp, rbp
 
+ 
+
+    call _init ; does this even do anything (NO!)
+
+    
    ; push qword [MB0]
    ; push qword [MB1]
     mov edi, [MB0]
     mov esi, [MB1]
     call main
     
+
+    ;global destructors
+    call _fini
     cli 
     hlt
     jmp $

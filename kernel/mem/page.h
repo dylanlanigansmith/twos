@@ -20,3 +20,5 @@ typedef struct {
 
 
 void make_page_struct();
+
+size_t expand_heap(void* heap_ptr, size_t size_to_add);

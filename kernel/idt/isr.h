@@ -8,7 +8,8 @@ typedef struct {
     uint64_t ds;
     // Pushed by pusha.
     uint64_t edi, esi, ebp, esp, ebx, edx, ecx, int_no;
-    uint64_t err_code, eax_idfk;
+    uint64_t err_code, eax_idfk; 
+    //broskii theres r8-r15 too eek
     // Pushed by the processor automatically.
     uint64_t eip, cs, eflags, useresp, ss;
 }  __attribute__((packed)) registers_t;

@@ -1,4 +1,4 @@
-multiboot addr: 0x1181b0 
+multiboot addr: 0x11ab30 
 
  found framebuffer tagSTART Frame Buffer Dump
 tagfb->common.type: 8 
@@ -13,11 +13,11 @@ tagfb->common.reserved: 0
 END Frame Buffer Dump
 found VBE
 enabled interupts
-cr3 = : 0x112000 
-address p4 = : 0x112000 
-address p4real = : 0x112000 
-address p3 = : 0x113000 
-address p3 via p4[0] = : 0x113023 
+cr3 = : 0x114000 
+address p4 = : 0x114000 
+address p4real = : 0x114000 
+address p3 = : 0x115000 
+address p3 via p4[0] = : 0x115023 
 idx for VA : 0xfc000000 
 p4 idx : 0 
 p3 idx : 3 
@@ -30,8 +30,8 @@ mapped : 0xfc000000
 to physical addresss: 0xfc000000 
 ==flushed TLB==
 invalidated: 0xfc000000 
-0 > p4 : 0x113023 
-cr3 = : 0x112000 
+0 > p4 : 0x115023 
+cr3 = : 0x114000 
 idx for VA : 0xdeadbeef00000000 
 p4 idx : 381 
 p3 idx : 444 
@@ -44,79 +44,65 @@ mapped : 0xdeadbeef00000000
 to physical addresss: 0x80000000 
 ==flushed TLB==
 invalidated: 0xdeadbeef00000000 
-mapped frame buffer
-init gfx
-kmalloced : 0xffffbeef00000000 
-freeing. HA YOU WISH
-our heap is at 
-i am printing!
-our heap is at 
-len is : 15 
-chars:
-our heap is at 0xffffbeef00000000
-i am printing!
-0xffffbeef00000000
-len is : 18 
-chars:
-0xffffbeef00000000before ++ c = : 17 
- and btw 
-i am printing!
- and btw 
-len is : 9 
-chars:
- and btw I JUST MALLOCED
-i am printing!
-I JUST MALLOCED
-len is : 15 
-chars:
-I JUST MALLOCEDbefore ++ c = : 28 
- from it
-i am printing!
- from it
-len is : 8 
-chars:
- from itour heap is at 
-i am printing!
-our heap is at 
-len is : 15 
-chars:
-our heap is at 0xffffbeef00000000
-i am printing!
-0xffffbeef00000000
-len is : 18 
-chars:
-0xffffbeef00000000before ++ c = : 17 
- and btw 
-i am printing!
- and btw 
-len is : 9 
-chars:
- and btw I JUST MALLOCED
-i am printing!
-I JUST MALLOCED
-len is : 15 
-chars:
-I JUST MALLOCEDbefore ++ c = : 28 
+bmap [ 0xffffbeef00000000 ] size=0 
+max size = 262130 max_size_bytes = 0x200000 
+Graphics Init 1024 x 768 x 32 
+tasking initwe are so fucking back baby 
+IN 64 BIT WITH GRUB SUPPORT
+AND 32 BIT COLOR
+>making new block at 0xffffbeef00200000 size=49 / 0x31 
+making footer @ 0xffffbeef00200025added to alloc map, new # allocs = 1 
+Heap Usage: 25/100 
+our heap is at 0xffffbeef00000000 and btw I JUST MALLOCED from it
+freeing block at 0xffffbeef00200000 / block_size=36 
+block freed, size of allocs = 1 
+heap use current: 0x200031 heap remaining: 0x5fffcf 
 
-i am printing!
-
-len is 0
-len is : 0 
-chars:
-our heap is at 
-i am printing!
-our heap is at 
-len is : 15 
-chars:
-our heap is at 0xffffbeef00000000
-i am printing!
-0xffffbeef00000000
-len is : 18 
-chars:
-0xffffbeef00000000before ++ c = : 17 
-
-i am printing!
-
-len is 0
-len is : 0 
-chars:
+ i just freed our string I JUST MALLOCED 
+found space at 0. need size 0x18 found size 0x24 
+using existing block at 0xffffbeef00200000 / block_size=36 
+now I malloc a new string, did it work? HOLY SHIT IT WORKED 
+we found no space to fit size 0x1d 
+making new block at 0xffffbeef00200031 size=54 / 0x36 
+making footer @ 0xffffbeef0020005badded to alloc map, new # allocs = 2 
+Heap Usage: 25/100 
+we found no space to fit size 0x16 
+making new block at 0xffffbeef00200067 size=47 / 0x2f 
+making footer @ 0xffffbeef0020008aadded to alloc map, new # allocs = 3 
+Heap Usage: 25/100 
+we found no space to fit size 0x13 
+making new block at 0xffffbeef00200096 size=44 / 0x2c 
+making footer @ 0xffffbeef002000b6added to alloc map, new # allocs = 4 
+Heap Usage: 25/100 
+we found no space to fit size 0x32 
+making new block at 0xffffbeef002000c2 size=75 / 0x4b 
+making footer @ 0xffffbeef00200101added to alloc map, new # allocs = 5 
+Heap Usage: 25/100 
+freeing block at 0xffffbeef00200031 / block_size=41 
+block freed, size of allocs = 5 
+heap use current: 0x20010d heap remaining: 0x5ffef3 
+c++ was supposed to be nice however it is stoopid
+we found no space to fit size 0x2d 
+making new block at 0xffffbeef0020010d size=70 / 0x46 
+making footer @ 0xffffbeef00200147added to alloc map, new # allocs = 6 
+Heap Usage: 25/100 
+we found no space to fit size 0x3f 
+making new block at 0xffffbeef00200153 size=88 / 0x58 
+making footer @ 0xffffbeef0020019fadded to alloc map, new # allocs = 7 
+Heap Usage: 25/100 
+i C the appeal now ha get it do you get it do you get the joke
+freeing block at 0xffffbeef00200153 / block_size=75 
+block freed, size of allocs = 7 
+heap use current: 0x2001ab heap remaining: 0x5ffe55 
+freeing block at 0xffffbeef0020010d / block_size=57 
+block freed, size of allocs = 7 
+heap use current: 0x2001ab heap remaining: 0x5ffe55 
+freeing block at 0xffffbeef00200096 / block_size=31 
+block freed, size of allocs = 7 
+heap use current: 0x2001ab heap remaining: 0x5ffe55 
+freeing block at 0xffffbeef00200067 / block_size=34 
+block freed, size of allocs = 7 
+heap use current: 0x2001ab heap remaining: 0x5ffe55 
+freeing block at 0xffffbeef002000c2 / block_size=62 
+block freed, size of allocs = 7 
+heap use current: 0x2001ab heap remaining: 0x5ffe55 

@@ -1,4 +1,7 @@
 #pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <stdarg.h> //we can have this?!
 #include "stdint.h"
 //todo: standardize this to work with serial and gfx
@@ -7,6 +10,13 @@
 
 #define PRINT_SERIAL
 #define PRINT_GRAPHICAL
+
+#define _COM 0b01
+#define _GFX 0b10
+
+typedef size_t (*__printf_out_fn)(const char *, char *, size_t);
+
+void oprintf(uint8_t out, const char* fmt, ...);
 
 void print(const char* str);
 void println(const char* str);
@@ -26,4 +36,9 @@ size_t sprintf(char* buf, size_t len, const char* fmt, ...);
 
 //__vprintf should take the print function as an arg tbh so we canuse it for other shit
  //this also doesnt need to be public unless ^
-size_t __vprintf(const char *fmt, char *buf_out, size_t len, va_list args); //this one actually works its what i get for not just writing my own to start with
+size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t len, va_list args); //this one actually works its what i get for not just writing my own to start with
+
+
+#ifdef __cplusplus
+}
+#endif

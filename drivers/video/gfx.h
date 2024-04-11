@@ -1,6 +1,6 @@
 #pragma once
 #include "../../kernel/stdlib.h"
-
+#include "color.h"
 #include "video.h"
 
 #define SCREEN_W 1024
@@ -19,12 +19,7 @@ typedef struct{
 static inline vec2 v2(const uint16_t x, const uint16_t y) { vec2 p = {x,y}; return p; }
 
 
-typedef union { struct {
-    uint8_t b,g,r,a;
-} __attribute__((packed));
-    uint32_t rgba;
-} color;
-//so these are backwards, its argb when #ff00ff00
+
 
 
 
@@ -76,6 +71,7 @@ static inline void gfx_clear_white(){
 
 void gfx_init(const color clear_clr);
 
+bool gfx_has_init();
 //drawing
 
 void gfx_fill_rect(const vec2 pos, const vec2 size, const color clr);

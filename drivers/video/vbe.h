@@ -38,3 +38,45 @@ typedef struct  {
 	uint16_t off_screen_mem_size;	// size of memory in the framebuffer but not being displayed on the screen
 	uint8_t reserved1[206];
 } __attribute__ ((packed)) vbe_mode_info_t;
+
+/*
+ if(tagvbe && 0){
+        vbe_mode_info_t* vbe = (vbe_mode_info_t*)tagvbe->vbe_mode_info.external_specification;
+        serial_printi("vbe->attributes", vbe->attributes);
+        serial_printi("vbe->window_a", vbe->window_a);
+        serial_printi("vbe->window_b", vbe->window_b);
+        serial_printi("vbe->granularity", vbe->granularity);
+        serial_printi("vbe->window_size", vbe->window_size);
+        serial_printi("vbe->segment_a", vbe->segment_a);
+        serial_printi("vbe->segment_b", vbe->segment_b);
+        serial_printi("vbe->win_func_ptr", vbe->win_func_ptr);
+        serial_printi("vbe->pitch", vbe->pitch);
+        serial_printi("vbe->width", vbe->width);
+        serial_printi("vbe->height", vbe->height);
+        serial_printi("vbe->w_char", vbe->w_char);
+        serial_printi("vbe->y_char", vbe->y_char);
+        serial_printi("vbe->planes", vbe->planes);
+        serial_printi("vbe->bpp", vbe->bpp);
+        serial_printi("vbe->banks", vbe->banks);
+        serial_printi("vbe->memory_model", vbe->memory_model);
+        serial_printi("vbe->bank_size", vbe->bank_size);
+        serial_printi("vbe->image_pages", vbe->image_pages);
+        serial_printi("vbe->reserved0", vbe->reserved0);
+        serial_printi("vbe->red_mask", vbe->red_mask);
+        serial_printi("vbe->red_position", vbe->red_position);
+        serial_printi("vbe->green_mask", vbe->green_mask);
+        serial_printi("vbe->green_position", vbe->green_position);
+        serial_printi("vbe->blue_mask", vbe->blue_mask);
+        serial_printi("vbe->blue_position", vbe->blue_position);
+        serial_printi("vbe->reserved_mask", vbe->reserved_mask);
+        serial_printi("vbe->reserved_position", vbe->reserved_position);
+        serial_printi("vbe->direct_color_attributes", vbe->direct_color_attributes);
+        serial_printh("vbe->framebuffer", vbe->framebuffer);
+        serial_printi("vbe->off_screen_mem_off", vbe->off_screen_mem_off);
+        serial_printi("vbe->off_screen_mem_size", vbe->off_screen_mem_size);
+// Note: Printing reserved1, which is an array, might not provide useful information in debug prints
+
+    }
+
+
+*/

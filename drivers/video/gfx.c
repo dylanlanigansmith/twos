@@ -1,7 +1,7 @@
 #include "gfx.h"
 #include "font8x8_basic.h"
 
-
+#include "../../kernel/stdlib.h"
 
 
 
@@ -45,10 +45,17 @@ void gfx_clear( const color clr)
 
 void gfx_init(const color clear_clr)
 {
+
     GFX_STATE_SET_DEFAULTS(gfx_state);
     gfx_clear(clear_clr);
     reset_last_draw();
     gfx_state.has_init = True;
+    oprintf(_COM,"Graphics Init %i x %i x %i \n", SCREEN_W, SCREEN_H, SCREEN_BPP * 8);
+}
+
+bool gfx_has_init()
+{
+    return gfx_state.has_init;
 }
 
 void gfx_fill_rect(const vec2 pos, const vec2 size, const color clr)

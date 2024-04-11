@@ -27,7 +27,11 @@ void print(const char *str)
 
 #ifdef PRINT_GRAPHICAL
 #ifdef VGA_MODE_GFX
-    gfx_print(str);
+    static bool gfx_ok = False;
+    if(!gfx_ok)
+        gfx_ok = gfx_has_init();
+    else
+        gfx_print(str);
 #else
     console_print(str);
 #endif
@@ -37,7 +41,7 @@ void print(const char *str)
     serial_print(str);
 #endif
 
-     debug_string(str);
+    // debug_string(str);
 }
 
 #define __PRINT_PRINTSTR(str) print(str)
@@ -67,25 +71,32 @@ void printl(uint64_t ll, int base)
 
 
 
+size_t print_wrapper(const char *str)
+{
+    __PRINT_PRINTSTR(str);
+    return 0;
+}
+__printf_out_fn __print = print_wrapper;
+
+
+
 void printf(const char *fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
-    __vprintf(fmt, 0, 0, args);
+    __vprintf(__print, fmt, 0, 0, args);
 
     va_end(args);
 }
 
-size_t sprintf(char *buf, size_t len, const char *fmt, ...)
-{
 
+void oprintf(uint8_t out, const char* fmt, ...){
+    __printf_out_fn fnprint = (out == 1) ? (__printf_out_fn)(&serial_print) : __print;
     va_list args;
     va_start(args, fmt);
-    size_t ret = __vprintf(fmt, buf, len, args);
+    __vprintf(fnprint, fmt, 0, 0, args);
 
     va_end(args);
-
-    return ret;
 }
 
 size_t sprint(const char *str, char *buf, size_t max_len)
@@ -114,17 +125,22 @@ size_t sprint(const char *str, char *buf, size_t max_len)
     return (strcat(buf, str) != 0) ? new_len - cur_len : 0;
 }
 
-size_t print_wrapper(const char *str)
-{
-    __PRINT_PRINTSTR(str);
-    return 0;
-}
 
-typedef size_t (*__printf_out_fn)(const char *, char *, size_t);
-
-__printf_out_fn __print = print_wrapper;
 
 __printf_out_fn __sprint = sprint;
+size_t sprintf(char *buf, size_t len, const char *fmt, ...)
+{
+
+    va_list args;
+    va_start(args, fmt);
+    size_t ret = __vprintf(__sprint, fmt, buf, len, args);
+
+    va_end(args);
+
+    return ret;
+}
+
+
 
 /*
 size_t __vprintf_bad(const char *fmt, char *buf_out, size_t len, va_list args)
@@ -239,10 +255,10 @@ size_t __vprintf_bad(const char *fmt, char *buf_out, size_t len, va_list args)
 */
 // we should have a bullet proof print for errors etc
 
-size_t __vprintf(const char *fmt, char *buf_out, size_t len, va_list args)
+size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t len, va_list args)
 {
     // should be an arg
-    __printf_out_fn _print = (buf_out && len) ? __sprint : __print;
+    
     // later we can check if buf is not 0 and use it vs printing
     char buf[PRINTF_MAX];
     
@@ -345,7 +361,7 @@ size_t __vprintf(const char *fmt, char *buf_out, size_t len, va_list args)
              
              
             c += last_fmt_len; //and our normal inc accounts for %
-             serial_printi("before ++ c = ", c);
+           //  serial_printi("before ++ c = ", c);
         }
        ///if(fmt[c + 1] == 0)
         

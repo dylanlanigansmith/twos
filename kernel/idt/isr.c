@@ -1,6 +1,7 @@
 #include "isr.h"
 
 #include "../stdlib/string.h"
+#include "../stdlib/print.h"
 #include "../../drivers/video/console.h"
 #include "../pic/pic.h"
 #include "../stdlib/memory.h"
@@ -81,6 +82,8 @@ void dump_regs(registers_t regs)
 #define EXCEPTION_PRINTI(str, num) serial_printi(str, num)
 #define EXCEPTION_PRINTH(str, num) serial_printh(str, num)
 #define EXCEPTION_PRINTLN(str) serial_println(str)
+#define EXCEPTION_PRINTLN(str) println(str)
+#define EXCEPTION_PRINTF(fmt, ...) printf(fmt, __VA_ARGS__)
 void handle_error_generic(int num, int err){
     EXCEPTION_PRINTLN("=======");
     if( 0 <= num && num < 32){
@@ -101,8 +104,8 @@ void handle_pagefault(registers_t* regs){
     uint64_t cr2 = 0;
     __asm__ volatile ("movq %0, cr2" : "=r" (cr2) );
     EXCEPTION_PRINTLN("== PAGE FAULT ==");
-    EXCEPTION_PRINTH("Error: ", regs->err_code);
-    EXCEPTION_PRINTH("At Address [CR2]: ", cr2);
+    EXCEPTION_PRINTF("Error: %lu \n", regs->err_code);
+    EXCEPTION_PRINTF("At Address [CR2]: %lx \n", cr2);
     EXCEPTION_PRINTLN(  (regs->err_code & 0b100) ? "USER" : "KERNEL");
     EXCEPTION_PRINTLN(  (regs->err_code & 0b10) ? "WRITE" : "READ");
     EXCEPTION_PRINTLN(  (regs->err_code & 0b01) ? "PAGE-PROTECTION VIOLATION" : "PAGE NOT PRESENT");
@@ -115,7 +118,7 @@ void handle_pagefault(registers_t* regs){
     EXCEPTION_PRINTLN("==============");
     num_pfs++;
 
-    if(num_pfs > 10)
+    if(num_pfs > 3)
         for(;;){
             __asm__("hlt");
         }
