@@ -11,8 +11,11 @@ extern "C" {
 #define PRINT_SERIAL
 #define PRINT_GRAPHICAL
 
-#define _COM 0b01
-#define _GFX 0b10
+#define _COM    0b01
+#define _FB    0b10
+#define _OUT    0b100
+#define _OUT2   0b1000
+
 
 typedef size_t (*__printf_out_fn)(const char *, char *, size_t);
 
@@ -27,6 +30,7 @@ void printl(uint64_t ll, int base);
 
 
 #define PRINTF_MAX 1024
+void debugf(const char* fmt, ...) ;
 void printf(const char* fmt, ...) ;
 size_t sprintf(char* buf, size_t len, const char* fmt, ...);
 

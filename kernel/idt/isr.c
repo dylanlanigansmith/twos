@@ -87,7 +87,7 @@ void handle_error_generic(registers_t* regs, bool recover){
     }
     EXCEPTION_PRINTLN("=======");
     if(num == last_num || !recover)
-        panic("can't recover");
+        panic("double exception! ");
     
     last_num = num;
 
@@ -156,9 +156,6 @@ void isr_handler(uint64_t rdi, registers_t regs)
     case ISR_GeneralProtectionFault: //sorry for u bro
         handle_gpf(&regs);
         break;
-
-    case ISR_Debug:
-        print_isr_regs(&regs);
     default: 
         handle_error_generic(&regs, recoverable); break;
 

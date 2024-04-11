@@ -7,6 +7,15 @@
 #include "../../drivers/video/gfx.h"
 #include "../../drivers/video/console.h"
 #endif
+
+
+#include "../stdio/stdout.h"
+
+void print_stdout(const char* str){
+    for(int c = 0; str[c] != 0; ++c)
+        stdout_putchar(c);
+}
+
 void debug_string(const char *str)
 {
     serial_println("\ni am printing!");
@@ -88,13 +97,27 @@ void printf(const char *fmt, ...)
 
     va_end(args);
 }
-
-
-void oprintf(uint8_t out, const char* fmt, ...){
-    __printf_out_fn fnprint = (out == 1) ? (__printf_out_fn)(&serial_print) : __print;
+void debugf(const char *fmt, ...)
+{
+    static  __printf_out_fn _debug = (__printf_out_fn)(&serial_print);
+    _debug("DBG: ",0,0);
     va_list args;
     va_start(args, fmt);
-    __vprintf(fnprint, fmt, 0, 0, args);
+    __vprintf(__print, fmt, 0, 0, args);
+
+    va_end(args);
+}
+
+void oprintf(uint8_t out, const char* fmt, ...){
+    va_list args;
+    va_start(args, fmt);
+    if(out & _COM)
+        __vprintf((__printf_out_fn)(&serial_print), fmt, 0, 0, args);
+    if(out & _FB)
+        __vprintf(__print, fmt, 0, 0, args);
+    if(out & _OUT)
+        __vprintf((__printf_out_fn)(&print_stdout), fmt, 0, 0, args);
+    
 
     va_end(args);
 }
@@ -305,7 +328,7 @@ size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t 
                     break;
                 case 'x':
                     // Int but Hex
-                    total += _print(__PRINT_ITOA(va_arg(args, int), 16), buf_out, len);
+                    total += _print(__PRINT_ITOA(va_arg(args, unsigned int), 16), buf_out, len);
                     last_fmt_len = 1;
                     break;
                 case 'c':

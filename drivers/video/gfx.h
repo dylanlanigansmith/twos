@@ -7,16 +7,16 @@
 #define SCREEN_H 768
 #define SCREEN_PITCH 4096
 #define SCREEN_BPP 4 //bytes
-#define FB_PHYS_ADDR 0xfc000000 
+#define FB_PHYS_ADDR 0xfc000000
 #define FB_ADDR 0xfc000000
 #define FB_BPP 32
-#define FB_SIZE 0x300000 //(size_t)(SCREEN_W * SCREEN_H + SCREEN_W) * 4 //wrong
-#define FB_END_ADDR  0xff414000 //(FB_ADDR + FB_SIZE)
+#define FB_SIZE (size_t)(SCREEN_H * SCREEN_PITCH)
+#define FB_END_ADDR  (uintptr_t)(FB_ADDR + FB_SIZE)
 
 typedef struct{
-    uint16_t x,y;
+    uint32_t x,y;
 } vec2; 
-static inline vec2 v2(const uint16_t x, const uint16_t y) { vec2 p = {x,y}; return p; }
+static inline vec2 v2(const uint32_t x, const uint32_t y) { vec2 p = {x,y}; return p; }
 
 
 
@@ -47,8 +47,8 @@ extern gfx_state_t gfx_state;
 static inline void gfx_set_color(gfx_state_t* gs, const color clr) { gs->draw_color = clr; }
 static inline void gfx_set_default_color(gfx_state_t* gs, const color clr) { *(uint32_t*)(&(gs->draw_color)) = 0xffffffff; } //oh god
 
-static inline uint8_t* get_pixel(const vec2 pos){
-    return (uint8_t*)( FB_ADDR + SCREEN_PITCH * pos.y + pos.x * SCREEN_BPP);
+static inline uint32_t* get_pixel(const vec2 pos){
+    return (uint32_t*)( FB_ADDR + SCREEN_PITCH * pos.y + pos.x * SCREEN_BPP);
 }
 
 static inline void set_pixel(const vec2 pos, const color clr){
@@ -59,11 +59,9 @@ static inline void set_pixel(const vec2 pos, const color clr){
 
 void gfx_clear( const color clr);
 
-static inline void gfx_clear_from_pos(const vga_clr clr, const vec2 pos){
-    void* addr = (void*)(get_pixel(pos));
-
-    memset(addr, clr, FB_END_ADDR - (size_t)addr);
-}
+void gfx_clear_text(); 
+void gfx_clear_to_pos(const color clr, const vec2 pos);
+void gfx_clear_from_pos(const color clr, const vec2 pos);
 
 static inline void gfx_clear_white(){
      memset((void*)FB_ADDR, 0xff, FB_SIZE);

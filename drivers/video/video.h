@@ -7,6 +7,10 @@ What Graphics Mode Is Set In Real Mode ?
 //#define VGA_MODE_CHAR
 #define VGA_MODE_GFX
 
+//#define VGA_COLOR_16 
+
+#ifdef VGA_COLOR_16
+
 typedef uint8_t vga_clr;
 
 enum vga_colors {
@@ -27,3 +31,5 @@ enum vga_colors {
     clr_yellow,
     clr_white
 };
+
+#endif

@@ -18,7 +18,7 @@
 #include "mem/heap.h"
 
 #include "task/task.h"
-
+#include "stdio/stdout.h"
 extern unsigned long GDT_CODE_OFFSET;
 
 int cpp_test(int, int);
@@ -111,13 +111,14 @@ void main(void *addr, void *magic)
    
     make_page_struct(); //this also initializes heap, maps frame buffer
     
+    stdout_init();
     gfx_init(color_cyan);
     print("we are so fucking back baby \n");
     print("IN 64 BIT WITH GRUB SUPPORT\n");
     print("AND 32 BIT COLOR\n");
 
-    tasking_init(main_fn);
-    main_fn();
+    //tasking_init(main_fn);
+    //main_fn();
     //we have gotten ourselves a system
 
   
@@ -138,11 +139,11 @@ void main(void *addr, void *magic)
     
     _free(noway);
 
-    printf("\n i just freed our string %s \n", noway);
-    noway = kmalloc(24);
-    strcpy(noway, "HOLY SHIT IT WORKED");
+   // printf("\n i just freed our string %s \n", noway);
+    //noway = kmalloc(24);
+  //  strcpy(noway, "HOLY SHIT IT WORKED");
 
-    printf("now I malloc a new string, did it work? %s \n", noway);
+   // printf("now I malloc a new string, did it work? %s \n", noway);
 
    // println("now i am going to malloc 10mb, sorry");
 
@@ -151,10 +152,31 @@ void main(void *addr, void *magic)
    // kfree(hate2seeit);
    // println("well, i just freed that 10mb, are you telling me this shit worked?");
     //println("freed");
-    int agh = cpp_test(2,2);
+   // int agh = cpp_test(2,2);
    
     println("task this bitches");
-    yield();
+   // gfx_print(stdout.buffer);
+
+   gfx_clear(color_cyan);
+    size_t old_len = stdout.index;
+
+
+    char last_top = 0;
+
+    for(;;)
+        while (old_len != stdout.index || last_top != stdout_top()){ //for backspace 
+            gfx_clear_text();
+            //gfx_clear(gfx_state.clear_color);
+            gfx_print(get_stdout());
+            //for(int i = 0; i < stdout.index; ++i)
+           //     gfx_putc(stdout.buffer[stdout.index]);
+           
+         //   gfx_putc(stdout_top());
+           
+            old_len = stdout.index;
+            last_top = stdout_top();
+        }
+    
 
     
     for(;;){

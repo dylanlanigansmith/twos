@@ -6,6 +6,10 @@
 #include "../port/port.h"
 #include "../video/gfx.h"
 #include "../video/console.h"
+
+#include "scancode.h"
+#include "ascii.h"
+#include "../../kernel/stdio/stdout.h"
 //https://blog.igorw.org/2015/03/04/scancode-to-ascii/
 #define SCANCODE2ASCII_TABLE /*
        0     1     2     3     4     5     6     7     8     9     A     B     C     D     E     F
@@ -30,14 +34,33 @@ static const unsigned char sc2ascii[] = {SCANCODE2ASCII_TABLE};
 
 uint8_t shouldScan = 1;
 
+//0x2a down 0xaa up
+uint8_t lshift = 0;
+
 static void keydown_isr(registers_t* regs){
     if(!shouldScan) return;
     uint8_t scan = port_byte_in(0x60); 
     if(scan == 0 || scan == 0xff || scan == 0x9d) return;
-    char c = 0;
+
+
+    if(scan == SCAN_LSHIFT_DOWN) lshift = 1;
+    else if(scan == SCAN_LSHIFT_UP) lshift = 0;
+   
     
-    //gfx_print(htoa(scan));
-    
+    //gfx_print(htoa(sc2ascii[scan]));
+
+
+    char c = sc2ascii[scan];
+    //well time to read about ps2
+    if(c != 0x0){
+        if(lshift)
+           c = apply_shift_modifier(c);
+        stdout_putchar(c);
+    }
+        
+
+
+    #ifdef LEGACY_KBD
     switch (scan){
         case 0xe:
             gfx_delc(); return;
@@ -52,8 +75,9 @@ static void keydown_isr(registers_t* regs){
     static char b[2] = {0,0};
     b[0] = c;
    // console_print(b);
-    gfx_putc(c);
-
+    //gfx_putc(c);
+    
+    #endif
 
  
 
