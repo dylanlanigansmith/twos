@@ -23,6 +23,35 @@ extern unsigned long GDT_CODE_OFFSET;
 
 int cpp_test(int, int);
 
+
+uint64_t start_tick = 0;
+
+bool first_call = False;
+void main_fn()
+{
+bed:
+   // if(first_call) panic("omg");
+    first_call = True;
+    println("task main");
+    start_tick = 0;
+    //gfx_clear(color_cyan);
+    while( 0xffffffffff < (tick) ){
+        //__asm__ volatile ("hlt");
+    }
+    printi(tick);
+    println("---");println("---");println("---");println("---");println("---");
+    tick = 0;
+    yield();
+
+    println("main: im back bitches");
+
+    //goto bed;
+
+    for(;;){
+        __asm__("hlt");
+    }
+}
+
 void main(void *addr, void *magic)
 {
     disable_interupts();
@@ -33,7 +62,7 @@ void main(void *addr, void *magic)
     
     // register irq handlers
     keyboard_init();
-    timer_init(50);
+    timer_init(5);
 
     if (magic != MULTIBOOT2_BOOTLOADER_MAGIC){
         //uh what?
@@ -83,17 +112,19 @@ void main(void *addr, void *magic)
     make_page_struct(); //this also initializes heap, maps frame buffer
     
     gfx_init(color_cyan);
+    print("we are so fucking back baby \n");
+    print("IN 64 BIT WITH GRUB SUPPORT\n");
+    print("AND 32 BIT COLOR\n");
 
-    tasking_init();
+    tasking_init(main_fn);
+    main_fn();
     //we have gotten ourselves a system
 
   
    
 
 
-    print("we are so fucking back baby \n");
-    print("IN 64 BIT WITH GRUB SUPPORT\n");
-    print("AND 32 BIT COLOR\n");
+    
     
     print(">");
 
@@ -122,7 +153,8 @@ void main(void *addr, void *magic)
     //println("freed");
     int agh = cpp_test(2,2);
    
-
+    println("task this bitches");
+    yield();
 
     
     for(;;){
@@ -160,3 +192,4 @@ void main(void *addr, void *magic)
     }
     __builtin_unreachable();
 }
+

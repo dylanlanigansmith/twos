@@ -4,13 +4,14 @@
 #include "../../drivers/video/console.h"
 #include "../../drivers/port/port.h"
 
-uint32_t tick = 0;
+uint64_t tick = 0;
 
 static void timer_handler(registers_t* reg){
     tick++;
-    uint16_t old_cursor = get_cursor();
+    
    
    #ifdef VGA_MODE_CHAR
+    uint16_t old_cursor = get_cursor();
     set_cursor(0,CONSOLE_H - 2);
     console_print(itoa(tick, 10));
     set_cursor_offset(old_cursor);

@@ -5,7 +5,7 @@ CPP_SOURCES = $(wildcard kernel/*.cpp kernel/**/*.cpp drivers/*.cpp drivers/**/*
 HEADERS = $(wildcard kernel/*.h kernel/**/*.h drivers/**/*.h)
 CPP_HEADERS = $(wildcard kernel/*.hpp kernel/**/*.hpp drivers/**/*.hpp)
 
-ASM =  $(wildcard kernel/asm/**.asm kernel/boot/*.asm kernel/cpp/*.asm)
+ASM =  $(wildcard kernel/asm/**.asm kernel/boot/*.asm kernel/cpp/*.asm kernel/task/*.asm)
 #should Make sources dep on all header files
 OBJ = ${C_SOURCES:.c=.o}
 CPP_OBJ = ${CPP_SOURCES:.cpp=.o}

@@ -41,6 +41,7 @@ void gfx_clear( const color clr)
    }
    // memset((void*)(FB_ADDR), clr, FB_SIZE);
     gfx_state.clear_color = clr;
+    reset_last_draw();
 }
 
 void gfx_init(const color clear_clr)

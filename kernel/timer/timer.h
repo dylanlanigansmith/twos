@@ -12,3 +12,4 @@
 
 void timer_init(uint32_t freq);
 
+extern uint64_t tick;

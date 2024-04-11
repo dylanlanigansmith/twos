@@ -25,6 +25,23 @@ typedef struct {
     size_t size;
     bmap_t* allocs;
 } heap_t;
+
+//HEADER AND FOOTER
+#define HEAP_CRC 0xD515DEAD
+
+#define HEAP_HEAD_AVAILABLE (uint8_t)0xff
+#define HEAP_HEAD_IN_USE (uint8_t)0x00
+typedef struct {
+    uint32_t crc;
+    uint8_t available;
+    size_t block_size; //size from end of header to end of footer 
+} __attribute__((packed)) heap_header_t;
+
+typedef struct {
+    uint32_t crc;
+    heap_header_t* header;
+} __attribute__((packed)) heap_footer_t;
+//could add index in bmap to header  ? 
 #endif
 
 

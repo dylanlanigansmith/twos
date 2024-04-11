@@ -40,62 +40,57 @@ static inline void irq_log(uint32_t int_no, uint32_t err_code)
 }
 
 
-void dump_regs(registers_t regs)
-{
-    console_print(htoa(regs.ds));
-    console_print(" ");
-    console_print(htoa(regs.edi));
-    console_print(" ");
-    console_print(htoa(regs.esi));
-    console_print(" ");
-    console_print(htoa(regs.ebp));
-    console_print(" ");
-    console_print(htoa(regs.esp));
-    console_print(" ");
-    console_print(htoa(regs.ebx));
-    console_print(" ");
-    console_print(htoa(regs.edx));
-    console_print(" ");
-    console_print(htoa(regs.ecx));
-    console_print(" ");
-    console_print(htoa(regs.eax_idfk));
-    console_print(" ");
-    console_print(htoa(regs.int_no));
-    console_print(" ");
-    console_print(htoa(regs.err_code));
-    console_print(" ");
-    console_print(htoa(regs.eip));
-    console_print(" ");
-    console_print(htoa(regs.cs));
-    console_print(" ");
-    console_print(htoa(regs.eflags));
-    console_print(" ");
-    console_print(htoa(regs.useresp));
-    console_print(" ");
-    console_print(htoa(regs.ss));
-    console_print(" ");
-    console_print(htoa(regs.edi));
-    console_print(" ");
-}
 
+
+void print_isr_regs(registers_t* regs)
+{
+    printf("int_no = %lx\n", regs->int_no);
+    printf("err_code = %lx\n", regs->err_code);
+    printf("ds = %lx\n", regs->ds);
+    printf("rdi = %lx\n", regs->edi);
+    printf("rsi = %lx\n", regs->esi);
+    printf("*rbp = %lx\n", regs->ebp);
+    printf("rbx = %lx\n", regs->ebx);
+    printf("rcx = %lx\n", regs->ecx);
+    printf("rdx = %lx\n", regs->edx);
+    printf("rax = %lx\n", regs->eax);
+    printf("rsp = %lx\n", regs->rsp);
+    printf("rip = %lx\n", regs->eip);
+    printf("cs = %lx\n", regs->cs);
+    printf("eflags = %lx\n", regs->eflags);
+    printf("user_rsp = %lx\n", regs->useresp);
+    printf("ss = %lx\n", regs->ss);
+}
 
 #define EXCEPTION_PRINTI(str, num) serial_printi(str, num)
 #define EXCEPTION_PRINTH(str, num) serial_printh(str, num)
 #define EXCEPTION_PRINTLN(str) serial_println(str)
 #define EXCEPTION_PRINTLN(str) println(str)
 #define EXCEPTION_PRINTF(fmt, ...) printf(fmt, __VA_ARGS__)
-void handle_error_generic(int num, int err){
+
+int last_num = -1;
+
+void handle_error_generic(registers_t* regs, bool recover){
+
+    int num = regs->int_no; int err = regs->err_code; //lazy fuck
+
     EXCEPTION_PRINTLN("=======");
     if( 0 <= num && num < 32){
         EXCEPTION_PRINTI(exception_names[num], num);
         if(err){
             EXCEPTION_PRINTI("Non-Zero Error Code", 0);
         }
+        print_isr_regs(regs);
     }
     else{
          EXCEPTION_PRINTI("ISR_Unknown", num);
     }
     EXCEPTION_PRINTLN("=======");
+    if(num == last_num || !recover)
+        panic("can't recover");
+    
+    last_num = num;
+
 }
 
 
@@ -103,7 +98,7 @@ int num_pfs = 0;
 void handle_pagefault(registers_t* regs){
     uint64_t cr2 = 0;
     __asm__ volatile ("movq %0, cr2" : "=r" (cr2) );
-    EXCEPTION_PRINTLN("== PAGE FAULT ==");
+    EXCEPTION_PRINTLN("\n== PAGE FAULT ==");
     EXCEPTION_PRINTF("Error: %lu \n", regs->err_code);
     EXCEPTION_PRINTF("At Address [CR2]: %lx \n", cr2);
     EXCEPTION_PRINTLN(  (regs->err_code & 0b100) ? "USER" : "KERNEL");
@@ -117,12 +112,29 @@ void handle_pagefault(registers_t* regs){
 
     EXCEPTION_PRINTLN("==============");
     num_pfs++;
-
+   
     if(num_pfs > 3)
         for(;;){
             __asm__("hlt");
         }
    
+}
+
+
+int num_gpfs  = 0;
+void handle_gpf(registers_t* regs){
+    num_gpfs++;
+    EXCEPTION_PRINTLN("\n=== GPF ===");
+    EXCEPTION_PRINTF("Error: %lu \n", regs->err_code);
+    EXCEPTION_PRINTF("rbp %lx \n", regs->ebp);
+    EXCEPTION_PRINTLN("==============");
+    //EXCEPTION_PRINTF("rsp %lx \n", regs->esp);
+    print_isr_regs(regs);
+    if(num_gpfs > 2)
+        for(;;){
+            __asm__("hlt");
+        }
+
 }
 
 void isr_handler(uint64_t rdi, registers_t regs)
@@ -134,14 +146,21 @@ void isr_handler(uint64_t rdi, registers_t regs)
     else
         isr_log(regs.int_no, regs.err_code);
 #endif
-
+    bool recoverable = True;
+    if(regs.int_no == ISR_InvalidOpcode) recoverable = False;
     switch (regs.int_no)
     {
     case ISR_PageFault:
         handle_pagefault(&regs);
         break;
+    case ISR_GeneralProtectionFault: //sorry for u bro
+        handle_gpf(&regs);
+        break;
+
+    case ISR_Debug:
+        print_isr_regs(&regs);
     default: 
-        handle_error_generic(regs.int_no, regs.err_code); break;
+        handle_error_generic(&regs, recoverable); break;
 
     }
 }

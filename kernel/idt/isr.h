@@ -7,11 +7,11 @@
 typedef struct {
     uint64_t ds;
     // Pushed by pusha.
-    uint64_t edi, esi, ebp, esp, ebx, edx, ecx, int_no;
-    uint64_t err_code, eax_idfk; 
+    uint64_t edi, esi, ebp, ebx, edx, ecx, eax, int_no;
+    uint64_t err_code, rsp; 
     //broskii theres r8-r15 too eek
     // Pushed by the processor automatically.
-    uint64_t eip, cs, eflags, useresp, ss;
+    uint64_t cs, eflags, eip, useresp, ss;
 }  __attribute__((packed)) registers_t;
 
 //64 
