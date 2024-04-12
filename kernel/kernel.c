@@ -11,6 +11,8 @@
 
 #include "../drivers/sound/sound.h"
 #include "boot/multiboot2.h"
+#include "boot/mb_header.h"
+
 
 #include "../drivers/serial/serial.h"
 
@@ -71,60 +73,29 @@ void task_draw_test(){
 
 void main(void *addr, void *magic)
 {
+    if ((uint64_t)magic != MULTIBOOT2_BOOTLOADER_MAGIC){ /* uh how? */ }
+    //we do check this in parse_multiboot_header() but that does happen rather late in the start process 
     disable_interupts();
     PIC_init();
    
     init_idt();
-    // disable_interupts();
     
     // register irq handlers
     keyboard_init();
     timer_init(PIT_RATE);
 
-    if (magic != MULTIBOOT2_BOOTLOADER_MAGIC){
-        //uh what?
+    
+    serial_init(); //we can now debug and log! 
+    debugf("multiboot2 addr = %lx magic = %lx \n",  (uintptr_t)addr, (uint64_t)magic);
+    
+    if(parse_multiboot_header(addr, (uint64_t)magic) == MB_HEADER_PARSE_ERROR){ //gets acpi, framebuffer, etc
+        panic("multiboot parse fail");
     }
-    
-    
-
-    serial_init();
-    serial_printh("multiboot addr",  addr);
-    
-    struct multiboot_tag *tag;
-    struct multiboot_tag_framebuffer *tagfb;
-
-    struct multiboot_tag_vbe * tagvbe;
-
-    for (tag = (struct multiboot_tag *)(addr + 8); tag->type != MULTIBOOT_TAG_TYPE_END;
-        tag = (struct multiboot_tag *)((multiboot_uint8_t *)tag + ((tag->size + 7) & ~7)))
-    {
-        if (tag->type = MULTIBOOT_TAG_TYPE_FRAMEBUFFER)
-        {
-            tagfb = (struct multiboot_tag_framebuffer *)tag;
-            if(tagfb->common.framebuffer_width != 1024) continue;
-            serial_print("\n found framebuffer tag");
-           
-            serial_print("START Frame Buffer Dump\n");
-            serial_printi("tagfb->common.type",  tagfb->common.type);
-            serial_printi("tagfb->common.size",  tagfb->common.size);
-            serial_printh("tagfb->common.framebuffer_addr",  tagfb->common.framebuffer_addr);
-            serial_printi("tagfb->common.framebuffer_pitch",  tagfb->common.framebuffer_pitch);
-            serial_printi("tagfb->common.framebuffer_width",  tagfb->common.framebuffer_width);
-            serial_printi("tagfb->common.framebuffer_height",  tagfb->common.framebuffer_height);
-            serial_printi("tagfb->common.framebuffer_bpp",  tagfb->common.framebuffer_bpp);
-            serial_printi("tagfb->common.framebuffer_type",  tagfb->common.framebuffer_type);
-            serial_printi("tagfb->common.reserved",  tagfb->common.reserved);
-            serial_print("END Frame Buffer Dump\n");          
-        }   
-        if(tag->type = MULTIBOOT_TAG_TYPE_VBE){
-            tagvbe = ( struct multiboot_tag_vbe *)tag;
-            serial_print("found VBE\n");
-        }
-    }
+   
   
     _init_cpp(); //bc we cant get global constructors to work & by we i mean I
-   __asm__("sti");
-    serial_println("enabled interupts");
+    __asm__("sti");
+    serial_println("enabled interupts"); //should we do this after paging ??? 
    
     make_page_struct(); //this also initializes heap, maps frame buffer
     
@@ -153,7 +124,7 @@ void main(void *addr, void *magic)
     */
 
     ASSERT(gfx_has_init());
-    
+   
      printf("tasking time :( %lx %lx \n", (uintptr_t)task_drawtimer, (uintptr_t)task_draw_test);
     
    // task_draw_test();

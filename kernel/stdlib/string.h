@@ -17,6 +17,8 @@ char* strcat(char* dest, const char* src);
 
 size_t strlen(const char* str);
 
+int strncmp(const char* str1, const char* str2, size_t num);
+
 #ifdef __cplusplus
 }
 #endif

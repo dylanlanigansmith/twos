@@ -79,3 +79,26 @@ size_t strlen(const char* str){ //could be more robust but we dont have malloc s
 	while(str[len] != 0) len++;
 	return len;
 }
+
+int strncmp(const char *str1, const char* str2, size_t num)
+{
+	if(!str1 || !str2 || !num) return 0;	
+	int matching = 0;
+    int c = 0;
+	while(str1[c] == str2[c] && c < num && str1[c] != 0 && str2[c] != 0){
+		matching++;
+		c++;
+	}
+
+	/*
+		spec is < 0 when lower first not match in 1 v 2
+
+		0 when equal 
+
+		> 0 when greater first not match in 1 v 2
+	*/ //this is gonna be wrong bc i wrote it to return num matching chars earlier 
+	if(matching == num) return 0;
+	if(str1[c] > str2[c]) return -1; 
+	else return 1; 
+
+}

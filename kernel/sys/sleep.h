@@ -2,4 +2,4 @@
 
 #include "../kernel.h"
 
-void sleep_ns(uint64_t )
+void sleep_ns(uint64_t ns);

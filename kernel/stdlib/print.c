@@ -115,7 +115,7 @@ void printf(const char *fmt, ...)
 void debugf(const char *fmt, ...)
 {
     __printf_out_fn _debug = (__printf_out_fn)(&serial_print);
-    _debug("DBG: ",0,0);
+   // _debug("$: ",0,0);
     va_list args;
     va_start(args, fmt);
     __vprintf(_debug, fmt, 0, 0, args);

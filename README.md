@@ -5,7 +5,7 @@
 ## Feature Overview
     - x86 64 bit
     - Multiboot2 spec. compatible
-    - VGA Graphics Driver, up to 1024x768 32 bit color support
+    - VGA/VBE Graphics Drivers, up to 1024x768 32 bit color support
     - Multi-tasking Kernel
     - The only thing that isn't from scratch is the use GRUB/Multiboot bootloader 
         - Built completely freestanding, custom libc, from scratch standard library, etc.
@@ -31,7 +31,7 @@
 
 
 #### Detailed Features
-- VGA/VESA Framebuffer, up to 32 bit color, Graphics Driver provides API 
+- VBE Framebuffer, up to 32 bit color, Graphics Driver provides API 
 
 - Serial/COM port support, kernel debugging via serial
 
@@ -64,6 +64,7 @@
         - next project ?
     - honestly the only thing I consistently miss from C++ is function over-loading, and some of how C++ handles structs (aka lemme stick functions in there so im not prefixing every function like "structname_dothing(example_t* examplestruct)")
         - im pretty sure if I switched to like the newest C20 / C23 I would get some of these features (unknown if I would without libc / stdlib though)
+        - ooh i also miss being able to declare variables inside logical expressions, ie. 'if (int err = get_error(); err > 0 ) { print(err); }' is nice to have 
        
 
 If you want to test your understanding of how a modern computer works, write an OS from scratch. I have been humbled and learned so much about concepts I thought I had down pat. Also you'll never forget the x64 ABI and calling conventions after this too. 

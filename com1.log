@@ -1,17 +1,40 @@
-multiboot addr: 0x11d4d8 
-
- found framebuffer tagSTART Frame Buffer Dump
-tagfb->common.type: 8 
-tagfb->common.size: 38 
-tagfb->common.framebuffer_addr: 0xfc000000 
-tagfb->common.framebuffer_pitch: 4096 
-tagfb->common.framebuffer_width: 1024 
-tagfb->common.framebuffer_height: 768 
-tagfb->common.framebuffer_bpp: 32 
-tagfb->common.framebuffer_type: 1 
-tagfb->common.reserved: 0 
-END Frame Buffer Dump
+multiboot2 addr = 0x11d5d8 magic = 0x36d76289 
+parse_multiboot_header()
+===MULTIBOOT_TAG_TYPE_MMAP===
+mmaps->entry_size: 24 
+mmaps->entry_version: 0x0 
+mmap [0]:{ @0x0 - 0x9fc00 } size 0x9fc00 |  mem_avail 1 
+mmap [1]:{ @0x9fc00 - 0xa0000 } size 0x400 |  mem_reserved 2 
+mmap [2]:{ @0xf0000 - 0x100000 } size 0x10000 |  mem_reserved 2 
+mmap [3]:{ @0x100000 - 0xbffe0000 } size 0xbfee0000 |  mem_avail 1 
+mmap [4]:{ @0xbffe0000 - 0xc0000000 } size 0x20000 |  mem_reserved 2 
+mmap [5]:{ @0xfeffc000 - 0xff000000 } size 0x4000 |  mem_reserved 2 
+mmap [6]:{ @0xfffc0000 - 0x100000000 } size 0x40000 |  mem_reserved 2 
+mmap [7]:{ @0x100000000 - 0x240000000 } size 0x140000000 |  mem_avail 1 
+mmap [8]:{ @0x41400000009 - 0x45400000019 } size 0x4000000010 |  mem_unknown 15 
+mmap [9]:{ @0x0 - 0x0 } size 0x0 |  mem_unknown 0 
+mmap [10]:{ @0x0 - 0x0 } size 0x0 |  mem_unknown 0 
+mmap [11]:{ @0x0 - 0x1b00000000 } size 0x1b00000000 |  mem_avail 1 
+mmap [12]:{ @0x10000000000000 - 0x10100000000000 } size 0x100000000000 |  mem_unknown 0 
+mmap [13]:{ @0x0 - 0x800000000 } size 0x800000000 |  mem_unknown 0 
+mmap [14]:{ @0x2100000000 - 0x2700000001 } size 0x600000001 |  mem_unknown 0 
+mmap [15]:{ @0x200000000000 - 0x7b9400000000 } size 0x5b9400000000 |  mem_unknown 0 
+mmap [16]:{ @0x1000000000 - 0x1000000000 } size 0x0 |  mem_unknown 0 
+mmap [17]:{ @0x600000001 - 0x106b9a00000001 } size 0x106b9400000000 |  mem_unknown 0 
+mmap [18]:{ @0x2200000000 - 0x2200000000 } size 0x0 |  mem_unknown 0 
+mmap [19]:{ @0x0 - 0x4000000000 } size 0x4000000000 |  mem_avail 1 
+mmap [20]:{ @0x106bb600000000 - 0x10e76c00000000 } size 0x7bb600000000 |  mem_unknown 0 
+mmap [21]:{ @0x0 - 0x200000000 } size 0x200000000 |  mem_unknown 0 
+mmap [22]:{ @0x5b00000000 - 0x6100000001 } size 0x600000001 |  mem_unknown 0 
+mmap [23]:{ @0x7c2000000000 - 0x7c4c00000000 } size 0x2c00000000 |  mem_unknown 0 
 found VBE
+===MULTIBOOT_TAG_TYPE_ACPI_OLD===
+rsdp->Signature: 'RSD PTR ' 
+rsdp->OEMID: 'BOCHS ' 
+rsdp->Revision: 0 
+rsdp->Checksum: 57 
+rsdp->RsdtAddress: 0xbffe1c40 
+parsed mb2 header successfully
 enabled interupts
 cr3 = : 0x116000 
 address p4 = : 0x116000 
