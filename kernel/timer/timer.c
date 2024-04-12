@@ -4,12 +4,16 @@
 #include "../../drivers/video/console.h"
 #include "../../drivers/port/port.h"
 
+#include "../task/task.h"
+
 uint64_t tick = 0;
 
 static void timer_handler(registers_t* reg){
     tick++;
     
-   
+
+    if(sched.current_task == 0) return;
+   on_timer_tick(tick, reg);
    #ifdef VGA_MODE_CHAR
     uint16_t old_cursor = get_cursor();
     set_cursor(0,CONSOLE_H - 2);

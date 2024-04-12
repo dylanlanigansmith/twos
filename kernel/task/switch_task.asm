@@ -47,18 +47,18 @@ restore_regs:
     pop rax
 
     ; Restore flags
-    push qword [rdi + 136]  ; Push rflags onto the stack
+    push qword [rdi + 136]  ;  rflags
     popfq 
 
-     ; Restore cr3
-  ;  mov rax, [rdi + 144]    ; cr3
-  ;  mov cr3, rax     
+     ; cr3
+  
     mov rax, [rdi + 16]     ; load saved rip into rax
-     ; Restore stack-related registers
+   
     mov rsp, [rdi]          ; rsp
     mov rbp, [rdi + 8]      ; rbp
-    push rax   
-    ; Restore general-purpose registers
+    push rax   ; new RIP
+
+
     mov rax, [rdi + 24]     ; rax
     mov rbx, [rdi + 32]     ; rbx
     mov rcx, [rdi + 40]     ; rcx
@@ -74,11 +74,11 @@ restore_regs:
     mov r14, [rdi + 120]    ; r14
     mov r15, [rdi + 128]    ; r15
 
-                      ; Restore rflags from the structure
+                    
     
 
    
-    ret ; return!
+    ret ; good fuckin luck
     
    
 

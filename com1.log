@@ -1,4 +1,4 @@
-multiboot addr: 0x11d3e8 
+multiboot addr: 0x11d490 
 
  found framebuffer tagSTART Frame Buffer Dump
 tagfb->common.type: 8 
@@ -52,9 +52,23 @@ Heap Usage: 25/100
 
 === stdout init @ 0xffffbeef0020000d size 4096 idx 0  ready = 1 ===
 Graphics Init 1024 x 768 x 32 ready = 1 
-DBG: stdout tasking time :( ? 
-tasking time :(DBG: stdout old len =  ? 
-old len = DBG: stdout 0 ? 
-0DBG: stdout i last top  ? 
-i last top DBG: stdout ( ? 
-(DBG: stdout  ? 
+tasking init
+we found no space to fit size 0x6a1 
+making new block at 0xffffbeef00201019 size=1722 / 0x6ba 
+making footer @ 0xffffbeef002016c7added to alloc map, new # allocs = 2 
+Heap Usage: 25/100 
+we found no space to fit size 0x2000 
+making new block at 0xffffbeef002016d3 size=8217 / 0x2019 
+making footer @ 0xffffbeef002036e0added to alloc map, new # allocs = 3 
+Heap Usage: 25/100 
+create_task task_drawtimer pid 1 rip 0x1010a1 !
+added initial task  pid 0 !
+adding task task_draw_test pid 1 !
+we found no space to fit size 0x2000 
+making new block at 0xffffbeef002036ec size=8217 / 0x2019 
+making footer @ 0xffffbeef002056f9added to alloc map, new # allocs = 4 
+Heap Usage: 25/100 
+create_task task_draw_test pid 1 rip 0x10112a !
+tasking time :( 0x1010a1 0x10112a 
+task draw timer 
+task draw test 

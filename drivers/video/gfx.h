@@ -60,6 +60,9 @@ static inline void set_pixel(const vec2 pos, const color clr){
 void gfx_clear( const color clr);
 
 void gfx_clear_text(); 
+
+void gfx_clear_line(uint32_t y, uint32_t height); 
+
 void gfx_clear_to_pos(const color clr, const vec2 pos);
 void gfx_clear_from_pos(const color clr, const vec2 pos);
 
@@ -80,9 +83,14 @@ void gfx_fill_rect(const vec2 pos, const vec2 size, const color clr);
 void gfx_draw_str(const char* str, vec2 pos, const color clr);
 void gfx_draw_char(const char* font_char, const vec2 pos, const color clr);
 
+
+void gfx_draw_char_at(const char* font_char, const vec2 pos, const color clr);
+
 void gfx_print(const char* str);
 void gfx_print_at(const char* str, const vec2 pos);
 void gfx_printclr(const char* str, const color clr); 
+
+void gfx_print_pos(const char* str, vec2 pos);
 
 void gfx_putc(const char c);
 void gfx_delc();

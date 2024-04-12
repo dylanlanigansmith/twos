@@ -83,8 +83,8 @@ void stdout_onoverflow(){
 
 void stdout_putchar(uint8_t c)
 {
-    ASSERT(stdout.flags & stdout_backspace);
-    if( (stdout.flags & stdout_backspace) ){
+    //ASSERT(stdout.flags & stdout_backspace);
+    if( (stdout.flags & stdout_backspace) || 1 ){
         //buffered term mode 
         switch (c)
         {

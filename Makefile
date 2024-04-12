@@ -27,7 +27,9 @@ OBJ_LINK_LIST:= $(OBJ) $(CPP_OBJ) $(ASM_OBJ) #$(CRTI_OBJ) $(CRTBEGIN_OBJ) $(CRTE
 all: iso
 
 run: clean all
-	qemu-system-x86_64 -cdrom os.iso -device VGA,vgamem_mb=32 -audiodev pa,id=speaker -machine pcspk-audiodev=speaker -serial file:com1.log -m 8G
+#let it be known that if i run with -machine type=q35 my memory allocations for heap map actually work at expected address but then i have to fix everything for that, likely why shit dont run in nothin else rn tho 
+#really frustrating but ill just stick with qemu and be HAPPY
+	qemu-system-x86_64 -accel kvm -cdrom os.iso -device VGA,vgamem_mb=32 -audiodev pa,id=speaker -machine pcspk-audiodev=speaker -serial file:com1.log -m 8G
 rund: clean all
 	qemu-system-x86_64 -s -S -cdrom os.iso -device VGA,vgamem_mb=32 -audiodev pa,id=speaker -machine pcspk-audiodev=speaker -serial file:com1.log
 clean:

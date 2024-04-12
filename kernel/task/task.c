@@ -1,16 +1,20 @@
 #include "task.h"
 #include "../mem/heap.h"
 #include "../../drivers/video/gfx.h"
+#include "../timer/timer.h"
+
 #define DEBUGT(fmt, ...) printf(fmt, __VA_ARGS__)
 
 extern void capture_regs(regs_t* regs);
 extern void restore_regs(regs_t* regs);
 extern void fix_isr_regs();
-PID_t pid_last = 0;
-task_t* task_current;
+
+
 
 extern uint64_t get_cr3();
 
+
+scheduler_t sched;
 
 void print_regs(regs_t* regs)
 {
@@ -38,33 +42,27 @@ void print_regs(regs_t* regs)
 }
 
 
-void t1_main(){
-sleep:
-    uint64_t j = 1;
-    for(int i = 0; i < 10000000; ++i){
-        j *= 2;
-    }
-    printf("task1: i did a task %li\n\n\n\n\n", j);
-
-   
-    yield();
-
-    println("nice try");
-    goto sleep;
-}
 
 
 task_t main_task, t1;
-void create_task(task_t* task, task_entry_fn main_fn, uint64_t rflags, uint64_t cr3, uint64_t rsp, uint64_t rbp) //ignore flags and vma for now 
+
+#define KERNEL_TASK_STACK_SIZE 4096 * 2
+task_t* create_task( const char* name, task_entry_fn task_entry, uint64_t rflags) //ignore flags and vma for now 
 {
-    task->pid = pid_last++;
+    uint64_t new_stack = kmalloc(KERNEL_TASK_STACK_SIZE) + KERNEL_TASK_STACK_SIZE - sizeof(task_t);
+    task_t* task = (task_t*)new_stack; //task goes up from stack addr, stack goes downwards, nice! 
+    if(!new_stack) panic("task allocation failed!");
+    if(strlen(name) >= 31) panic("you only made task names 31 chars long!");
+        
+
+    task->pid = sched.pid_last + 1;
+
     
-    // Initialize regs_t members to 0
-    uint64_t new_stack = kmalloc(4096 * 4) + 4096 * 4;
+    //maybe this should just go in task alloc
 
     task->regs.rsp = new_stack;
     task->regs.rbp = new_stack;
-    task->regs.rip = (uint64_t)main_fn;
+    task->regs.rip = (uint64_t)task_entry;
     task->regs.rax = 0;
     task->regs.rbx = 0;
     task->regs.rcx = 0;
@@ -80,162 +78,168 @@ void create_task(task_t* task, task_entry_fn main_fn, uint64_t rflags, uint64_t 
     task->regs.r14 = 0;
     task->regs.r15 = 0;
     task->regs.rflags = rflags;
-    task->regs.cr3 = cr3;
+    task->regs.cr3 = get_cr3();
 
-    // Initialize vma and next to NULL
+    ASSERT(task->regs.cr3);
+
+    // handle list outside of create_task
     task->reserved = nullptr;
     task->next = nullptr;
+
+    DEBUGT("create_task %s pid %i rip %lx !\n", name, task->pid, task->regs.rip);
+    return task;
 }
 
-// Task 0: Calculate prime numbers using Sieve of Eratosthenes
-void task0() {
-    int n = 1000000; // Adjust the limit for different computation intensity
-    bool prime[n+1]; //if this doesnt break ill eat my hat
-    memset(prime, 1, sizeof(prime));
 
-    for (int p = 2; p * p <= n; p++) {
-        if (prime[p] == True) {
-            for (int i = p * p; i <= n; i += p)
-                prime[i] = 0;
-        }
-    }
-
-    printf("Task 0: Prime numbers up to %d:\n", n);
-    int highest = 0;
-    for (int p = 2; p <= n; p++)
-        if (prime[p])
-            highest = p; 
-
-    printf("%d ", highest);
-    printf("\n");
-}
-
-// Task 1: Perform matrix multiplication of two 100x100 matrices
-void task1() {
-    int n = 100; // Adjust the matrix size for different computation intensity
-    int a[100][100], b[100][100], c[100][100];
-
-    // Initialize matrices a and b
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            a[i][j] = i + j;
-            b[i][j] = i - j;
-        }
-    }
-
-    // Perform matrix multiplication
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            c[i][j] = 0;
-            for (int k = 0; k < n; k++)
-                c[i][j] += a[i][k] * b[k][j];
-        }
-    }
-
-    printf("Task 1: Matrix multiplication of %dx%d matrices completed\n", n, n);
-}
-
-// Task 2: Perform a series of calculations (CPU-intensive)
-void task2() {
-    unsigned long long result = 0;
-    for (unsigned long long i = 0; i < 1000000000; i++) {
-        result += i * i;
-    }
-    printf("Task 2: Calculation completed. Result: %llu\n", result);
-}
-
-// Task 3: Perform a series of calculations (CPU-intensive)
-void task3() {
-    unsigned long long result = 1;
-    for (unsigned long long i = 1; i <= 20; i++) {
-        result *= i;
-    }
-    printf("Task 3: Calculation completed. Result: %llu\n", result);
-}
-
-// Task 4: Calculate Fibonacci sequence iteratively
-void task4() {
-    unsigned long long n = 40; // Adjust this number for different computation intensity
-    unsigned long long a = 0, b = 1, c;
-
-    printf("Task 4: Calculating Fibonacci sequence for n = %llu...\n", n);
-    for (unsigned long long i = 2; i <= n; i++) {
-        c = a + b;
-        a = b;
-        b = c;
-    }
-    printf("Task 4: Result: %llu\n", b);
-}
-
-// Task 5: Perform a series of calculations (CPU-intensive)
-void task5() {
-    unsigned long long result = 0;
-    for (unsigned long long i = 0; i < 1000000000; i++) {
-        result += i * i * i;
-    }
-    printf("Task 5: Calculation completed. Result: %llu\n", result);
-}
-
-// Task 6: Perform a series of calculations (CPU-intensive)
-void task6() {
-    unsigned long long result = 0;
-    for (unsigned long long i = 0; i < 1000000000; i++) {
-        result += i * i * i * i;
-    }
-    printf("Task 6: Calculation completed. Result: %llu\n", result);
-}
-
-// Task 7: Perform a series of calculations (CPU-intensive)
-void task7() {
-    unsigned long long result = 0;
-    for (unsigned long long i = 0; i < 1000000000; i++) {
-        result += i * i * i * i * i;
-    }
-    printf("Task 7: Calculation completed. Result: %llu\n", result);
-}
 
 
 int tasking_init(task_entry_fn main_fn){
-
-
-    DEBUGT("%s", "tasking init");
-
+    DEBUGT("%s", "tasking init\n");
+    sched.current_task = sched.next_switch = sched.pid_last = sched.tasks = sched.timer = 0;
     regs_t r; capture_regs(&r); //for eflags and cr3 initial
-   //  main_task.regs.rip = &test;
-   // restore_regs(&r);
-    main_task.regs = r;
-    main_task.regs.rip = main_fn;
-   
-    create_task(&t1, &t1_main, main_task.regs.rflags, main_task.regs.cr3, main_task.regs.rsp, main_task.regs.rbp);
-    main_task.next = &t1;
-   
-    t1.next = &main_task;
-    task_current = &main_task;
+    
+    sched.defaults.cr3 = r.cr3;
+    sched.defaults.rflags = r.rflags;
+    
+    sched.tasks = kmalloc(sizeof(task_t) * MAX_TASK + 1);
+    ASSERT(sched.tasks);
+
+    //add our first task
+    sched.tasks[0] = create_task("task_drawtimer", main_fn, main_task.regs.rflags);
+    
+    sched.tasks[0]->pid = 0;
+    sched.pid_last = 0; //this surely wont cause some stupid bug bc its dumb
+    //nah it will
+     DEBUGT("added initial task %s pid %i !\n", sched.tasks[0]->name, sched.tasks[0]->pid);
     return 0;
 }
 
+int add_task(const char* name, task_entry_fn main_fn)
+{
+    DEBUGT("adding task %s pid %i !\n", name, sched.pid_last + 1);
+    ASSERT(sched.pid_last < MAX_TASK);
+
+    sched.tasks[sched.pid_last + 1] = create_task(name, main_fn, sched.defaults.rflags);
+
+    //lazy hack for testing
+
+    sched.tasks[0]->next =  sched.tasks[sched.pid_last + 1];
+
+    sched.tasks[sched.pid_last + 1]->next = sched.tasks[0]; // point our two test tasks at each other 
+
+
+    return 0;
+}
+#define ARBITRARY_SWITCH_INTERVAL 100
+void start_first_task()
+{
+    sched.next_switch = tick + ARBITRARY_SWITCH_INTERVAL;
+    sched.timer = tick;
+    start_task(sched.tasks[0]);
+
+   
+}
+
+void on_timer_tick(uint64_t ticks, registers_t* reg) //dont get me started on the two types of registers_t ok. 
+{
+    //okay so if this shit gets called during an intrp like i feel like its problematic vs just swapping on tick which actually sucks fr 
+
+    if(ticks < sched.next_switch) return;
+
+    sched.next_switch = ticks + ARBITRARY_SWITCH_INTERVAL;
+    sched.timer = ticks;
+
+
+    sched.current_task->regs.rbp = reg->rbp;
+    sched.current_task->regs.rsp = reg->rsp;
+    sched.current_task->regs.rip = reg->rip;
+    sched.current_task->regs.rflags = reg->rflags;
+
+    sched.current_task->regs.rax = reg->rax;
+    sched.current_task->regs.rcx = reg->rcx;
+    sched.current_task->regs.rdx = reg->rdx;
+    sched.current_task->regs.rbx = reg->rbx;
+    sched.current_task->regs.rdi = reg->rdi;
+    sched.current_task->regs.rsi = reg->rsi;
+
+    sched.current_task->regs.r9 = reg->r9;
+    sched.current_task->regs.r10 = reg->r10;
+    sched.current_task->regs.r11 = reg->r11;
+    sched.current_task->regs.r12 = reg->r12;
+    sched.current_task->regs.r13 = reg->r13;
+    sched.current_task->regs.r14 = reg->r14;
+    sched.current_task->regs.r15 = reg->r15;
+
+
+    sched.current_task = sched.current_task->next;
+
+
+    //WE SWITCHIN
+    reg->rbp = sched.current_task->regs.rbp;
+    reg->rsp = sched.current_task->regs.rsp;
+    reg->rip = sched.current_task->regs.rip;
+    reg->rflags = sched.current_task->regs.rflags;
+
+    reg->rax = sched.current_task->regs.rax;
+    reg->rcx = sched.current_task->regs.rcx;
+    reg->rdx = sched.current_task->regs.rdx;
+    reg->rbx = sched.current_task->regs.rbx;
+    reg->rdi = sched.current_task->regs.rdi;
+    reg->rsi = sched.current_task->regs.rsi;
+
+    
+
+    reg->r9 = sched.current_task->regs.r9;
+    reg->r10 = sched.current_task->regs.r10;
+    reg->r11 = sched.current_task->regs.r11;
+    reg->r12 = sched.current_task->regs.r12;
+    reg->r13 = sched.current_task->regs.r13;
+    reg->r14 = sched.current_task->regs.r14;
+    reg->r15 = sched.current_task->regs.r15;
+
+
+    //oh shit oh fuck
+}
+
+void start_task(task_t *task)
+{
+    ASSERT(sched.current_task == 0);
+
+    sched.current_task = task;
+    
+    sched.timer = tick;
+
+    //HERE WE GO
+
+    task_entry_fn fn = (task_entry_fn)(task->regs.rip);
+    //yeah no way hose
+     __asm__ volatile ("cli");
+    restore_regs(&task->regs);
+    __asm__ volatile ("sti ;  ");
+    //fn(); 
+}
 
 void switchTask(task_t* prev, task_t* new){
     //yk i love that you can use new as a name in c
     uint64_t return_address =  __builtin_return_address (1);
     printf("return address: %lx", return_address);
-    __asm__ volatile ("cli");
+   
     capture_regs(&prev->regs);
    // print_regs(&new->regs);
     prev->regs.rip = return_address;
    //  main_task.regs.rip = &test;
     restore_regs(&(new->regs));
-    __asm__ volatile ("sti");
+    
     //no fuckin way
 }
 bool first = False;
 void yield(){
     
     
-    task_t* prev = task_current;
+    task_t* prev = 0; //task_current;
     ASSERT(prev != nullptr);
 
-    task_current = task_current->next;
+  //  task_current = task_current->next;
    // switchTask(prev, task_current);
    //yk i love that you can use new as a name in c
     uint64_t return_address =  __builtin_return_address (0);
@@ -250,16 +254,19 @@ void yield(){
    // if(first) panic("hm");
     first = True;
    //  main_task.regs.rip = &test;
-    restore_regs(&task_current->regs);
+  //  restore_regs(&task_current->regs);
     
     __asm__ volatile ("sti");
     
 }
 
 PID_t getpid(){
-    return task_current->pid;
+    return sched.current_task->pid;
 }
 
-int fork(){
+
+
+int fork()
+{
     return 0;
 }

@@ -27,28 +27,34 @@ int cpp_test(int, int);
 uint64_t start_tick = 0;
 
 bool first_call = False;
-void main_fn()
-{
-bed:
-   // if(first_call) panic("omg");
-    first_call = True;
-    println("task main");
-    start_tick = 0;
-    //gfx_clear(color_cyan);
-    while( 0xffffffffff < (tick) ){
-        //__asm__ volatile ("hlt");
+
+uint64_t last_tick = 0;
+void task_drawtimer(){
+    
+    serial_print("task draw timer \n");
+     gfx_clear_line(598, 24);
+    for(;;){
+        if((last_tick + 100) < tick  ){
+             //   serial_printi("t=", tick);
+                 gfx_clear_line(598, 24);
+                last_tick = tick;
+                gfx_print_pos(lltoa(tick, 10), v2(5, 600));
+            }
     }
-    printi(tick);
-    println("---");println("---");println("---");println("---");println("---");
-    tick = 0;
-    yield();
-
-    println("main: im back bitches");
-
-    //goto bed;
-
+}
+uint64_t last_tick2 = 0;
+void task_draw_test(){
+    
+    serial_print("task draw test \n");
+     gfx_clear_line(498, 24);
     for(;;){
         __asm__("hlt");
+        if((last_tick2 + 100) < tick  ){
+             //   serial_printi("t=", tick);
+                gfx_clear_line(498, 24);
+                last_tick2 = tick;
+                gfx_print_pos(lltoa(tick, 10), v2(5, 500));
+            }
     }
 }
 
@@ -62,7 +68,7 @@ void main(void *addr, void *magic)
     
     // register irq handlers
     keyboard_init();
-    timer_init(5);
+    timer_init(PIT_RATE);
 
     if (magic != MULTIBOOT2_BOOTLOADER_MAGIC){
         //uh what?
@@ -113,65 +119,32 @@ void main(void *addr, void *magic)
     
     stdout_init();
     gfx_init(color_cyan);
-   // print("we are so fucking back baby \n");
-   // print("IN 64 BIT WITH GRUB SUPPORT\n");
-   // print("AND 32 BIT COLOR\n");
-
-    //tasking_init(main_fn);
-    //main_fn();
-    //we have gotten ourselves a system
-
-  
-   
-
-
+    //we are so back
     
-    
-    //print(">");
+    tasking_init(&task_drawtimer); //first task should be on our main stack as its new kernel main 
+    add_task("task_draw_test",task_draw_test);
+    //we have gotten ourselves a system with two processes running
+    // do a little dance or something 
 
-    //char* noway = _malloc(24);
 
-
-   // uint32_t i = *(uint32_t*)(HEAP_VIRT_REAL); //there is many a bug in your paging code
-
-   // strcpy(noway, "I JUST MALLOCED");
-   // printf("our heap is at %lx and btw %s from it\n", (uint64_t)(HEAP_VIRT_REAL), noway);
-    //
-    //_free(noway);
-
-   // printf("\n i just freed our string %s \n", noway);
-    //noway = kmalloc(24);
-  //  strcpy(noway, "HOLY SHIT IT WORKED");
-
-   // printf("now I malloc a new string, did it work? %s \n", noway);
-
-   // println("now i am going to malloc 10mb, sorry");
-
-   // void* hate2seeit = kmalloc(PAGE_SIZE * 5);
-
-   // kfree(hate2seeit);
-   // println("well, i just freed that 10mb, are you telling me this shit worked?");
-    //println("freed");
-   // int agh = cpp_test(2,2);
-   
-   //println("task this bitches");
-   // gfx_print(stdout.buffer);
-
-  // gfx_clear(color_cyan);
-
- // print_stdout("what the fuck");
-    
 
     ASSERT(gfx_has_init());
     
-     print("tasking time :(");
+     printf("tasking time :( %lx %lx \n", (uintptr_t)task_drawtimer, (uintptr_t)task_draw_test);
     
+   // task_draw_test();
+    start_first_task();
+
     size_t old_len = 0;
     char last_top = stdout_top();
     printf("old len = %li last top %c", old_len, last_top);
+
+    uint64_t last_tick = 0;
     for(;;){
         __asm__("hlt");
-        while (old_len != stdout.index || last_top != stdout_top()){ //for backspace 
+        //solve YOUR OLDLEN struggles with one simple TRICK
+            //let stdout mark itself as dirty 
+        while (old_len != stdout.index ){ //|| last_top != stdout_top() //for backspace 
            
            // if(!stdout_update()) continue;
             gfx_clear_text();
@@ -184,12 +157,29 @@ void main(void *addr, void *magic)
            
             old_len = stdout.index;
             last_top = stdout_top();
-
+            break;
+             
           //  if(last_top) stdout_putchar('$');
         }
+      ///  if((last_tick + 100) < tick  ){
+             //   serial_printi("t=", tick);
+         //       gfx_clear_line(598, 24);
+        //        last_tick = tick;
+       //         gfx_print_pos(lltoa(tick, 10), v2(5, 600));
+         //   }
+         
+        
     }
 
+    /*
     
+    Scheduler:
+        test: one process that reads a bunch of values and updates stdout
+
+        task 1-5: changing values etc
+
+        PIT runs for x interval, then switches task
+    */
     for(;;){
         __asm__("hlt");
     }

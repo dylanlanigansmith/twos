@@ -16,12 +16,13 @@ void* memset(void* dest, uint8_t val, size_t num_bytes){
 
 void *memset_u32(volatile uint32_t* dest, const uint32_t val, const size_t num_ints) //so we pass size as number of 4 byte chunks to write
 {
+    __asm__ volatile ("cli");
     //todo alignment
     if(!dest || !num_ints) return nullptr;
     
     for(int i = 0; i < num_ints; ++i){
         dest[i] = val;
     }
-
+      __asm__ volatile ("sti");
     return (void*)dest;
 }

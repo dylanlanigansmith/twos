@@ -73,7 +73,23 @@ void gfx_clear_text()
     
     reset_last_draw();
 }
-void gfx_clear_to_pos(const color clr, const vec2 pos) //i hate this function we arent friends
+void gfx_clear_line(uint32_t y, uint32_t height)
+{
+    color clr = color_red; //gfx_state.clear_color;
+    uintptr_t start_addr = (FB_ADDR) + (SCREEN_PITCH * y);
+    uintptr_t end_addr = start_addr + SCREEN_PITCH * height;
+    ASSERT(end_addr < FB_END_ADDR && start_addr >= FB_ADDR);
+
+    if( (height % 2) > 0) height++;
+    size_t num_ints = (SCREEN_PITCH / SCREEN_BPP) * height;
+    //agh
+    uint32_t* pixels = (uint32_t*)(start_addr);
+    if(!memset_u32(pixels, clr.argb, num_ints)){
+        KPANIC("gfx memset failed");
+    }
+
+}
+void gfx_clear_to_pos(const color clr, const vec2 pos) // i hate this function we arent friends
 {
 
 #define CLEAR_FAST 
@@ -100,11 +116,11 @@ void gfx_clear_to_pos(const color clr, const vec2 pos) //i hate this function we
     size_t num_ints = SCREEN_W * y;
   
 
-    __asm__ volatile ("cli"); //bc keyboard throws interupts as we clearing and shit goes sideways 
+     //bc keyboard throws interupts as we clearing and shit goes sideways 
    if(!memset_u32((uint32_t*)(FB_ADDR), c,  num_ints)){
         KPANIC("memset failure");
    }
-     __asm__ volatile ("sti");
+   
   
         
 }
@@ -158,7 +174,7 @@ void make_new_line(vec2* pos){
     
 }
 
-void gfx_draw_str(const char *str, vec2 pos, const color clr)
+void gfx_draw_str(const char *str, vec2 pos, const color clr) //TOUCHES LAST 
 {
     for (int c = 0; str[c] != 0; ++c){
         if (str[c] == '\n' || str[c] == '\r'){
@@ -177,7 +193,7 @@ void gfx_draw_str(const char *str, vec2 pos, const color clr)
 
 
 
-void gfx_draw_char(const char* font_char, const vec2 pos, const color clr)
+void gfx_draw_char(const char* font_char, const vec2 pos, const color clr) //TOUCHES LAST 
 {
     int cx, cy;
     int mask[8] = {1,2,4,8,16,32,64,128};
@@ -194,25 +210,28 @@ void gfx_draw_char(const char* font_char, const vec2 pos, const color clr)
    
 }
 
-void gfx_print(const char *str)
+
+
+void gfx_print(const char *str) //TOUCHES LAST 
 {
     gfx_print_at(str, last_draw);
 }
 
-void gfx_print_at(const char *str, const vec2 pos)
+void gfx_print_at(const char *str, const vec2 pos) //TOUCHES LAST 
 {
-   
     gfx_draw_str(str, pos, gfx_state.draw_color);
-
-    
 }
 
-void gfx_printclr(const char *str, const color clr)
+void gfx_printclr(const char *str, const color clr) //TOUCHES LAST 
 {
     gfx_draw_str(str, last_draw, clr);
 }
 
-void gfx_putc(const char c) //print single char (ex: from keyboard scancode)
+
+
+
+
+void gfx_putc(const char c) //print single char (ex: from keyboard scancode) //TOUCHES LAST 
 {
     if(c == '\n' || c == '\r'){
          make_new_line(&last_draw); return;
@@ -250,4 +269,37 @@ void gfx_delc() //remove last char
     update_last_draw(pos);
 
     
+}
+
+
+
+/*
+THESE DONT TOUCH CURSOR
+
+*/
+void gfx_draw_char_at(const char *font_char, const vec2 pos, const color clr)
+{
+    int cx, cy;
+    int mask[8] = {1,2,4,8,16,32,64,128};
+    for(cy = 0; cy < FONT_H; ++cy){
+        for(cx=0; cx < FONT_W; ++cx){
+            if(font_char[cy] & mask[cx]) set_pixel(v2(pos.x + cx, pos.y + cy + FONT_H), clr);
+        }
+    }
+}
+void gfx_print_pos(const char *str,  vec2 pos)
+{
+    //this is stopid
+    for (int c = 0; str[c] != 0; ++c){
+        if (str[c] == '\n' || str[c] == '\r'){
+            make_new_line(&pos); continue;
+        }
+        
+        gfx_draw_char_at(GET_FONT(str, c), pos, gfx_state.draw_color);
+        pos.x += FONT_W;
+        if (pos.x > (SCREEN_W - FONT_W + 2) ){
+            make_new_line(&pos);
+        }
+       
+    }
 }
