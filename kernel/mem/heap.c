@@ -128,7 +128,7 @@ uint32_t find_best_free_space(size_t size, uint8_t flags){
     HEAPDBG("we found no space to fit size %lx \n", size);
     return FREE_SPACE_NONE;
 }
-
+//yeah i just wrote my own malloc what are you gonna do about it ?
 void* _malloc(size_t size){
     uint32_t space = find_best_free_space(size, ALLOC_FLAGS_NONE);
     if(space == FREE_SPACE_NONE) // we need to add a new block

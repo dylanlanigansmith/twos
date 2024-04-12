@@ -32,6 +32,16 @@ bool stdout_ready()
     return ((uintptr_t)stdout.buffer != 0 && stdout.size > 0);
 }
 
+uint8_t stdout_dirty()
+{
+    return stdout.dirty;
+}
+
+void stdout_flush()
+{
+    stdout.dirty = 0;
+}
+
 void stdout_init()
 {
     stdout.lock = 0;
@@ -83,6 +93,7 @@ void stdout_onoverflow(){
 
 void stdout_putchar(uint8_t c)
 {
+    stdout.dirty = 1;
     //ASSERT(stdout.flags & stdout_backspace);
     if( (stdout.flags & stdout_backspace) || 1 ){
         //buffered term mode 

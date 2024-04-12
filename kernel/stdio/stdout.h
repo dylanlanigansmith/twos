@@ -22,11 +22,17 @@ typedef struct
     size_t index;
 
     uint8_t lock;
+
+    uint8_t dirty;
 } stdout_t;
 
 extern stdout_t stdout; 
 
 bool stdout_ready();
+
+uint8_t stdout_dirty(); 
+void stdout_flush(); 
+
 
 void stdout_init();
 uint8_t stdout_update();

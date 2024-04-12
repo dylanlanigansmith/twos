@@ -1,4 +1,4 @@
-multiboot addr: 0x11d490 
+multiboot addr: 0x11d4d8 
 
  found framebuffer tagSTART Frame Buffer Dump
 tagfb->common.type: 8 

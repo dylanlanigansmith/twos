@@ -11,8 +11,20 @@
 #define TIMER_MODE_REPEAT 0x36
 
 
-#define PIT_RATE 400 //it hertz
+#define PIT_RATE 1000 //it hertz
 
 void timer_init(uint32_t freq);
 
 extern uint64_t tick;
+
+
+typedef struct {
+    uint64_t ns_since;
+
+} ktime_t;
+
+
+static inline void ktime_create(ktime_t* kt){
+    kt->ns_since = 0;
+    
+}

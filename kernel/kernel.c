@@ -50,10 +50,21 @@ void task_draw_test(){
     for(;;){
         __asm__("hlt");
         if((last_tick2 + 100) < tick  ){
+
+            if(stdout_dirty()){
+                 gfx_clear_text();
+                 __asm__ volatile ("cli");
+                  gfx_print(get_stdout());
+                  stdout_flush();
+                  __asm__ volatile ("sti");
+            }
+             
+         //   gfx_clear(gfx_state.clear_color);
+           
              //   serial_printi("t=", tick);
-                gfx_clear_line(498, 24);
-                last_tick2 = tick;
-                gfx_print_pos(lltoa(tick, 10), v2(5, 500));
+              //  gfx_clear_line(498, 24);
+               // last_tick2 = tick;
+                //gfx_print_pos(lltoa(tick, 10), v2(5, 500));
             }
     }
 }
@@ -126,7 +137,20 @@ void main(void *addr, void *magic)
     //we have gotten ourselves a system with two processes running
     // do a little dance or something 
 
+    /*
+        things to fix now
+        - need physical memory management or at least a semblance of it
+        - page mapping - just use kmalloc and figure out physical address
+            - bonus points if it works in other emus again 
+        - make stdout not fucked
 
+        then we can jump 2 user mode
+        - refactor when we add syscalls
+            - take all this SHIT out of kernel
+        - terminal
+        - write some programs for _our operating system_
+        -^ see prev.
+    */
 
     ASSERT(gfx_has_init());
     
