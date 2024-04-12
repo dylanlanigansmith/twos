@@ -6,7 +6,7 @@
 
 
 
-volatile vec2 last_draw = {0,0}; 
+vec2 last_draw = {0,0}; 
 
 void update_last_draw(const vec2 pos){
     last_draw.x = pos.x;
@@ -69,11 +69,11 @@ void gfx_clear_text()
     
     
     color clr = gfx_state.clear_color;
-    gfx_clear_to_pos(color_white, pos);
+    gfx_clear_to_pos(color_white, pos); //so we really only need to clear current row / last two rows for performance
     
     reset_last_draw();
 }
-void gfx_clear_to_pos(const color clr, const vec2 pos)
+void gfx_clear_to_pos(const color clr, const vec2 pos) //i hate this function we arent friends
 {
 
 #define CLEAR_FAST 
@@ -81,7 +81,7 @@ void gfx_clear_to_pos(const color clr, const vec2 pos)
  for(uint32_t y = 0; y < pos.y; ++y){
         for(uint32_t x = 0; x < SCREEN_W; ++x)
             set_pixel(v2(x,y), clr);
-    }
+    } return;
 #endif
 
   //  void* addr = (void*)(get_pixel(pos));
@@ -92,30 +92,20 @@ void gfx_clear_to_pos(const color clr, const vec2 pos)
    // memset_u32((void*)(FB_ADDR), clr.argb,  num_pixels);
 
    //lol
-
-   //for(int x = 0; x < pos.x; ++x)
-    
    
    volatile uint32_t c = clr.argb;
    uint32_t y = pos.y;
    if(y % 2 != 0)
         y = (y != (SCREEN_H - 1) ) ? (y+1) : (SCREEN_H); // make it stupid so you remember it is likely bugged
-
-    //oprintf(_COM, "clear to x %i y %i size = %i clr = %x  \n", pos.x, pos.y, SCREEN_W * pos.y, c);
-
     size_t num_ints = SCREEN_W * y;
-     oprintf(_COM,"hmmm %lx %i (%i) %li %li \n", (uint32_t*)(FB_ADDR), y, pos.x, num_ints, (num_ints) % SCREEN_W);
+  
 
-    __asm__ volatile ("cli");
+    __asm__ volatile ("cli"); //bc keyboard throws interupts as we clearing and shit goes sideways 
    if(!memset_u32((uint32_t*)(FB_ADDR), c,  num_ints)){
-        oprintf(_COM,"yo memset fucked off %x %i", c, y);
+        KPANIC("memset failure");
    }
      __asm__ volatile ("sti");
-   oprintf(_COM,"WE MADE IT WROTE %li \n",  (num_ints));
-   //
-    // oprintf(_COM, "clear to x %i y %i size = %i clr = %x  \n", pos.x, pos.y, SCREEN_W * pos.y, c);
-        
-   // }
+  
         
 }
 
@@ -136,12 +126,12 @@ void gfx_init(const color clear_clr)
     gfx_clear(clear_clr);
     reset_last_draw();
     gfx_state.has_init = True;
-    oprintf(_COM,"Graphics Init %i x %i x %i \n", SCREEN_W, SCREEN_H, SCREEN_BPP * 8);
+    oprintf(_COM,"Graphics Init %i x %i x %i ready = %i \n", SCREEN_W, SCREEN_H, SCREEN_BPP * 8, gfx_state.has_init);
 }
 
-bool gfx_has_init()
+int gfx_has_init()
 {
-    return gfx_state.has_init;
+    return (gfx_state.has_init > 0);
 }
 
 void gfx_fill_rect(const vec2 pos, const vec2 size, const color clr)

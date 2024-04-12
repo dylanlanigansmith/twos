@@ -8,12 +8,18 @@
 #include "../../drivers/video/console.h"
 #endif
 
-
+#include "stdbool.h"
 #include "../stdio/stdout.h"
 
+size_t __print_stdout(const char* str){   
+    return 0;
+}
+
 void print_stdout(const char* str){
-    for(int c = 0; str[c] != 0; ++c)
-        stdout_putchar(c);
+
+    for(int c = 0; str[c] != 0; ++c){
+        stdout_putchar(str[c]);
+    }
 }
 
 void debug_string(const char *str)
@@ -30,21 +36,30 @@ void debug_string(const char *str)
     for (int c = 0; c < len; ++c)
         serial_write(str[c]);
 }
-
+int gfx_ok = 0;
 void print(const char *str)
 {
 
-#ifdef PRINT_GRAPHICAL
-#ifdef VGA_MODE_GFX
-    static bool gfx_ok = False;
-    if(!gfx_ok)
-        gfx_ok = gfx_has_init();
-    else
-        gfx_print(str);
-#else
-    console_print(str);
-#endif
-#endif
+//#ifdef PRINT_GRAPHICAL
+   
+
+    
+        if(gfx_ok == 0){
+            gfx_ok = gfx_has_init();
+            
+           
+        } if(gfx_ok) {
+
+            
+            print_stdout(str); }
+      //  #ifndef FORCE_STDOUT
+       //         gfx_print(str);
+      //  #endif
+            
+  
+     //   }
+        
+//#endif
 
 #ifdef PRINT_SERIAL
     serial_print(str);
@@ -99,11 +114,11 @@ void printf(const char *fmt, ...)
 }
 void debugf(const char *fmt, ...)
 {
-    static  __printf_out_fn _debug = (__printf_out_fn)(&serial_print);
+    __printf_out_fn _debug = (__printf_out_fn)(&serial_print);
     _debug("DBG: ",0,0);
     va_list args;
     va_start(args, fmt);
-    __vprintf(__print, fmt, 0, 0, args);
+    __vprintf(_debug, fmt, 0, 0, args);
 
     va_end(args);
 }
@@ -116,7 +131,7 @@ void oprintf(uint8_t out, const char* fmt, ...){
     if(out & _FB)
         __vprintf(__print, fmt, 0, 0, args);
     if(out & _OUT)
-        __vprintf((__printf_out_fn)(&print_stdout), fmt, 0, 0, args);
+        __vprintf((__printf_out_fn)(&__print_stdout), fmt, 0, 0, args);
     
 
     va_end(args);
@@ -280,6 +295,8 @@ size_t __vprintf_bad(const char *fmt, char *buf_out, size_t len, va_list args)
 
 size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t len, va_list args)
 {
+    
+    ASSERT((uintptr_t)_print != nullptr); 
     // should be an arg
     
     // later we can check if buf is not 0 and use it vs printing
@@ -328,7 +345,7 @@ size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t 
                     break;
                 case 'x':
                     // Int but Hex
-                    total += _print(__PRINT_ITOA(va_arg(args, unsigned int), 16), buf_out, len);
+                    total += _print(__PRINT_ITOA(va_arg(args, int), 16), buf_out, len);
                     last_fmt_len = 1;
                     break;
                 case 'c':
@@ -345,7 +362,8 @@ size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t 
                     break;
                 // Longs
                 case 'l':
-                case 'L': // okay so we just dont bother with longs and just use long long bc thats all its gonna be in this case but maybe ill regret this!
+                case 'L':
+                 // okay so we just dont bother with longs and just use long long bc thats all its gonna be in this case but maybe ill regret this!
                     char ch2 = fmt[j + 1];
                     switch (ch2)
                     {
@@ -372,7 +390,7 @@ size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t 
                         break;
                     }
                     break;
-
+                    
                 case 's':
                     total += _print(va_arg(args, char *), buf_out, len);
                     last_fmt_len = 1;

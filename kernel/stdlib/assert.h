@@ -6,6 +6,6 @@
 
 
 
-static inline bad_assert(const char* file, int line){
+static inline void bad_assert(const char* file, int line){
         panic_info("Assertion Failed!", file, line);
 }

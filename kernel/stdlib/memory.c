@@ -14,7 +14,7 @@ void* memset(void* dest, uint8_t val, size_t num_bytes){
     return dest;
 }
 
-void *memset_u32(uint32_t* dest, uint32_t val, size_t num_ints) //so we pass size as number of 4 byte chunks to write
+void *memset_u32(volatile uint32_t* dest, const uint32_t val, const size_t num_ints) //so we pass size as number of 4 byte chunks to write
 {
     //todo alignment
     if(!dest || !num_ints) return nullptr;

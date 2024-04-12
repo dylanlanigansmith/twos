@@ -13,21 +13,52 @@ typedef struct {
 
     // Pushed by the processor automatically.
     uint64_t cs, eflags, eip, useresp, ss;
-}  __attribute__((packed)) registers_t;
+}  __attribute__((packed)) registers32_t;
 
 typedef struct {
     uint64_t ds;
     // Pushed by pusha macro
-    uint64_t rdi, rsi, rbp, rbx, rdx, rcx, rax;
-    uint64_t r8, r9, r10,r11,r12,r13,r14,r15;
+    uint64_t r15, r14, r13,r12,r11,r10,r9,r8;
+    uint64_t rbp, rsi, rdi, rbx, rdx, rcx, rax;
+   
     //pushed by us
     uint64_t int_no, err_code;
-    //broskii theres r8-r15 too eek
+   
     
     // Pushed by the processor automatically.
-    uint64_t  rsp, cs, eflags, eip, useresp, ss;
-}  __attribute__((packed)) registers64_t;
+    uint64_t  rip, cs, rflags, rsp, ss;
+}  __attribute__((packed)) registers_t;
 //64 
+
+
+/*
+
+pushed on itrp:
+
+cpu:
+
+ss
+prev rsp
+rflags
+cs
+rip
+
+err_code //us or cpu
+itrp num //us
+
+rax, rcx, rdx, rbx, rdi, rsi, rbp
+r8 r9 r10 r11 r12 r13 r14 r15
+
+----
+
+call c handler (rdi, regs_struct)
+
+----
+
+pop 15,14,13,12,11,10,9,8 
+
+*/
+
 
 typedef void (*isr_t)(registers_t*);
 

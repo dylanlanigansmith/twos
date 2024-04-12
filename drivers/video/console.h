@@ -13,7 +13,11 @@
 #define REG_SCREEN_CTRL 0x3D4
 #define REG_SCREEN_DATA 0x3D5
 
-
+/**
+ * 
+ * 
+ * this is for 80x25 terminal mode which we dont really suppoort anymore
+*/
 
 static inline uint8_t get_color(uint8_t fg, uint8_t bg){ //for text
     return (bg << 4) | (fg & 0x0f);
@@ -24,8 +28,8 @@ struct screen_char_t {
     uint8_t prop;
 };
 
-void* get_console_memory() __attribute__((always_inline));
-size_t get_console_memory_size() __attribute__((always_inline));
+void* get_console_memory() ;//__attribute__((always_inline));
+size_t get_console_memory_size() ;//__attribute__((always_inline));
 
 
 void clear_screen();

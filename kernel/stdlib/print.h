@@ -19,6 +19,8 @@ extern "C" {
 
 typedef size_t (*__printf_out_fn)(const char *, char *, size_t);
 
+void print_stdout(const char* str);
+
 void oprintf(uint8_t out, const char* fmt, ...);
 
 void print(const char* str);

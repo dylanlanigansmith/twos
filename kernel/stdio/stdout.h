@@ -1,7 +1,7 @@
 #pragma once
 #include "../stdlib.h"
 #define STDOUT_BUFFER 4096
-
+#define FORCE_STDOUT
 
 enum stdout_flags
 {
@@ -26,7 +26,10 @@ typedef struct
 
 extern stdout_t stdout; 
 
+bool stdout_ready();
+
 void stdout_init();
+uint8_t stdout_update();
 
 static inline char* get_stdout(){
     stdout.buffer[stdout.index] = '\0';
@@ -35,4 +38,4 @@ static inline char* get_stdout(){
 void stdout_putchar(uint8_t c);
 void stdout_bytein(uint8_t byte);
 
-static inline char stdout_top(){ return stdout.buffer[stdout.index]; }
+static inline char stdout_top(){ return (stdout.index > 0) ?  stdout.buffer[stdout.index - 1] : stdout.buffer[0]; }

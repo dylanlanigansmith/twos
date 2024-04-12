@@ -2,6 +2,7 @@
 #include "../mem/heap.h"
 
 #include "../../drivers/video/gfx.h"
+#include "../../drivers/input/keyboard.h"
 stdout_t stdout; 
 
 
@@ -26,6 +27,11 @@ void stdout_unlock(){
     stdout.lock = 0x00;
 }
 
+bool stdout_ready()
+{
+    return ((uintptr_t)stdout.buffer != 0 && stdout.size > 0);
+}
+
 void stdout_init()
 {
     stdout.lock = 0;
@@ -40,7 +46,23 @@ void stdout_init()
     stdout.flags |= stdout_backspace | stdout_wipeoverflow;
     stdout_unlock();
 
-     oprintf(_COM,"\n=== stdout init @ %lx size %i idx %i ===\n", (uintptr_t)stdout.buffer, stdout.size, stdout.index);
+    oprintf(_COM,"\n=== stdout init @ %lx size %i idx %i  ready = %i ===\n", (uintptr_t)stdout.buffer, stdout.size, stdout.index, stdout_ready());
+}
+
+uint8_t stdout_update()
+{
+   
+    if(!keys_available()) return 0;
+    keys_lock_queue();
+    uint8_t len = 0;
+     char* keys = get_keys(&len); //stoopid
+    
+    for(int c = 0; keys[c] != 0; ++c) //redundant
+        stdout_putchar(keys[c]);
+    
+    keys_reset_queue();
+
+    return len;
 }
 
 void stdout_onoverflow(){
@@ -61,6 +83,7 @@ void stdout_onoverflow(){
 
 void stdout_putchar(uint8_t c)
 {
+    ASSERT(stdout.flags & stdout_backspace);
     if( (stdout.flags & stdout_backspace) ){
         //buffered term mode 
         switch (c)
@@ -70,7 +93,6 @@ void stdout_putchar(uint8_t c)
             stdout_bytein(' '); stdout_bytein(' '); stdout_bytein(' '); stdout_bytein(' '); //python users triggered
             break;
         case '\b':
-          
             //stdout_bytein(c);
            if(stdout.index) //dont go < 0
                stdout.index--; //do we want to just leave backspaces in and render them instead? //yeah
@@ -92,7 +114,10 @@ void stdout_bytein(uint8_t byte)
 
     if ( (stdout.index + 2) > stdout.size)
         stdout_onoverflow();
+        //i am going fucking crazy
+   // ASSERT(  stdout.index < stdout.size  );
+
+
+
     stdout.buffer[stdout.index++] = byte;
-
-
 }

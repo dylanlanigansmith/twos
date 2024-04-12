@@ -113,9 +113,9 @@ void main(void *addr, void *magic)
     
     stdout_init();
     gfx_init(color_cyan);
-    print("we are so fucking back baby \n");
-    print("IN 64 BIT WITH GRUB SUPPORT\n");
-    print("AND 32 BIT COLOR\n");
+   // print("we are so fucking back baby \n");
+   // print("IN 64 BIT WITH GRUB SUPPORT\n");
+   // print("AND 32 BIT COLOR\n");
 
     //tasking_init(main_fn);
     //main_fn();
@@ -127,17 +127,17 @@ void main(void *addr, void *magic)
 
     
     
-    print(">");
+    //print(">");
 
-    char* noway = _malloc(24);
+    //char* noway = _malloc(24);
 
 
-    uint32_t i = *(uint32_t*)(HEAP_VIRT_REAL); //there is many a bug in your paging code
+   // uint32_t i = *(uint32_t*)(HEAP_VIRT_REAL); //there is many a bug in your paging code
 
-    strcpy(noway, "I JUST MALLOCED");
-    printf("our heap is at %lx and btw %s from it\n", (uint64_t)(HEAP_VIRT_REAL), noway);
-    
-    _free(noway);
+   // strcpy(noway, "I JUST MALLOCED");
+   // printf("our heap is at %lx and btw %s from it\n", (uint64_t)(HEAP_VIRT_REAL), noway);
+    //
+    //_free(noway);
 
    // printf("\n i just freed our string %s \n", noway);
     //noway = kmalloc(24);
@@ -154,19 +154,28 @@ void main(void *addr, void *magic)
     //println("freed");
    // int agh = cpp_test(2,2);
    
-    println("task this bitches");
+   //println("task this bitches");
    // gfx_print(stdout.buffer);
 
-   gfx_clear(color_cyan);
-    size_t old_len = stdout.index;
+  // gfx_clear(color_cyan);
 
+ // print_stdout("what the fuck");
+    
 
-    char last_top = 0;
-
-    for(;;)
+    ASSERT(gfx_has_init());
+    
+     print("tasking time :(");
+    
+    size_t old_len = 0;
+    char last_top = stdout_top();
+    printf("old len = %li last top %c", old_len, last_top);
+    for(;;){
+        __asm__("hlt");
         while (old_len != stdout.index || last_top != stdout_top()){ //for backspace 
+           
+           // if(!stdout_update()) continue;
             gfx_clear_text();
-            //gfx_clear(gfx_state.clear_color);
+         //   gfx_clear(gfx_state.clear_color);
             gfx_print(get_stdout());
             //for(int i = 0; i < stdout.index; ++i)
            //     gfx_putc(stdout.buffer[stdout.index]);
@@ -175,8 +184,10 @@ void main(void *addr, void *magic)
            
             old_len = stdout.index;
             last_top = stdout_top();
+
+          //  if(last_top) stdout_putchar('$');
         }
-    
+    }
 
     
     for(;;){

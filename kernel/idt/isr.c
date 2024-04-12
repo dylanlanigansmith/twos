@@ -11,55 +11,37 @@
 
 isr_t interupt_handlers[256];
 
-//#define DEBUG
-static inline void isr_log(uint32_t int_no, uint32_t err_code)
+
+
+
+
+void print_isr_regs(registers_t* regs, bool extended)
 {
-    // make hex
-    uint16_t old_cursor = get_cursor();
-    // set_cursor(50,CONSOLE_H - 1);
-    serial_print("isr #[");
-    serial_print(itoa(int_no, 10));
-    serial_print("] err[");
-    serial_print(htoa(err_code));
-    serial_print("]\n");
 
-
-    // set_cursor_offset(old_cursor);
-}
-static inline void irq_log(uint32_t int_no, uint32_t err_code)
-{
-    // make hex
-    uint16_t old_cursor = get_cursor();
-    set_cursor(0, CONSOLE_H - 1);
-    console_print_str("irq #[", 0);
-    console_print(itoa(int_no, 10));
-    console_print("] err[");
-    console_print(htoa(err_code));
-    console_print("]\n");
-    set_cursor_offset(old_cursor);
-}
-
-
-
-
-void print_isr_regs(registers_t* regs)
-{
-    printf("int_no = %lx\n", regs->int_no);
+    printf("===isr[%lx] err{%lx}====\n", regs->int_no, regs->err_code);
     printf("err_code = %lx\n", regs->err_code);
-    printf("ds = %lx\n", regs->ds);
-    printf("rdi = %lx\n", regs->edi);
-    printf("rsi = %lx\n", regs->esi);
-    printf("*rbp = %lx\n", regs->ebp);
-    printf("rbx = %lx\n", regs->ebx);
-    printf("rcx = %lx\n", regs->ecx);
-    printf("rdx = %lx\n", regs->edx);
-    printf("rax = %lx\n", regs->eax);
-    printf("rsp = %lx\n", regs->rsp);
-    printf("rip = %lx\n", regs->eip);
+    printf("rbp = %lx\n", regs->rbp);
+    printf("rip = %lx\n", regs->rip);
+    printf("ss:rsp = %lx\n", regs->rsp);
     printf("cs = %lx\n", regs->cs);
-    printf("eflags = %lx\n", regs->eflags);
-    printf("user_rsp = %lx\n", regs->useresp);
+    printf("rflags = %lx\n", regs->rflags);
+    printf("ds = %lx\n", (uint64_t)(regs->ds & 0xffff));
     printf("ss = %lx\n", regs->ss);
+    printf("rax = %lx\n", regs->rax);
+    printf("rbx = %lx\n", regs->rbx);
+    printf("rcx = %lx\n", regs->rcx);
+    printf("rdx = %lx\n", regs->rdx);
+    printf("rdi = %lx\n", regs->rdi);
+    printf("rsi = %lx\n", regs->rsi);
+    printf("r8 = %lx\n", regs->r8);
+    printf("r9 = %lx\n", regs->r9);
+    if(!extended) return;
+    printf("r10 = %lx\n", regs->r10);
+    printf("r11 = %lx\n", regs->r11);
+    printf("r12 = %lx\n", regs->r12);
+    printf("r13 = %lx\n", regs->r13);
+    printf("r14 = %lx\n", regs->r14);
+    printf("r15 = %lx\n", regs->r15);
 }
 
 #define EXCEPTION_PRINTI(str, num) serial_printi(str, num)
@@ -80,7 +62,7 @@ void handle_error_generic(registers_t* regs, bool recover){
         if(err){
             EXCEPTION_PRINTI("Non-Zero Error Code", 0);
         }
-        print_isr_regs(regs);
+        print_isr_regs(regs, (num == 1) ? 1 : 0);
     }
     else{
          EXCEPTION_PRINTI("ISR_Unknown", num);
@@ -126,11 +108,11 @@ void handle_gpf(registers_t* regs){
     num_gpfs++;
     EXCEPTION_PRINTLN("\n=== GPF ===");
     EXCEPTION_PRINTF("Error: %lu \n", regs->err_code);
-    EXCEPTION_PRINTF("rbp %lx \n", regs->ebp);
+    EXCEPTION_PRINTF("rbp %lx \n", regs->rbp);
     EXCEPTION_PRINTLN("==============");
     //EXCEPTION_PRINTF("rsp %lx \n", regs->esp);
-    print_isr_regs(regs);
-    if(num_gpfs > 2)
+    print_isr_regs(regs, 1);
+    if(num_gpfs > 1)
         for(;;){
             __asm__("hlt");
         }

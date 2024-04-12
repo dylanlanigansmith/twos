@@ -36,6 +36,9 @@ uint8_t shouldScan = 1;
 
 //0x2a down 0xaa up
 uint8_t lshift = 0;
+#define KEY_QUEUE_SIZE 64
+uint8_t key_queue[64];
+uint8_t key_idx = 0;
 
 static void keydown_isr(registers_t* regs){
     if(!shouldScan) return;
@@ -55,6 +58,11 @@ static void keydown_isr(registers_t* regs){
     if(c != 0x0){
         if(lshift)
            c = apply_shift_modifier(c);
+        
+        if(key_idx >= KEY_QUEUE_SIZE)
+            key_idx = 0;
+        key_queue[key_idx] = c;
+        key_idx++;
         stdout_putchar(c);
     }
         
@@ -87,4 +95,36 @@ static void keydown_isr(registers_t* regs){
 void keyboard_init()
 {
     register_interupt_handler(IRQ1, (isr_t)&keydown_isr);
+    key_idx = 0;
+    memset(key_queue, 0, KEY_QUEUE_SIZE);
+}
+
+uint8_t* get_keys(uint8_t* amt)
+{
+    
+    uint8_t len = 0;
+   // print(key_queue);
+    while(key_queue[len] != 0){
+        
+        len++;
+    }
+    *amt = len;
+    return key_queue;
+}
+
+bool keys_available()
+{
+    return key_idx > 0;
+}
+
+void keys_lock_queue()
+{
+    __asm__ volatile ("cli;");
+    
+}
+
+void keys_reset_queue()
+{
+    key_idx = 0;
+    __asm__ volatile ("sti;");
 }

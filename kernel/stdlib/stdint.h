@@ -21,7 +21,11 @@ typedef unsigned long long uint64_t;
 typedef long long int64_t;
 typedef uint64_t uintptr_t;
 
+#ifndef __cplusplus
+typedef unsigned long long  size_t; 
+#else
 typedef unsigned long  size_t; 
+#endif
 
 #ifdef __cplusplus
 }

@@ -69,7 +69,7 @@ static inline void gfx_clear_white(){
 
 void gfx_init(const color clear_clr);
 
-bool gfx_has_init();
+int gfx_has_init(); // swear to god
 //drawing
 
 void gfx_fill_rect(const vec2 pos, const vec2 size, const color clr);
