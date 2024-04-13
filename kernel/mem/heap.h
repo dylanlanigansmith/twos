@@ -9,9 +9,9 @@ extern "C" {
 
 
 #define HEAP_PHYS 0x80000000
-#define HEAP_VIRT 0xdeadbeef00000000
+#define HEAP_VIRT 0xffffbeefed000000ULL
 //dont fuckin ask
-#define HEAP_VIRT_REAL 0xffffbeef00000000 //0xffffbeef00000000
+#define HEAP_VIRT_REAL HEAP_VIRT //0x007fbeef00000000 //0xffffbeef00000000
 #define HEAP_SIZE 0x800000 //this is initial size
 
 //temporary
@@ -55,6 +55,8 @@ void* kmalloc(size_t size);
 size_t kfree(void* address);
 
 void alloc_init();
+
+
 
 #ifdef __cplusplus
 }

@@ -1,4 +1,4 @@
-multiboot2 addr = 0x11d5d8 magic = 0x36d76289 
+multiboot2 addr = 0x11e708 magic = 0x36d76289 
 parse_multiboot_header()
 ===MULTIBOOT_TAG_TYPE_MMAP===
 mmaps->entry_size: 24 
@@ -18,15 +18,15 @@ mmap [11]:{ @0x0 - 0x1b00000000 } size 0x1b00000000 |  mem_avail 1
 mmap [12]:{ @0x10000000000000 - 0x10100000000000 } size 0x100000000000 |  mem_unknown 0 
 mmap [13]:{ @0x0 - 0x800000000 } size 0x800000000 |  mem_unknown 0 
 mmap [14]:{ @0x2100000000 - 0x2700000001 } size 0x600000001 |  mem_unknown 0 
-mmap [15]:{ @0x200000000000 - 0x7b9400000000 } size 0x5b9400000000 |  mem_unknown 0 
+mmap [15]:{ @0x200000000000 - 0x814400000000 } size 0x614400000000 |  mem_unknown 0 
 mmap [16]:{ @0x1000000000 - 0x1000000000 } size 0x0 |  mem_unknown 0 
-mmap [17]:{ @0x600000001 - 0x106b9a00000001 } size 0x106b9400000000 |  mem_unknown 0 
+mmap [17]:{ @0x600000001 - 0x10714a00000001 } size 0x10714400000000 |  mem_unknown 0 
 mmap [18]:{ @0x2200000000 - 0x2200000000 } size 0x0 |  mem_unknown 0 
 mmap [19]:{ @0x0 - 0x4000000000 } size 0x4000000000 |  mem_avail 1 
-mmap [20]:{ @0x106bb600000000 - 0x10e76c00000000 } size 0x7bb600000000 |  mem_unknown 0 
+mmap [20]:{ @0x10716600000000 - 0x10f2cc00000000 } size 0x816600000000 |  mem_unknown 0 
 mmap [21]:{ @0x0 - 0x200000000 } size 0x200000000 |  mem_unknown 0 
 mmap [22]:{ @0x5b00000000 - 0x6100000001 } size 0x600000001 |  mem_unknown 0 
-mmap [23]:{ @0x7c2000000000 - 0x7c4c00000000 } size 0x2c00000000 |  mem_unknown 0 
+mmap [23]:{ @0x81d000000000 - 0x81fc00000000 } size 0x2c00000000 |  mem_unknown 0 
 found VBE
 ===MULTIBOOT_TAG_TYPE_ACPI_OLD===
 rsdp->Signature: 'RSD PTR ' 
@@ -36,16 +36,19 @@ rsdp->Checksum: 57
 rsdp->RsdtAddress: 0xbffe1c40 
 parsed mb2 header successfully
 enabled interupts
-cr3 = : 0x116000 
-address p4 = : 0x116000 
-address p4real = : 0x116000 
-address p3 = : 0x117000 
-address p3 via p4[0] = : 0x117023 
+cr3 = : 0x117000 
+address p4 = : 0x117000 
+address p4real = : 0x117000 
+address p3 = : 0x118000 
+address p3 via p4[0] = : 0x118023 
+Extended VA: : 0xfc000000 
 idx for VA : 0xfc000000 
 p4 idx : 0 
 p3 idx : 3 
 p2 idx : 480 
 p1 idx : 0 
+ p4 =0  p3 = 3 p2 = 480 p1 = 0 
+ p4 =0  p3 = 3 p2 = 480 p1 = 0 
 mapping virtual : 0xfc000000 
 mapping physical : 0xfc000000 
 pages = : 2 
@@ -53,45 +56,93 @@ mapped : 0xfc000000
 to physical addresss: 0xfc000000 
 ==flushed TLB==
 invalidated: 0xfc000000 
-0 > p4 : 0x117023 
-cr3 = : 0x116000 
-idx for VA : 0xdeadbeef00000000 
+0 > p4 : 0x118023 
+cr3 = : 0x117000 
+Extended VA: : 0xffffbeefed000000 
+idx for VA : 0xffffbeefed000000 
 p4 idx : 381 
-p3 idx : 444 
-p2 idx : 0 
+p3 idx : 447 
+p2 idx : 360 
 p1 idx : 0 
-NEW mapping virtual : 0xdeadbeef00000000 
+ p4 =381  p3 = 447 p2 = 360 p1 = 0 
+ p4 =381  p3 = 447 p2 = 360 p1 = 0 
+NEW mapping virtual : 0xffffbeefed000000 
 mapping physical : 0x80000000 
 pages = : 4 
-mapped : 0xdeadbeef00000000 
+map_new: p3 = 0x10f000mapped : 0xffffbeefed000000 
 to physical addresss: 0x80000000 
 ==flushed TLB==
-invalidated: 0xdeadbeef00000000 
-bmap [ 0xffffbeef00000000 ] size=0 
+invalidated: 0xffffbeefed000000 
+bmap [ 0xffffbeefed000000 ] size=0 
 max size = 262130 max_size_bytes = 0x200000 
-making new block at 0xffffbeef00200000 size=4121 / 0x1019 
-making footer @ 0xffffbeef0020100dadded to alloc map, new # allocs = 1 
+making new block at 0xffffbeefed200000 size=4121 / 0x1019 
+making footer @ 0xffffbeefed20100d 
+ added to alloc map, new # allocs = 1 
 Heap Usage: 25/100 
 
-=== stdout init @ 0xffffbeef0020000d size 4096 idx 0  ready = 1 ===
+=== stdout init @ 0xffffbeefed20000d size 4096 idx 0  ready = 1 ===
 Graphics Init 1024 x 768 x 32 ready = 1 
 tasking init
 we found no space to fit size 0x6a1 
-making new block at 0xffffbeef00201019 size=1722 / 0x6ba 
-making footer @ 0xffffbeef002016c7added to alloc map, new # allocs = 2 
+making new block at 0xffffbeefed201019 size=1722 / 0x6ba 
+making footer @ 0xffffbeefed2016c7 
+ added to alloc map, new # allocs = 2 
 Heap Usage: 25/100 
 we found no space to fit size 0x2000 
-making new block at 0xffffbeef002016d3 size=8217 / 0x2019 
-making footer @ 0xffffbeef002036e0added to alloc map, new # allocs = 3 
+making new block at 0xffffbeefed2016d3 size=8217 / 0x2019 
+making footer @ 0xffffbeefed2036e0 
+ added to alloc map, new # allocs = 3 
 Heap Usage: 25/100 
 create_task task_drawtimer pid 1 rip 0x1010a1 !
 added initial task  pid 0 !
 adding task task_draw_test pid 1 !
 we found no space to fit size 0x2000 
-making new block at 0xffffbeef002036ec size=8217 / 0x2019 
-making footer @ 0xffffbeef002056f9added to alloc map, new # allocs = 4 
+making new block at 0xffffbeefed2036ec size=8217 / 0x2019 
+making footer @ 0xffffbeefed2056f9 
+ added to alloc map, new # allocs = 4 
 Heap Usage: 25/100 
 create_task task_draw_test pid 1 rip 0x10112a !
+note: page aligning requested physaddr (0xbffe1c40) to 0xbff00000
+map_phys_addr():  0xbff00000 -> 0xffffbaddad000000 | 1 pages 
+Extended VA: : 0xffffbaddad000000 
+idx for VA : 0xffffbaddad000000 
+p4 idx : 373 
+p3 idx : 374 
+p2 idx : 360 
+p1 idx : 0 
+ p4 =373  p3 = 374 p2 = 360 p1 = 0 
+ p4 =373  p3 = 374 p2 = 360 p1 = 0 
+we found no space to fit size 0x1000 
+making new block at 0xffffbeefed205705 size=4121 / 0x1019 
+making footer @ 0xffffbeefed206712 
+ added to alloc map, new # allocs = 5 
+Heap Usage: 25/100 
+we found no space to fit size 0x1000 
+making new block at 0xffffbeefed20671e size=4121 / 0x1019 
+making footer @ 0xffffbeefed20772b 
+ added to alloc map, new # allocs = 6 
+Heap Usage: 25/100 
+Extended VA: : 0xffffbeefed200000 
+idx for VA : 0xffffbeefed200000 
+p4 idx : 381 
+p3 idx : 447 
+p2 idx : 361 
+p1 idx : 0 
+ p4 =381  p3 = 447 p2 = 361 p1 = 0 
+ p4 =381  p3 = 447 p2 = 361 p1 = 0 
+p3_ ptr = 0x10f023 p4 = 0x117000 p3 = 0x10f000 
+p3_phys = 0x80205712 p3_virt = 0xffffbeefed205712 
+Extended VA: : 0xffffbeefed200000 
+idx for VA : 0xffffbeefed200000 
+p4 idx : 381 
+p3 idx : 447 
+p2 idx : 361 
+p1 idx : 0 
+ p4 =381  p3 = 447 p2 = 361 p1 = 0 
+ p4 =381  p3 = 447 p2 = 361 p1 = 0 
+p3_ ptr = 0x10f023 p4 = 0x117000 p3 = 0x10f000 
+p2_phys = 0x8020672b p2_virt = 0xffffbeefed20672b 
+==flushed TLB==
+invalidated: 0xffffbaddad000000 
 tasking time :( 0x1010a1 0x10112a 
-task draw timer 
-task draw test 
+old len = 0i last top 

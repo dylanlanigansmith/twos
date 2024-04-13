@@ -13,7 +13,7 @@
 #include "boot/multiboot2.h"
 #include "boot/mb_header.h"
 
-
+#include "sys/sysinfo.h"
 #include "../drivers/serial/serial.h"
 
 #include "mem/page.h"
@@ -124,11 +124,16 @@ void main(void *addr, void *magic)
     */
 
     ASSERT(gfx_has_init());
-   
+   // void* test = kmalloc(512);
+  //  printf("trying virt to phys: %lx \n", virt_to_phys((uintptr_t)test) );
+   // kfree(test);
+
+    map_phys_addr(0xffffbaddad000000llu, sysinfo.rsdp->RsdtAddress, PAGE_SIZE ) ;
+
      printf("tasking time :( %lx %lx \n", (uintptr_t)task_drawtimer, (uintptr_t)task_draw_test);
     
    // task_draw_test();
-    start_first_task();
+   // start_first_task();
 
     size_t old_len = 0;
     char last_top = stdout_top();

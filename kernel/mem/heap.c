@@ -91,7 +91,7 @@ uintptr_t create_heap_block(uintptr_t addr, size_t mem_size){ //size is sizeof a
     create_heap_header(header);
 
     heap_footer_t* footer = (heap_footer_t*)(addr + mem_size + sizeof(heap_header_t));
-    HEAPDBG("making footer @ %lx", (uintptr_t)footer);
+    HEAPDBG("making footer @ %lx \n", (uintptr_t)footer);
     ASSERT((uintptr_t)footer < get_heap_end() );
     create_heap_footer(footer, header);
 
@@ -160,7 +160,7 @@ void* _malloc(size_t size){
             HEAPDBG("%s", "bmap_insert failed to return expected address \n"); 
             KPANIC("heap header insertion failure");
         }
-        HEAPDBG("added to alloc map, new # allocs = %i \n", heap.allocs->size); 
+        HEAPDBG(" added to alloc map, new # allocs = %i \n", heap.allocs->size); 
 
         HEAPDBG("Heap Usage: %i/100 \n", get_heap_use_percent());
         return alloc_addr; 
