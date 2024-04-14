@@ -9,7 +9,10 @@ typedef struct {
     void* multiboot2;
     void* vbe_mode_info;
     void* framebuffer_common;
-
+    struct {
+        uintptr_t addr; 
+        uint32_t w, h, pitch, bpp;
+    }fb;
     void* mb_mmaps;
 
     RSDP_t* rsdp;

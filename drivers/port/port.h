@@ -15,4 +15,4 @@ static inline void io_wait(){
     port_byte_out(0x80, 0);
 }
 
-void port_e9_hack_out(char c);
+void port_e9_hack_out(uint8_t c);

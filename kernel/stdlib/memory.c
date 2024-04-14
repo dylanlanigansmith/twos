@@ -7,8 +7,15 @@ void* memcpy(void* dest, void* src, size_t num_bytes){
 }
 
 
-void* memset(void* dest, uint8_t val, size_t num_bytes){
-    for(int i = 0; i < num_bytes; ++i){
+void* memset(void* dest, register uint8_t val, register size_t num_bytes){
+    register uint8_t *d = (uint8_t*)dest;
+    while(num_bytes-- > 0)
+        *d++ = val;
+    return dest;
+}
+
+void* memset_old(void* dest, uint8_t val, size_t num_bytes){
+    for(int i = 0; i < num_bytes; ++i){ //dunno
         *((char*)(dest + i)) = val;
     }
     return dest;

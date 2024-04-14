@@ -2,7 +2,7 @@
 plugin_ctrl: unmapped=true, biosdev=true, speaker=true, extfpuirq=true, parallel=true, serial=true, iodebug=true, pcidev=false, usb_uhci=true
 config_interface: textconfig
 display_library: x
-memory: guest=2048, host=2048
+memory: guest=4096, host=2048
 boot: cdrom
 
 ata0: enabled=true, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14

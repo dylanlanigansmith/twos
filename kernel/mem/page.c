@@ -1,7 +1,7 @@
 #include "page.h"
 #include "heap.h"
 #include "../../drivers/serial/serial.h"
-
+#include "../../kernel/sys/sysinfo.h"
 #include "page_alloc.h"
 extern uint64_t get_cr3();
 
@@ -237,7 +237,7 @@ void make_page_struct()
    
    
  
-    map_to_physical(&p2_vram, p3, p4, (uint64_t)0xfc000000ULL, (uint64_t)VIRTMAP,  0x300000ULL);
+    map_to_physical(&p2_vram, p3, p4, (uint64_t)sysinfo.fb.addr, (uint64_t)VIRTMAP,  0x300000ULL);
     
    // serial_printh("address p2_vram = ", (uintptr_t)&p2_vram);
   //  dump_pt(p3, "p3", 1);

@@ -46,15 +46,17 @@ void serial_write(char a)
  #define BOCHS
 void serial_print(const char *str)
 {
+     #ifdef BOCHS
+    for(int c = 0; str[c] != 0; ++c)
+        port_e9_hack_out(str[c]);
+    
+    #else
     CHECK_SERIAL_INIT()
     for(int c = 0; str[c] != 0; ++c)
         serial_write(str[c]);
 
 
-    #ifdef BOCHS
-       for(int c = 0; str[c] != 0; ++c)
-        port_e9_hack_out(str[c]);
-    #endif
+   #endif
 }
 
 void serial_println(const char *str)

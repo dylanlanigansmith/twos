@@ -19,16 +19,17 @@ mmap [11]:{ @0x0 - 0x1b00000000 } size 0x1b00000000 |  mem_avail 1
 mmap [12]:{ @0x10000000000000 - 0x10100000000000 } size 0x100000000000 |  mem_unknown 0 
 mmap [13]:{ @0x0 - 0x800000000 } size 0x800000000 |  mem_unknown 0 
 mmap [14]:{ @0x2100000000 - 0x2700000001 } size 0x600000001 |  mem_unknown 0 
-mmap [15]:{ @0x200000000000 - 0x8b7400000000 } size 0x6b7400000000 |  mem_unknown 0 
+mmap [15]:{ @0x200000000000 - 0x8bb400000000 } size 0x6bb400000000 |  mem_unknown 0 
 mmap [16]:{ @0x1000000000 - 0x1000000000 } size 0x0 |  mem_unknown 0 
-mmap [17]:{ @0x600000001 - 0x107b7a00000001 } size 0x107b7400000000 |  mem_unknown 0 
+mmap [17]:{ @0x600000001 - 0x107bba00000001 } size 0x107bb400000000 |  mem_unknown 0 
 mmap [18]:{ @0x2200000000 - 0x2200000000 } size 0x0 |  mem_unknown 0 
 mmap [19]:{ @0x0 - 0x4000000000 } size 0x4000000000 |  mem_avail 1 
-mmap [20]:{ @0x107b9600000000 - 0x11072c00000000 } size 0x8b9600000000 |  mem_unknown 0 
+mmap [20]:{ @0x107bd600000000 - 0x1107ac00000000 } size 0x8bd600000000 |  mem_unknown 0 
 mmap [21]:{ @0x0 - 0x200000000 } size 0x200000000 |  mem_unknown 0 
 mmap [22]:{ @0x5b00000000 - 0x6100000001 } size 0x600000001 |  mem_unknown 0 
-mmap [23]:{ @0x8c0000000000 - 0x8c2c00000000 } size 0x2c00000000 |  mem_unknown 0 
+mmap [23]:{ @0x8c4000000000 - 0x8c6c00000000 } size 0x2c00000000 |  mem_unknown 0 
 found VBE
+fb @ 0xfc000000 h= 768 p= 4096 
 ===MULTIBOOT_TAG_TYPE_ACPI_OLD===
 rsdp->Signature: 'RSD PTR ' 
 rsdp->OEMID: 'BOCHS ' 

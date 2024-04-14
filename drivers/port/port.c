@@ -29,7 +29,7 @@ void port_word_out(uint16_t port, uint16_t data)
      __asm__("out dx, al" : : "a" (data), "d" (port));
 }
 
-void port_e9_hack_out(char c)
+void port_e9_hack_out(uint8_t c)
 {
-     __asm__ volatile ("mov dx, 0xe9; mov al, bl; outb dx, al; mov rdi, rax; outb dx, al;" :: "b" ( c) ); 
+     __asm__ volatile ("mov dx, 0xe9; mov al, bl; outb dx, al;" :: "b" (c) ); 
 }

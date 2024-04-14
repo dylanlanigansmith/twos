@@ -90,6 +90,12 @@ int parse_multiboot_header(void *header, uint64_t magic)
            // if(tagfb->common.framebuffer_width != 1024) continue; //all sorts of garbage comes from this so we should look into it 
 
            sysinfo.framebuffer_common = &tagfb->common;
+           sysinfo.fb.addr = tagfb->common.framebuffer_addr;
+           sysinfo.fb.w = tagfb->common.framebuffer_width;
+           sysinfo.fb.h = tagfb->common.framebuffer_height;
+           sysinfo.fb.pitch =  tagfb->common.framebuffer_pitch;
+           sysinfo.fb.bpp = tagfb->common.framebuffer_bpp;
+           debugf("fb @ %lx h= %i p= %i \n", sysinfo.fb.addr, sysinfo.fb.h,  sysinfo.fb.pitch);
            if(!DUMP_FB_TAG) continue;
             serial_print("\n found framebuffer tag");
            
@@ -174,6 +180,7 @@ int parse_multiboot_header(void *header, uint64_t magic)
         }
          if(tag->type == MULTIBOOT_TAG_TYPE_ACPI_NEW){
                 serial_println("===MMULTIBOOT_TAG_TYPE_ACPI_NEW===");
+                sysinfo.rsdp = 0;
          }
     }
     serial_println("parsed mb2 header successfully");

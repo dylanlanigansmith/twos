@@ -103,7 +103,9 @@ void main(void *addr, void *magic)
 
         panic("multiboot parse fail");
     }else{
-        play_sound(440);
+       port_e9_hack_out('M'); port_e9_hack_out('B'); port_e9_hack_out(0);
+
+       
     }
     // serial_println("\n===init mem===\n");
     make_page_struct(); //this also initializes heap, maps frame buffer
@@ -113,9 +115,9 @@ void main(void *addr, void *magic)
 
     if(sysinfo.rsdp){  
 
-    uintptr_t rsdt = map_phys_addr(ACPI_ADDR, sysinfo.rsdp->RsdtAddress, PAGE_SIZE * 2, 0b10000001LLU ) ;
-                                    // base mapping and offset from it 
-    ACPI_discover_SDTs( (void*)(rsdt), ACPI_ADDR, sysinfo.rsdp->RsdtAddress);
+        uintptr_t rsdt = map_phys_addr(ACPI_ADDR, sysinfo.rsdp->RsdtAddress, PAGE_SIZE * 2, 0b10000001LLU ) ;
+                                        // base mapping and offset from it 
+        ACPI_discover_SDTs( (void*)(rsdt), ACPI_ADDR, sysinfo.rsdp->RsdtAddress);
     }
 
     __asm__("sti");

@@ -38,9 +38,9 @@
 00000000000i[USBCTL] Pluggable USB devices
 00000000000i[USBCTL]   floppy mouse tablet keypad keyboard hub disk cdrom
 00000000000i[USBCTL]   printer
-00000000000i[MEM0  ] allocated memory at 0x720c73200010. after alignment, vector=0x720c73201000
-00000000000i[MEM0  ] 2048.00MB
-00000000000i[MEM0  ] mem block size = 0x00020000, blocks=16384
+00000000000i[MEM0  ] allocated memory at 0x7a3c3c600010. after alignment, vector=0x7a3c3c601000
+00000000000i[MEM0  ] 4096.00MB
+00000000000i[MEM0  ] mem block size = 0x00020000, blocks=32768
 00000000000i[MEM0  ] rom at 0xfffe0000/131072 ('/usr/share/bochs/BIOS-bochs-latest')
 00000000000i[CPU0  ] WARNING: 3DNow! is not implemented yet !
 00000000000i[DEV   ] will paste characters every 100 iodev timer ticks
@@ -50,7 +50,7 @@
 00000000000i[DEV   ] PIIX3 PCI-to-ISA bridge present at device 1, function 0
 00000000000i[PLUGIN] init_dev of 'cmos' plugin device by virtual method
 00000000000i[CMOS  ] Using local time for initial clock
-00000000000i[CMOS  ] Setting initial clock to: Sat Apr 13 20:42:37 2024 (time0=1713055357)
+00000000000i[CMOS  ] Setting initial clock to: Sat Apr 13 21:15:30 2024 (time0=1713057330)
 00000000000i[PLUGIN] init_dev of 'dma' plugin device by virtual method
 00000000000i[DMA   ] channel 4 used by cascade
 00000000000i[PLUGIN] init_dev of 'pic' plugin device by virtual method
@@ -209,115 +209,114 @@
 00000357124d[SER   ] com1 register write to  address: 0x03f9 = 0x00
 00000357812i[BIOS  ] Starting rombios32
 00000358250i[BIOS  ] Shutdown flag 0
-00000358858i[BIOS  ] ram_size=0x80000000
-00000359336i[BIOS  ] ram_end=2048MB
-00000439411i[BIOS  ] Found 1 cpu(s)
-00000453064i[BIOS  ] bios_table_addr: 0x000f9d98 end=0x000fcc00
-00000495951i[XGUI  ] charmap update. Font is 9 x 16
-00000780880i[PCI   ] i440FX PMC write to PAM register 59 (TLB Flush)
-00001108815i[P2ISA ] PCI IRQ routing: PIRQA# set to 0x0b
-00001108839i[P2ISA ] PCI IRQ routing: PIRQB# set to 0x09
-00001108863i[P2ISA ] PCI IRQ routing: PIRQC# set to 0x0b
-00001108887i[P2ISA ] PCI IRQ routing: PIRQD# set to 0x09
-00001108897i[P2ISA ] write: ELCR2 = 0x0a
-00001109666i[BIOS  ] PIIX3/PIIX4 init: elcr=00 0a
-00001123342i[BIOS  ] PCI: bus=0 devfn=0x00: vendor_id=0x8086 device_id=0x1237 class=0x0600
-00001125686i[BIOS  ] PCI: bus=0 devfn=0x08: vendor_id=0x8086 device_id=0x7000 class=0x0601
-00001127869i[BIOS  ] PCI: bus=0 devfn=0x09: vendor_id=0x8086 device_id=0x7010 class=0x0101
-00001128104i[PIDE  ] BAR #4: i/o base address = 0xc000
-00001128720i[BIOS  ] region 4: 0x0000c000
-00001130755i[BIOS  ] PCI: bus=0 devfn=0x0a: vendor_id=0x8086 device_id=0x7020 class=0x0c03
-00001130968i[UHCI  ] BAR #4: i/o base address = 0xc020
-00001131584i[BIOS  ] region 4: 0x0000c020
-00001131712i[UHCI  ] new IRQ line = 9
-00001133634i[BIOS  ] PCI: bus=0 devfn=0x0b: vendor_id=0x8086 device_id=0x7113 class=0x0680
-00001133910i[ACPI  ] new IRQ line = 11
-00001133924i[ACPI  ] new IRQ line = 9
-00001133952i[ACPI  ] new PM base address: 0xb000
-00001133966i[ACPI  ] new SM base address: 0xb100
-00001133994i[PCI   ] setting SMRAM control register to 0x4a
-00001298129i[CPU0  ] Enter to System Management Mode
-00001298139i[CPU0  ] RSM: Resuming from System Management Mode
-00001462195i[PCI   ] setting SMRAM control register to 0x0a
-00001488860i[BIOS  ] MP table addr=0x000f9e70 MPC table addr=0x000f9da0 size=0xc8
-00001490567i[BIOS  ] SMBIOS table addr=0x000f9e80
-00001492666i[BIOS  ] ACPI tables: RSDP addr=0x000f9fa0 ACPI DATA addr=0x7fff0000 size=0xff8
-00001495673i[BIOS  ] Firmware waking vector 0x7fff00cc
-00001497927i[PCI   ] i440FX PMC write to PAM register 59 (TLB Flush)
-00001498657i[BIOS  ] bios_table_cur_addr: 0x000f9fc4
-00001616777i[VBIOS ] VGABios $Id: vgabios.c 288 2021-05-28 19:05:28Z vruppert $
-00001616848i[BXVGA ] VBE known Display Interface b0c0
-00001616880i[BXVGA ] VBE known Display Interface b0c5
-00001619523i[VBIOS ] VBE Bios $Id: vbe.c 292 2021-06-03 12:24:22Z vruppert $
-00004691004i[XGUI  ] charmap update. Font is 9 x 16
-00005240970i[BIOS  ] IDE time out
-13949185979i[BIOS  ] Booting from 07c0:0000
-14020560254i[BXVGA ] VBE set bpp (32)
-14020560273i[BXVGA ] VBE set xres (1024)
-14020560292i[BXVGA ] VBE set yres (768)
-14020560380i[BXVGA ] VBE enabling x 1024, y 768, bpp 32, 3145728 bytes visible
-14027833008d[SER   ] com1 register write to  address: 0x03f9 = 0x00
-14027833023d[SER   ] com1 register write to  address: 0x03fb = 0x80
-14027833038d[SER   ] com1 register write to  address: 0x03f8 = 0x01
-14027833053d[SER   ] com1 register write to  address: 0x03f9 = 0x00
-14027833068d[SER   ] com1 register write to  address: 0x03fb = 0x02
-14027833083d[SER   ] com1 register write to  address: 0x03fa = 0xc7
-14027833083i[SER   ] com1: FIFO enabled
-14027833098d[SER   ] com1 register write to  address: 0x03fc = 0x0b
-14027833113d[SER   ] com1 register write to  address: 0x03fc = 0x1e
-14027833128d[SER   ] com1 register write to  address: 0x03f8 = 0xae
-14027833141d[SER   ] com1 register read from address: 0x03f8 = 0x2e
-14027833213d[SER   ] com1 register read from address: 0x03fd = 0x60
-14027833237d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-14027839375d[SER   ] com1 register read from address: 0x03fd = 0x60
-14027839399d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-14027839616d[SER   ] com1 register read from address: 0x03fd = 0x60
-14027839640d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-14028054321d[SER   ] com1 register read from address: 0x03fd = 0x61
-14028054345d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-14028057765d[SER   ] com1 register read from address: 0x03fd = 0x61
-14028057789d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-14028115917d[SER   ] com1 register read from address: 0x03fd = 0x61
-14028115941d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-14028227665d[SER   ] com1 register read from address: 0x03fd = 0x61
-14028227689d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-14028301826d[SER   ] com1 register read from address: 0x03fd = 0x61
-14028301850d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-14028450712d[SER   ] com1 register read from address: 0x03fd = 0x61
-14028450736d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-14028512939d[SER   ] com1 register read from address: 0x03fd = 0x61
-14028512963d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-14028513012d[SER   ] com1 register read from address: 0x03fd = 0x61
-14028513036d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-14028528707i[CPU0  ] WARNING: HLT instruction with IF=0!
-234189927588i[      ] Ctrl-C detected in signal handler.
-234189927598i[      ] dbg: Quit
-234189927598i[CPU0  ] CPU is in long mode (halted)
-234189927598i[CPU0  ] CS.mode = 64 bit
-234189927598i[CPU0  ] SS.mode = 64 bit
-234189927598i[CPU0  ] EFER   = 0x00000500
-234189927598i[CPU0  ] | RAX=0000000000000004  RBX=000000000011f938
-234189927598i[CPU0  ] | RCX=0000000000000000  RDX=0000000000000017
-234189927598i[CPU0  ] | RSP=0000000000115db8  RBP=0000000000115dd8
-234189927598i[CPU0  ] | RSI=0000000000000000  RDI=0000000000109062
-234189927598i[CPU0  ] |  R8=0000000000104477   R9=0000000000000002
-234189927598i[CPU0  ] | R10=0000000000000000  R11=0000000000000000
-234189927598i[CPU0  ] | R12=0000000000000000  R13=0000000000000000
-234189927598i[CPU0  ] | R14=0000000000000000  R15=0000000000000000
-234189927598i[CPU0  ] | IOPL=0 id vip vif ac vm rf nt of df if tf sf zf af pf cf
-234189927598i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
-234189927598i[CPU0  ] |  CS:0008( 0001| 0|  0) 00000000 00000000 0 0
-234189927598i[CPU0  ] |  DS:0010( 0002| 0|  0) 00000000 00000000 0 0
-234189927598i[CPU0  ] |  SS:0010( 0002| 0|  0) 00000000 00000000 0 0
-234189927598i[CPU0  ] |  ES:0010( 0002| 0|  0) 00000000 00000000 0 0
-234189927598i[CPU0  ] |  FS:0010( 0002| 0|  0) 00000000 00000000 0 0
-234189927598i[CPU0  ] |  GS:0010( 0002| 0|  0) 00000000 00000000 0 0
-234189927598i[CPU0  ] |  MSR_FS_BASE:0000000000000000
-234189927598i[CPU0  ] |  MSR_GS_BASE:0000000000000000
-234189927598i[CPU0  ] | RIP=00000000001020da (00000000001020da)
-234189927598i[CPU0  ] | CR0=0xe0010011 CR2=0xffffffffffffffff
-234189927598i[CPU0  ] | CR3=0x0000000000118000 CR4=0x00000030
-234189927598d[SER   ] Exit
-234189927598i[CMOS  ] Last time is 1713058702 (Sat Apr 13 21:38:22 2024)
-234189927598i[XGUI  ] Exit
-234189927598i[SIM   ] quit_sim called with exit code 0
+00000358858i[BIOS  ] ram_size=0xc0000000
+00000359336i[BIOS  ] ram_end=3072MB
+00000439483i[BIOS  ] Found 1 cpu(s)
+00000453136i[BIOS  ] bios_table_addr: 0x000f9d98 end=0x000fcc00
+00000780952i[PCI   ] i440FX PMC write to PAM register 59 (TLB Flush)
+00001108887i[P2ISA ] PCI IRQ routing: PIRQA# set to 0x0b
+00001108911i[P2ISA ] PCI IRQ routing: PIRQB# set to 0x09
+00001108935i[P2ISA ] PCI IRQ routing: PIRQC# set to 0x0b
+00001108959i[P2ISA ] PCI IRQ routing: PIRQD# set to 0x09
+00001108969i[P2ISA ] write: ELCR2 = 0x0a
+00001109738i[BIOS  ] PIIX3/PIIX4 init: elcr=00 0a
+00001123414i[BIOS  ] PCI: bus=0 devfn=0x00: vendor_id=0x8086 device_id=0x1237 class=0x0600
+00001125758i[BIOS  ] PCI: bus=0 devfn=0x08: vendor_id=0x8086 device_id=0x7000 class=0x0601
+00001127941i[BIOS  ] PCI: bus=0 devfn=0x09: vendor_id=0x8086 device_id=0x7010 class=0x0101
+00001128176i[PIDE  ] BAR #4: i/o base address = 0xc000
+00001128792i[BIOS  ] region 4: 0x0000c000
+00001130827i[BIOS  ] PCI: bus=0 devfn=0x0a: vendor_id=0x8086 device_id=0x7020 class=0x0c03
+00001131040i[UHCI  ] BAR #4: i/o base address = 0xc020
+00001131656i[BIOS  ] region 4: 0x0000c020
+00001131784i[UHCI  ] new IRQ line = 9
+00001133706i[BIOS  ] PCI: bus=0 devfn=0x0b: vendor_id=0x8086 device_id=0x7113 class=0x0680
+00001133982i[ACPI  ] new IRQ line = 11
+00001133996i[ACPI  ] new IRQ line = 9
+00001134024i[ACPI  ] new PM base address: 0xb000
+00001134038i[ACPI  ] new SM base address: 0xb100
+00001134066i[PCI   ] setting SMRAM control register to 0x4a
+00001298201i[CPU0  ] Enter to System Management Mode
+00001298211i[CPU0  ] RSM: Resuming from System Management Mode
+00001462267i[PCI   ] setting SMRAM control register to 0x0a
+00001474203i[XGUI  ] charmap update. Font is 9 x 16
+00001488932i[BIOS  ] MP table addr=0x000f9e70 MPC table addr=0x000f9da0 size=0xc8
+00001490639i[BIOS  ] SMBIOS table addr=0x000f9e80
+00001492738i[BIOS  ] ACPI tables: RSDP addr=0x000f9fa0 ACPI DATA addr=0xbfff0000 size=0xff8
+00001495745i[BIOS  ] Firmware waking vector 0xbfff00cc
+00001497999i[PCI   ] i440FX PMC write to PAM register 59 (TLB Flush)
+00001498729i[BIOS  ] bios_table_cur_addr: 0x000f9fc4
+00001616849i[VBIOS ] VGABios $Id: vgabios.c 288 2021-05-28 19:05:28Z vruppert $
+00001616920i[BXVGA ] VBE known Display Interface b0c0
+00001616952i[BXVGA ] VBE known Display Interface b0c5
+00001619595i[VBIOS ] VBE Bios $Id: vbe.c 292 2021-06-03 12:24:22Z vruppert $
+00005241042i[BIOS  ] IDE time out
+00117585676i[XGUI  ] charmap update. Font is 9 x 16
+13564092671i[BIOS  ] Booting from 07c0:0000
+13635466948i[BXVGA ] VBE set bpp (32)
+13635466967i[BXVGA ] VBE set xres (1024)
+13635466986i[BXVGA ] VBE set yres (768)
+13635467074i[BXVGA ] VBE enabling x 1024, y 768, bpp 32, 3145728 bytes visible
+13642714936d[SER   ] com1 register write to  address: 0x03f9 = 0x00
+13642714951d[SER   ] com1 register write to  address: 0x03fb = 0x80
+13642714966d[SER   ] com1 register write to  address: 0x03f8 = 0x01
+13642714981d[SER   ] com1 register write to  address: 0x03f9 = 0x00
+13642714996d[SER   ] com1 register write to  address: 0x03fb = 0x02
+13642715011d[SER   ] com1 register write to  address: 0x03fa = 0xc7
+13642715011i[SER   ] com1: FIFO enabled
+13642715026d[SER   ] com1 register write to  address: 0x03fc = 0x0b
+13642715041d[SER   ] com1 register write to  address: 0x03fc = 0x1e
+13642715056d[SER   ] com1 register write to  address: 0x03f8 = 0xae
+13642715069d[SER   ] com1 register read from address: 0x03f8 = 0x2e
+13642715779d[SER   ] com1 register read from address: 0x03fd = 0x60
+13642715803d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
+13642723275d[SER   ] com1 register read from address: 0x03fd = 0x60
+13642723299d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
+13642724394d[SER   ] com1 register read from address: 0x03fd = 0x60
+13642724418d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
+13642975349d[SER   ] com1 register read from address: 0x03fd = 0x61
+13642975373d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
+13642983369d[SER   ] com1 register read from address: 0x03fd = 0x61
+13642983393d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
+13643037802d[SER   ] com1 register read from address: 0x03fd = 0x61
+13643037826d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
+13643129447d[SER   ] com1 register read from address: 0x03fd = 0x61
+13643129471d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
+13643196544d[SER   ] com1 register read from address: 0x03fd = 0x61
+13643196568d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
+13643337709d[SER   ] com1 register read from address: 0x03fd = 0x61
+13643337733d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
+13643413884d[SER   ] com1 register read from address: 0x03fd = 0x61
+13643413908d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
+13643414475d[SER   ] com1 register read from address: 0x03fd = 0x61
+13643414499d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
+379159270000i[      ] Ctrl-C detected in signal handler.
+379159270001i[      ] dbg: Quit
+379159270001i[CPU0  ] CPU is in long mode (halted)
+379159270001i[CPU0  ] CS.mode = 64 bit
+379159270001i[CPU0  ] SS.mode = 64 bit
+379159270001i[CPU0  ] EFER   = 0x00000500
+379159270001i[CPU0  ] | RAX=000000000000012f  RBX=000000000011f958
+379159270001i[CPU0  ] | RCX=0000000000000122  RDX=000000000000012e
+379159270001i[CPU0  ] | RSP=0000000000115fc0  RBP=0000000000115ff0
+379159270001i[CPU0  ] | RSI=00000000ff000000  RDI=000000520000012a
+379159270001i[CPU0  ] |  R8=0000000000104530   R9=0000000000000001
+379159270001i[CPU0  ] | R10=0000000000000000  R11=0000000000000000
+379159270001i[CPU0  ] | R12=0000000000000000  R13=0000000000000000
+379159270001i[CPU0  ] | R14=0000000000000000  R15=0000000000000000
+379159270001i[CPU0  ] | IOPL=0 id vip vif ac vm rf nt of df IF tf sf ZF af PF cf
+379159270001i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
+379159270001i[CPU0  ] |  CS:0008( 0001| 0|  0) 00000000 00000000 0 0
+379159270001i[CPU0  ] |  DS:0010( 0002| 0|  0) 00000000 00000000 0 0
+379159270001i[CPU0  ] |  SS:0010( 0002| 0|  0) 00000000 00000000 0 0
+379159270001i[CPU0  ] |  ES:0010( 0002| 0|  0) 00000000 00000000 0 0
+379159270001i[CPU0  ] |  FS:0010( 0002| 0|  0) 00000000 00000000 0 0
+379159270001i[CPU0  ] |  GS:0010( 0002| 0|  0) 00000000 00000000 0 0
+379159270001i[CPU0  ] |  MSR_FS_BASE:0000000000000000
+379159270001i[CPU0  ] |  MSR_GS_BASE:0000000000000000
+379159270001i[CPU0  ] | RIP=0000000000101393 (0000000000101393)
+379159270001i[CPU0  ] | CR0=0xe0010011 CR2=0x0000000000000000
+379159270001i[CPU0  ] | CR3=0x0000000000118000 CR4=0x00000030
+379159270001d[SER   ] Exit
+379159270001i[CMOS  ] Last time is 1713062746 (Sat Apr 13 22:45:46 2024)
+379159270001i[XGUI  ] Exit
+379159270001i[SIM   ] quit_sim called with exit code 0

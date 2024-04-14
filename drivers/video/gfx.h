@@ -7,8 +7,12 @@
 #define SCREEN_H 768
 #define SCREEN_PITCH 4096
 #define SCREEN_BPP 4 //bytes
-#define FB_PHYS_ADDR 0xfc000000
+
+
+#define FB_PHYS_ADDR sysinfo.fb.addr
 #define FB_ADDR 0xfc000000
+//#define FB_PHYS_ADDR 0xfc000000
+//#define FB_ADDR 0xfc000000
 #define FB_BPP 32
 #define FB_SIZE (size_t)(SCREEN_H * SCREEN_PITCH)
 #define FB_END_ADDR  (uintptr_t)(FB_ADDR + FB_SIZE)
