@@ -1,6 +1,8 @@
 #include "page.h"
 #include "heap.h"
 #include "../../drivers/serial/serial.h"
+
+#include "page_alloc.h"
 extern uint64_t get_cr3();
 
 extern uintptr_t p2_table;
@@ -12,6 +14,8 @@ page_table_t p2_vram;
 page_table_t p2_heap;
 page_table_t p3_heap;
 
+
+page_table_t p2_palloc;
 
 page_table_t* get_p4(){
     return (page_table_t*)(get_cr3());
@@ -152,6 +156,38 @@ void dump_pt(page_table_t* p, const char* str, bool skip0){
 }
 
 
+void map_identity(page_table_t* p2, page_table_t* p4, uint64_t addr, int num_pages){
+    ASSERT(is_page_aligned(addr));
+    
+    page_indices_t ids = {0,0,0,0};
+    get_page_index_vm(addr, &ids);
+
+    page_table_t* p3 = pt_addr(p4->entries[ids.p4]);
+    debugf("map_identity( p2 = %lx p3 = %lx p4 = %lx addr = %lx num = %i)", (uint64_t)p2, (uint64_t)p3, (uint64_t)p4, addr, num_pages);
+    for(uint64_t i = 0; i < num_pages; ++i){
+        
+        uint64_t current_virtual_address = addr + (i * PAGE_SIZE);
+        uint64_t current_physical_address = addr + (i * PAGE_SIZE); 
+        
+        int idx = (current_virtual_address >> P2_SHIFT) & 0x1ff;
+        p2->entries[idx] = current_physical_address | 0b10000011; //| PAGE_PRESENT_FLAG | PAGE_WRITE_FLAG | PSE_HUGE_FLAG;
+       // serial_printh("physical = ", get_p3_phys_address(p2->entries[i]));
+      
+    }
+    if(p3->entries[ids.pdpt3] != 0 && p3->entries[ids.pdpt3] != ((uint64_t)(p2)) | 0b11){
+                serial_printi("conflicting overlap in p3 @", ids.pdpt3); return; }
+
+     p3->entries[ids.pdpt3] = ((uint64_t)(p2)) | 0b11; // | PAGE_PRESENT_FLAG | PAGE_WRITE_FLAG | PSE_HUGE_FLAG;
+    //p4->entries[ids.p4] = (uint64_t)(p3) | 0b11;// | PAGE_PRESENT_FLAG | PAGE_WRITE_FLAG | PSE_HUGE_FLAG;
+    
+    serial_printh("ID mapped ", addr); 
+   
+
+    flush_tlb();
+    invalidate_page(addr);
+    
+}
+
 void init_heap()
 {
     memset(&p2_heap, 0, 512 * 8);
@@ -165,6 +201,14 @@ void init_heap()
     map_to_physical_new(&p2_heap, &p3_heap, p4, HEAP_PHYS, HEAP_VIRT, HEAP_SIZE);
 
     alloc_init();
+
+
+    //init palloc
+    memset(&p2_palloc, 0, sizeof(page_table_t));
+ 
+    map_identity(&p2_palloc, p4, PALLOC_BASE, 2);
+    palloc_init();
+    //map_to_physical_new(&p2_palloc, &p3_palloc, p4, PALLOC_BASE, PALLOC_BASE, PALLOC_SIZE);
 }
 
 void make_page_struct()
@@ -232,7 +276,7 @@ size_t expand_heap(void* heap_ptr, size_t size_to_add)
 
 
 
-uintptr_t virt_to_phys(uintptr_t virt)
+uintptr_t virt_to_phys(uintptr_t virt) //virt addr === 56 bits
 {
     //mask out offset within page
     uintptr_t ovirt = virt;
@@ -260,15 +304,13 @@ uintptr_t virt_to_phys(uintptr_t virt)
     }
     uintptr_t phys = p1 &  0xFFFFFFFFFFFFFF00ull;
     uintptr_t offset = ovirt - virt;
-   
+  
     return phys + offset;
 }
 
-page_table_t* pt_addr(uintptr_t entry){ 
-    return (page_table_t*)(entry & 0xFFFFFFFFFFFFFF00ull);
-}
 
-#define IDENTITY_MAP_END 0x3fffffffull //1 gib
+
+
 // the big issue
     // we are gonna point page tables to phys addresses, and thats cool and all
     //  - except we gonna need to walk tables and uh 
@@ -291,9 +333,9 @@ page_table_t* pt_addr(uintptr_t entry){
     //yk it feels pretty wrong to stick page tables on the heap
     // just cuz like shit gonna break HARD if heap/malloc f's up and wipes a page table / chunk of one
 
-uintptr_t map_phys_addr(uintptr_t virt, uintptr_t phys, size_t size)
+uintptr_t map_phys_addr(uintptr_t virt, uintptr_t phys, size_t size, uint64_t flags)
 {
-    
+    if(flags == 0) flags = 0b10000011LLU; 
     //our virt address has gotta meet some requirements and a smart man would check those here
     ASSERT(is_page_aligned(virt)); //ill check one
    
@@ -303,9 +345,9 @@ uintptr_t map_phys_addr(uintptr_t virt, uintptr_t phys, size_t size)
 
     //align phys if needed
     if(!is_page_aligned(phys)){
-         debugf("note: page aligning requested physaddr (%lx) to %lx\n", phys, phys & 0xFFFFFFFFFFF00000ull);
+         debugf("note: page aligning requested physaddr (%lx) to %lx\n", phys, phys & BITMASK_21_ALIGN);
     
-        phys = phys & 0xFFFFFFFFFFF00000ull;
+        phys = phys & BITMASK_21_ALIGN;
     }
     ASSERT(is_page_aligned(phys));
 
@@ -320,44 +362,43 @@ uintptr_t map_phys_addr(uintptr_t virt, uintptr_t phys, size_t size)
     page_table_t* p4, *p3,*p2; p4 = p3 = p2 = 0;
 
     p4 = get_p4();
+    pt_t* p4r = get_p4(); //oh shit 
     //okay so whats the damage: 
     //need to check tables at indices seeing what we need to allocate 
 
     
-    p3 = pt_addr( p4->entries[ind.pdpt3] );
-    uintptr_t p2_phys = 0;
+    p3 = pt_addr( p4->entries[ind.p4] );
+     debugf("initial p3 = %lx p4 = %lx \n", (uintptr_t)p3, (uintptr_t)p4 );
+    uintptr_t p2_addr = 0;
     //our logic for finding or making new tables as needed and mapping p4->p3->p2
     if(!p3){
-        p3 = kmalloc(sizeof(page_table_t)); //4096 if youre following along at home
-        p2 = kmalloc(sizeof(page_table_t));
-        memset(p3, 0, sizeof(page_table_t)); //our malloc doesnt page align and this is gonna b an issue!!
-        memset(p2, 0, sizeof(page_table_t));
-
+        p3 = palloc(); //palloc is ID mapped so virt/phys translation is not needed 
+        p2 = palloc();
+       
+        ASSERT(p3 && p2); 
         //set p4 to p3 PHYSICAL
-        uintptr_t p3_phys = virt_to_phys((uintptr_t)p3);
-        p4->entries[ind.pdpt3] = p3_phys | PT_FLAGS; //>:(
-         debugf("p3_phys = %lx p3_virt = %lx \n", p3_phys, p3);
+        
+        p4->entries[ind.p4] = (uintptr_t)p3 |  PT_FLAGS; //>:(
+
+
+        debugf("made new: p3 = %lx p2 = %lx entry = %lb \n", p3, p2,  p4->entries[ind.p4] );
         //set p2 phys since we made it
-        p2_phys = virt_to_phys((uintptr_t)p2);
        
     }
     else {
-        p2 = pt_addr( p3->entries[ind.pd2] ); //pt_addr removes or'ed flagsto make entry addr valid
+        p2 = pt_addr( p3->entries[ind.pdpt3] ); //pt_addr removes or'ed flagsto make entry addr valid
         if(!p2){
-            p2 = kmalloc(512 * sizeof(uintptr_t));
-            memset(p2, 0, sizeof(page_table_t));
+            p2 = palloc();
+            ASSERT(p2);
             //set p2 phys since we made it via malloc (returns virtual address)
-            p2_phys = virt_to_phys((uintptr_t)p2);
-        }
-        else{ //p2 exists somewhere identity mapped so set p2_phys to whatever we found in p3 
-        //**note that you will have to check for identity mapped vs in kernel heap address virtual space***
-            p2_phys = (uintptr_t)(p2);
-        }
+          
+        } 
     }
-     debugf("p2_phys = %lx p2_virt = %lx \n", p2_phys, p2);
+    debugf("we have: p3 = %lx p2 = %lx \n", (uintptr_t)p3, (uintptr_t)p2); //we should have a valid p3 and p2 now
+
      //okay so whether we made a table or found one, we set it to either the existing or new address respectively
-    p3->entries[ind.pd2] = p2_phys | PT_FLAGS; 
-   
+    p3->entries[ind.pdpt3] = ((uintptr_t)p2 | PT_FLAGS);
+     
     //we now should have p4 -> p3, and p3-> p2, and either made new tables or the existing ones were used where needed 
     //p2 should be valid now and ready for our mapping 
 
@@ -366,7 +407,9 @@ uintptr_t map_phys_addr(uintptr_t virt, uintptr_t phys, size_t size)
         uint64_t current_physical_address = phys + (i * PAGE_SIZE); //page size = 2MiB
 
         int idx = (current_virtual_address >> 21) & 0x1FF; //index will change if num_pages > 1 so calc on the fly
-        p2->entries[idx] = current_physical_address |  0b10000011LLU; //add our flags and magic 
+        p2->entries[idx] = current_physical_address |  flags; //add our flags and magic 
+        //https://wiki.osdev.org/images/thumb/6/6b/64-bit_page_tables2.png/412px-64-bit_page_tables2.png
+        debugf("entry %i @ %lx = %lx \n %lb", i,(p2->entries + 8 * idx),  p2->entries[idx], p2->entries[idx]);
     }
 
     //double whammy - ensure page changes went through
@@ -381,6 +424,16 @@ uintptr_t map_phys_addr(uintptr_t virt, uintptr_t phys, size_t size)
     //say a prayer and return virtual address we mapped 
     return virt + offset;
     //page fault in 3, 2, 1 ...
+
+
+    /*
+    mapping to 0xbfe00000
+            0b101111111110 0000 0000 0000 0000 0000 = fe
+            0b101111111111 0000 0000 0000 0000 0000 = ff
+            0b10111111111100000000000010000001 
+            0xbff00081
+    
+    */
 }
 
 /*
@@ -395,7 +448,7 @@ page heap
 page heap
 page heap
 page heap
-
+PAGE HEAP PAGE HEAP PAGE HEAP PAGE HEAP PAGE HEAP PAGE HEAP PAGE HEAP PAGE HEAP PAGE HEAP
 find a block of mem and map it greasy way like we do for heap/fb
 
 write freeless allocator

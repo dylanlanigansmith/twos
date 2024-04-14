@@ -14,3 +14,5 @@ static inline void io_wait(){
     //use unused port to kill time, linux kernel also uses 0x80
     port_byte_out(0x80, 0);
 }
+
+void port_e9_hack_out(char c);

@@ -121,6 +121,10 @@ int parse_multiboot_header(void *header, uint64_t magic)
 
             RSDP_t* rsdp = (RSDP_t*) acpi->rsdp;
 
+            if(!validate_rsdp(rsdp)){
+                serial_println("FAILED TO VALIDATE RSDP! ");
+                sysinfo.rsdp = 0; continue;
+            }
             sysinfo.rsdp = rsdp;
             
             if(!DUMP_ACPI_TAG) continue;

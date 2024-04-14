@@ -78,6 +78,8 @@ void handle_error_generic(registers_t* regs, bool recover){
 
 int num_pfs = 0;
 void handle_pagefault(registers_t* regs){
+
+    //intel manual 3141 4.12
     uint64_t cr2 = 0;
     __asm__ volatile ("movq %0, cr2" : "=r" (cr2) );
     EXCEPTION_PRINTLN("\n== PAGE FAULT ==");
@@ -93,6 +95,8 @@ void handle_pagefault(registers_t* regs){
     if(regs->err_code & 0b1000000) EXCEPTION_PRINTLN("CAUSE = SHADOW STACK ACCESS");
 
     EXCEPTION_PRINTLN("==============");
+
+  //  if((regs->err_code & 0b1000) ) return;
     num_pfs++;
    
     if(num_pfs > 3)

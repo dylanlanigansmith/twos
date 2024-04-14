@@ -91,7 +91,7 @@ uintptr_t create_heap_block(uintptr_t addr, size_t mem_size){ //size is sizeof a
     create_heap_header(header);
 
     heap_footer_t* footer = (heap_footer_t*)(addr + mem_size + sizeof(heap_header_t));
-    HEAPDBG("making footer @ %lx \n", (uintptr_t)footer);
+    HEAPDBG(" footer @ %lx \n", (uintptr_t)footer);
     ASSERT((uintptr_t)footer < get_heap_end() );
     create_heap_footer(footer, header);
 
@@ -125,7 +125,7 @@ uint32_t find_best_free_space(size_t size, uint8_t flags){
         }
         itr++;      
     }
-    HEAPDBG("we found no space to fit size %lx \n", size);
+    HEAPDBG("we found no space to fit size %lx, ", size);
     return FREE_SPACE_NONE;
 }
 //yeah i just wrote my own malloc what are you gonna do about it ?
@@ -143,7 +143,8 @@ void* _malloc(size_t size){
             if(!expanded_size){
                 KPANIC("Heap Full or Expansion Failed"); 
             }
-            HEAPDBG("heap expanded! new size = %lx \n", heap.size);
+            
+            HEAPDBG("\n ==HEAP EXPANDED new size = %lx == \n", heap.size);
             // HEAPDBG("heap addr %lx end addr %lx cur addr %lx \n", HEAP_VIRT_REAL, get_heap_end(), heap.addr);
         }
        
@@ -151,7 +152,7 @@ void* _malloc(size_t size){
 
         uintptr_t new_header_addr = heap.addr; //header will be at top of heap
         uintptr_t alloc_addr = new_header_addr + sizeof(heap_header_t); //where our alloc will be after header is added
-        HEAPDBG("making new block at %lx size=%lu / %lx \n", heap.addr, total_size, total_size);
+        HEAPDBG("making new block at %lx size=%lu / ", heap.addr, total_size, total_size);
         heap.addr = create_heap_block(heap.addr, size); //makes block at current end of heap, returns new end of heap after footer
 
         //last thing, we gotta add to map
@@ -202,7 +203,13 @@ size_t _free(void* addr){
 
 }
 
+/*
+need malloc aligned 
 
+just make block bigger until it aligns 
+paging would work then btw 
+
+*/
 
 
 

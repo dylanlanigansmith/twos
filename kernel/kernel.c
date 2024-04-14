@@ -21,6 +21,10 @@
 
 #include "task/task.h"
 #include "stdio/stdout.h"
+
+
+#include "mem/page_alloc.h"
+
 extern unsigned long GDT_CODE_OFFSET;
 
 int cpp_test(int, int);
@@ -86,20 +90,47 @@ void main(void *addr, void *magic)
 
     
     serial_init(); //we can now debug and log! 
+    io_wait();
+    serial_println("boot phase 1 complete"); 
+   // serial_println("boot phase 1 complete"); 
+   // serial_println("boot phase 1 complete"); 
+   // serial_println("boot phase 1 complete"); 
+
+    
     debugf("multiboot2 addr = %lx magic = %lx \n",  (uintptr_t)addr, (uint64_t)magic);
     
     if(parse_multiboot_header(addr, (uint64_t)magic) == MB_HEADER_PARSE_ERROR){ //gets acpi, framebuffer, etc
+
         panic("multiboot parse fail");
+    }else{
+        play_sound(440);
     }
-   
-  
-    _init_cpp(); //bc we cant get global constructors to work & by we i mean I
-    __asm__("sti");
-    serial_println("enabled interupts"); //should we do this after paging ??? 
-   
+    // serial_println("\n===init mem===\n");
     make_page_struct(); //this also initializes heap, maps frame buffer
+    //doing this pre-enable interupts now to see if stability improves 
+    _init_cpp(); //bc we cant get global constructors to work & by we i mean I
+    
+
+    if(sysinfo.rsdp){  
+
+    uintptr_t rsdt = map_phys_addr(ACPI_ADDR, sysinfo.rsdp->RsdtAddress, PAGE_SIZE * 2, 0b10000001LLU ) ;
+                                    // base mapping and offset from it 
+    ACPI_discover_SDTs( (void*)(rsdt), ACPI_ADDR, sysinfo.rsdp->RsdtAddress);
+    }
+
+    __asm__("sti");
+    serial_println("enabled interupts"); 
+
+     
+     
+      serial_println("\n==MEM INIT OK==\n");
+    
+   
+
+   
     
     stdout_init();
+    
     gfx_init(color_cyan);
     //we are so back
     
@@ -128,8 +159,8 @@ void main(void *addr, void *magic)
   //  printf("trying virt to phys: %lx \n", virt_to_phys((uintptr_t)test) );
    // kfree(test);
 
-    map_phys_addr(0xffffbaddad000000llu, sysinfo.rsdp->RsdtAddress, PAGE_SIZE ) ;
-
+   //
+  
      printf("tasking time :( %lx %lx \n", (uintptr_t)task_drawtimer, (uintptr_t)task_draw_test);
     
    // task_draw_test();

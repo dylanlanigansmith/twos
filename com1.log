@@ -1,4 +1,5 @@
-multiboot2 addr = 0x11e708 magic = 0x36d76289 
+boot phase 1 complete
+multiboot2 addr = 0x11f938 magic = 0x36d76289 
 parse_multiboot_header()
 ===MULTIBOOT_TAG_TYPE_MMAP===
 mmaps->entry_size: 24 
@@ -18,15 +19,15 @@ mmap [11]:{ @0x0 - 0x1b00000000 } size 0x1b00000000 |  mem_avail 1
 mmap [12]:{ @0x10000000000000 - 0x10100000000000 } size 0x100000000000 |  mem_unknown 0 
 mmap [13]:{ @0x0 - 0x800000000 } size 0x800000000 |  mem_unknown 0 
 mmap [14]:{ @0x2100000000 - 0x2700000001 } size 0x600000001 |  mem_unknown 0 
-mmap [15]:{ @0x200000000000 - 0x814400000000 } size 0x614400000000 |  mem_unknown 0 
+mmap [15]:{ @0x200000000000 - 0x8b7400000000 } size 0x6b7400000000 |  mem_unknown 0 
 mmap [16]:{ @0x1000000000 - 0x1000000000 } size 0x0 |  mem_unknown 0 
-mmap [17]:{ @0x600000001 - 0x10714a00000001 } size 0x10714400000000 |  mem_unknown 0 
+mmap [17]:{ @0x600000001 - 0x107b7a00000001 } size 0x107b7400000000 |  mem_unknown 0 
 mmap [18]:{ @0x2200000000 - 0x2200000000 } size 0x0 |  mem_unknown 0 
 mmap [19]:{ @0x0 - 0x4000000000 } size 0x4000000000 |  mem_avail 1 
-mmap [20]:{ @0x10716600000000 - 0x10f2cc00000000 } size 0x816600000000 |  mem_unknown 0 
+mmap [20]:{ @0x107b9600000000 - 0x11072c00000000 } size 0x8b9600000000 |  mem_unknown 0 
 mmap [21]:{ @0x0 - 0x200000000 } size 0x200000000 |  mem_unknown 0 
 mmap [22]:{ @0x5b00000000 - 0x6100000001 } size 0x600000001 |  mem_unknown 0 
-mmap [23]:{ @0x81d000000000 - 0x81fc00000000 } size 0x2c00000000 |  mem_unknown 0 
+mmap [23]:{ @0x8c0000000000 - 0x8c2c00000000 } size 0x2c00000000 |  mem_unknown 0 
 found VBE
 ===MULTIBOOT_TAG_TYPE_ACPI_OLD===
 rsdp->Signature: 'RSD PTR ' 
@@ -35,12 +36,11 @@ rsdp->Revision: 0
 rsdp->Checksum: 57 
 rsdp->RsdtAddress: 0xbffe1c40 
 parsed mb2 header successfully
-enabled interupts
-cr3 = : 0x117000 
-address p4 = : 0x117000 
-address p4real = : 0x117000 
-address p3 = : 0x118000 
-address p3 via p4[0] = : 0x118023 
+cr3 = : 0x118000 
+address p4 = : 0x118000 
+address p4real = : 0x118000 
+address p3 = : 0x119000 
+address p3 via p4[0] = : 0x119023 
 Extended VA: : 0xfc000000 
 idx for VA : 0xfc000000 
 p4 idx : 0 
@@ -56,8 +56,8 @@ mapped : 0xfc000000
 to physical addresss: 0xfc000000 
 ==flushed TLB==
 invalidated: 0xfc000000 
-0 > p4 : 0x118023 
-cr3 = : 0x117000 
+0 > p4 : 0x119023 
+cr3 = : 0x118000 
 Extended VA: : 0xffffbeefed000000 
 idx for VA : 0xffffbeefed000000 
 p4 idx : 381 
@@ -69,80 +69,86 @@ p1 idx : 0
 NEW mapping virtual : 0xffffbeefed000000 
 mapping physical : 0x80000000 
 pages = : 4 
-map_new: p3 = 0x10f000mapped : 0xffffbeefed000000 
+map_new: p3 = 0x10f000
+mapped : 0xffffbeefed000000 
 to physical addresss: 0x80000000 
 ==flushed TLB==
 invalidated: 0xffffbeefed000000 
 bmap [ 0xffffbeefed000000 ] size=0 
 max size = 262130 max_size_bytes = 0x200000 
-making new block at 0xffffbeefed200000 size=4121 / 0x1019 
-making footer @ 0xffffbeefed20100d 
+Extended VA: : 0x50000000 
+idx for VA : 0x50000000 
+p4 idx : 0 
+p3 idx : 1 
+p2 idx : 128 
+p1 idx : 0 
+ p4 =0  p3 = 1 p2 = 128 p1 = 0 
+ p4 =0  p3 = 1 p2 = 128 p1 = 0 
+map_identity( p2 = 0x110000 p3 = 0x119000 p4 = 0x118000 addr = 0x50000000 num = 2)
+ID mapped : 0x50000000 
+==flushed TLB==
+invalidated: 0x50000000 
+note: page aligning requested physaddr (0xbffe1c40) to 0xbfe00000
+map_phys_addr():  0xbfe00000 -> 0xffff800000000000 | 2 pages 
+Extended VA: : 0xffff800000000000 
+idx for VA : 0xffff800000000000 
+p4 idx : 256 
+p3 idx : 0 
+p2 idx : 0 
+p1 idx : 0 
+ p4 =256  p3 = 0 p2 = 0 p1 = 0 
+ p4 =256  p3 = 0 p2 = 0 p1 = 0 
+initial p3 = 0x0 p4 = 0x118000 
+alloc new page table at 0x50000000, index now 1 
+alloc new page table at 0x50001000, index now 2 
+made new: p3 = 0x50000000 p2 = 0x50001000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0101 0000 0000 0000 0000 0000 0000 0011  
+we have: p3 = 0x50000000 p2 = 0x50001000 
+entry 0 @ 0x50001000 = 0xbfe00081 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 1011 1111 1110 0000 0000 0000 1000 0001 
+entry 1 @ 0x50001040 = 0xc0000081 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 1100 0000 0000 0000 0000 0000 1000 0001 
+==flushed TLB==
+invalidated: 0xffff800000000000 
+RSDT RSDT claims 4 entries 
+[0 / 4]  = 0xbffe1af4
+[0 ] virtual is 0xffff8000001e1af4, offset was - 0x14c 
+found table entry [0] = 'FACP' crc = OK 
+added FACP to sysinfo[0], marked FACP idx 0
+[1 / 4]  = 0xbffe1b68
+[1 ] virtual is 0xffff8000001e1b68, offset was - 0xd8 
+found table entry [1] = 'APIC' crc = OK 
+added APIC to sysinfo[1]
+[2 / 4]  = 0xbffe1be0
+[2 ] virtual is 0xffff8000001e1be0, offset was - 0x60 
+found table entry [2] = 'HPET' crc = OK 
+added HPET to sysinfo[2]
+[3 / 4]  = 0xbffe1c18
+[3 ] virtual is 0xffff8000001e1c18, offset was - 0x28 
+found table entry [3] = 'WAET' crc = OK 
+added WAET to sysinfo[3]
+enabled interupts
+
+==MEM INIT OK==
+
+making new block at 0xffffbeefed200000 size=4121 /  footer @ 0xffffbeefed20100d 
  added to alloc map, new # allocs = 1 
 Heap Usage: 25/100 
 
 === stdout init @ 0xffffbeefed20000d size 4096 idx 0  ready = 1 ===
 Graphics Init 1024 x 768 x 32 ready = 1 
 tasking init
-we found no space to fit size 0x6a1 
-making new block at 0xffffbeefed201019 size=1722 / 0x6ba 
-making footer @ 0xffffbeefed2016c7 
+we found no space to fit size 0x6a1, making new block at 0xffffbeefed201019 size=1722 /  footer @ 0xffffbeefed2016c7 
  added to alloc map, new # allocs = 2 
 Heap Usage: 25/100 
-we found no space to fit size 0x2000 
-making new block at 0xffffbeefed2016d3 size=8217 / 0x2019 
-making footer @ 0xffffbeefed2036e0 
+we found no space to fit size 0x2000, making new block at 0xffffbeefed2016d3 size=8217 /  footer @ 0xffffbeefed2036e0 
  added to alloc map, new # allocs = 3 
 Heap Usage: 25/100 
-create_task task_drawtimer pid 1 rip 0x1010a1 !
+create_task task_drawtimer pid 1 rip 0x1010b7 !
 added initial task  pid 0 !
 adding task task_draw_test pid 1 !
-we found no space to fit size 0x2000 
-making new block at 0xffffbeefed2036ec size=8217 / 0x2019 
-making footer @ 0xffffbeefed2056f9 
+we found no space to fit size 0x2000, making new block at 0xffffbeefed2036ec size=8217 /  footer @ 0xffffbeefed2056f9 
  added to alloc map, new # allocs = 4 
 Heap Usage: 25/100 
-create_task task_draw_test pid 1 rip 0x10112a !
-note: page aligning requested physaddr (0xbffe1c40) to 0xbff00000
-map_phys_addr():  0xbff00000 -> 0xffffbaddad000000 | 1 pages 
-Extended VA: : 0xffffbaddad000000 
-idx for VA : 0xffffbaddad000000 
-p4 idx : 373 
-p3 idx : 374 
-p2 idx : 360 
-p1 idx : 0 
- p4 =373  p3 = 374 p2 = 360 p1 = 0 
- p4 =373  p3 = 374 p2 = 360 p1 = 0 
-we found no space to fit size 0x1000 
-making new block at 0xffffbeefed205705 size=4121 / 0x1019 
-making footer @ 0xffffbeefed206712 
- added to alloc map, new # allocs = 5 
-Heap Usage: 25/100 
-we found no space to fit size 0x1000 
-making new block at 0xffffbeefed20671e size=4121 / 0x1019 
-making footer @ 0xffffbeefed20772b 
- added to alloc map, new # allocs = 6 
-Heap Usage: 25/100 
-Extended VA: : 0xffffbeefed200000 
-idx for VA : 0xffffbeefed200000 
-p4 idx : 381 
-p3 idx : 447 
-p2 idx : 361 
-p1 idx : 0 
- p4 =381  p3 = 447 p2 = 361 p1 = 0 
- p4 =381  p3 = 447 p2 = 361 p1 = 0 
-p3_ ptr = 0x10f023 p4 = 0x117000 p3 = 0x10f000 
-p3_phys = 0x80205712 p3_virt = 0xffffbeefed205712 
-Extended VA: : 0xffffbeefed200000 
-idx for VA : 0xffffbeefed200000 
-p4 idx : 381 
-p3 idx : 447 
-p2 idx : 361 
-p1 idx : 0 
- p4 =381  p3 = 447 p2 = 361 p1 = 0 
- p4 =381  p3 = 447 p2 = 361 p1 = 0 
-p3_ ptr = 0x10f023 p4 = 0x117000 p3 = 0x10f000 
-p2_phys = 0x8020672b p2_virt = 0xffffbeefed20672b 
-==flushed TLB==
-invalidated: 0xffffbaddad000000 
-tasking time :( 0x1010a1 0x10112a 
+create_task task_draw_test pid 1 rip 0x101140 !
+tasking time :( 0x1010b7 0x101140 
 old len = 0i last top 

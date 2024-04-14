@@ -114,12 +114,17 @@ void printf(const char *fmt, ...)
 }
 void debugf(const char *fmt, ...)
 {
+   
+
+
     __printf_out_fn _debug = (__printf_out_fn)(&serial_print);
    // _debug("$: ",0,0);
     va_list args;
     va_start(args, fmt);
     __vprintf(_debug, fmt, 0, 0, args);
-
+     //if we wanna force new lines always for our forgetful ass we will sacrifice perf
+    size_t len = strlen(fmt);
+    if(fmt[len - 1] != '\n') _debug("\n", 0,0);
     va_end(args);
 }
 
@@ -348,6 +353,22 @@ size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t 
                     total += _print(__PRINT_ITOA(va_arg(args, int), 16), buf_out, len);
                     last_fmt_len = 1;
                     break;
+                case 'b':
+                case 'B':
+                        last_fmt_len = 1;
+                        _print("0b", buf_out, len);
+                        uint32_t num  = va_arg(args, int);
+                        if(num == 0){ _print("0", buf_out, len); break;}
+                        for (int i = sizeof(num) * 8 - 1; i >= 0; i--) {
+                                if ((num >> i) & 1)
+                                    _print("1", buf_out, len);
+                                else
+                                     _print("0", buf_out, len);
+
+                                if (i % 4 == 0)
+                                     _print(" ", buf_out, len);;  // Add a space for better readability
+                            }
+                        break;
                 case 'c':
                     // Characters
                     char cb[2] = {va_arg(args, int), 0};
@@ -367,6 +388,22 @@ size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t 
                     char ch2 = fmt[j + 1];
                     switch (ch2)
                     {
+                    case 'b':
+                    case 'B':
+                        _print("0b", buf_out, len);
+                        uint64_t num  = va_arg(args, unsigned long long);
+                        if(num == 0){ _print("0", buf_out, len); break;}
+                        for (int i = sizeof(num) * 8 - 1; i >= 0; i--) {
+                                if ((num >> i) & 1)
+                                    _print("1", buf_out, len);
+                                else
+                                     _print("0", buf_out, len);
+
+                                if (i % 4 == 0)
+                                     _print(" ", buf_out, len);;  // Add a space for better readability
+                            }
+                        last_fmt_len = 2;
+                        break;
                     case 'x': // btw this will prefix with 0x by default!
                         total += _print(__PRINT_HTOA(va_arg(args, unsigned long long)), buf_out, len);
                         last_fmt_len = 2;

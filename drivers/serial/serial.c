@@ -35,17 +35,26 @@ int serial_init()
 int is_transmit_empty(){
     return port_byte_in(SERIAL_PORT_COM1 + 5) & 0x20;
 }
+
 void serial_write(char a)
 {
     while(is_transmit_empty() == 0);
         port_byte_out(SERIAL_PORT_COM1, a);
+   
+    
 }
-
+ #define BOCHS
 void serial_print(const char *str)
 {
     CHECK_SERIAL_INIT()
     for(int c = 0; str[c] != 0; ++c)
         serial_write(str[c]);
+
+
+    #ifdef BOCHS
+       for(int c = 0; str[c] != 0; ++c)
+        port_e9_hack_out(str[c]);
+    #endif
 }
 
 void serial_println(const char *str)

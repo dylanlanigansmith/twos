@@ -60,7 +60,7 @@ task_t* create_task( const char* name, task_entry_fn task_entry, uint64_t rflags
     
     //maybe this should just go in task alloc
 
-    task->regs.rsp = new_stack;
+    task->regs.rsp = new_stack; //these arent 16 bit aligned!!! 
     task->regs.rbp = new_stack;
     task->regs.rip = (uint64_t)task_entry;
     task->regs.rax = 0;
