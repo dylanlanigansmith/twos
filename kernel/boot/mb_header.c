@@ -180,7 +180,7 @@ int parse_multiboot_header(void *header, uint64_t magic)
         }
          if(tag->type == MULTIBOOT_TAG_TYPE_ACPI_NEW){
                 serial_println("===MMULTIBOOT_TAG_TYPE_ACPI_NEW===");
-                sysinfo.rsdp = 0;
+               //xtsd is backwards compat
          }
     }
     serial_println("parsed mb2 header successfully");

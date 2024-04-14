@@ -32,6 +32,8 @@ void printl(uint64_t ll, int base);
 
 
 #define PRINTF_MAX 1024
+
+void debug( const char* str);
 void debugf(const char* fmt, ...) ;
 void printf(const char* fmt, ...) ;
 size_t sprintf(char* buf, size_t len, const char* fmt, ...);

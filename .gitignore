@@ -1,3 +1,5 @@
 *.bin
 os-image
 *.o
+toolchain/gcc*
+toolchain/binu*

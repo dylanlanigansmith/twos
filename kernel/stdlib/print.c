@@ -112,6 +112,12 @@ void printf(const char *fmt, ...)
 
     va_end(args);
 }
+void debug(const char *str)
+{
+    serial_print(str);
+     size_t len = strlen(str);
+    if(str[len - 1] != '\n') serial_print("\n");
+}
 void debugf(const char *fmt, ...)
 {
    

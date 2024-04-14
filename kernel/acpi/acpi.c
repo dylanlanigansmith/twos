@@ -51,6 +51,10 @@ int ACPI_discover_SDTs(void* rsdt_ptr, uintptr_t map_base, uintptr_t rsdt_phys){
                     sysinfo.fadt_idx = i;
                     debugf("added %s to sysinfo[%i], marked FACP idx %i\n", sig, i, sysinfo.fadt_idx);
                 }
+                if(!strncmp(sig, "APIC", 4)){
+                    sysinfo.madt_idx = i;
+                    debugf("added %s to sysinfo[%i], marked APIC idx %i\n", sig, i, sysinfo.madt_idx);
+                }
                 else debugf("added %s to sysinfo[%i]\n", sig, i);
                 
             }

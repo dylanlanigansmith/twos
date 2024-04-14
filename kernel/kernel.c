@@ -25,6 +25,8 @@
 
 #include "mem/page_alloc.h"
 
+#include "acpi/madt.h"
+
 extern unsigned long GDT_CODE_OFFSET;
 
 int cpp_test(int, int);
@@ -121,6 +123,8 @@ void main(void *addr, void *magic)
     
     debugf("multiboot2 addr = %lx magic = %lx \n",  (uintptr_t)addr, (uint64_t)magic);
     
+
+    //so we gotta do this sooner in boot stage! 
     if(parse_multiboot_header(addr, (uint64_t)magic) == MB_HEADER_PARSE_ERROR){ //gets acpi, framebuffer, etc
 
         panic("multiboot parse fail");
@@ -140,6 +144,8 @@ void main(void *addr, void *magic)
         uintptr_t rsdt = map_phys_addr(ACPI_ADDR, sysinfo.rsdp->RsdtAddress, PAGE_SIZE * 2, 0b10000001LLU ) ;
                                         // base mapping and offset from it 
         ACPI_discover_SDTs( (void*)(rsdt), ACPI_ADDR, sysinfo.rsdp->RsdtAddress);
+
+        madt_discover();
     }
 
     __asm__("sti");
@@ -163,26 +169,7 @@ void main(void *addr, void *magic)
     //we have gotten ourselves a system with two processes running
     // do a little dance or something 
 
-    /*
-        things to fix now
-        - need physical memory management or at least a semblance of it
-        
-        MAKE TASKING BETTER
-            -HARD BC I CANT THINK OF ANY TASKS
-            -add task end
-            -add task yield
-
-        file system sorta thing
-
-
-        FIGURE OUT HOW TO JUMP TO USER MODE
-        then we can jump 2 user mode
-        - refactor when we add syscalls
-            - take all this SHIT out of kernel
-        - terminal
-        - write some programs for _our operating system_
-        -^ see prev.
-    */
+   
 
     ASSERT(gfx_has_init());
     println("randos up");
@@ -196,11 +183,11 @@ void main(void *addr, void *magic)
     //no ps2 ???
     // no itrps in general??
    // task_draw_test();
-   // start_first_task();
+    start_first_task();
     
     size_t old_len = 0;
     char last_top = stdout_top();
-     __asm__ volatile("mov rdi, 0xcafebabe;  int 0x3");
+   //  __asm__ volatile("mov rdi, 0xcafebabe;  int 0x0");
     printf("ticks %lu", old_len, last_top, tick);
    
     uint64_t last_tick = 0;
@@ -247,28 +234,7 @@ void main(void *addr, void *magic)
     for(;;){
         __asm__("hlt");
     }
-    /*
-        now what?
-
-        kernel heap //in progress//
-        at least get a malloc
-
-            then we gotta figure out page api
-            then we can do fork/tasks
-            then jump to user mode 
-
-            goal: game in USER MODE 
-                also lets write game in cpp please
-
-                 c++ ?
-                 cross compiler ?
-        user mode ?
-
-
-        FILES = RAM DISK
-
     
-    */
 
 
     // kernel ends, we can return to entry pt which hangs or just do it here for transparency while we develop
