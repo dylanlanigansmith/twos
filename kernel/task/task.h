@@ -60,9 +60,11 @@ void on_timer_tick(uint64_t ticks, registers_t* reg);
 
 void start_task(task_t* task);
 
-int fork();
+
 
 
 void yield(); 
 
 PID_t getpid();
+
+void enter_user_mode();

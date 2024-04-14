@@ -127,21 +127,29 @@ start:
 
 global GDT_CODE_OFFSET
 global GDT_DATA_OFFSET
+global GDT_TSS_PTR
+global kernel_stack
 section .data
     MB0 dq 0x00000000000
     MB1 dq 0x00000000000
     GDT_CODE_OFFSET dd code_offset
     GDT_DATA_OFFSET dd data_offset
+    GDT_TSS_PTR dq tss_offset
+    kernel_stack dq stack_top
 
 global p2_table
 global p2_table2
 global p3_table
 global p4_table
+
+
+
 section .bss
     align 4096
     stack_bottom:
         resb 16384 
     stack_top:
+    
 
     reserved:
         resb 8192
@@ -158,17 +166,60 @@ section .bss
         resb 4096
 
 section .rodata
-gdt64:
-    dq 0
+
+
+
+
+
+
+gdt64: 
+;intel manual pg. 3098
+;https://wiki.osdev.org/Global_Descriptor_Table#Segment_Descriptor
+  ;45/46 = 0-3 priv level (3 = user)
+    ;47 = present 
+    ;44 if not set segment is system
+    ;43 = executable
+    ;41 Readable/Writable - code = read, data = write
+    ; 42 DC - for code if 1 can be exec from equal or lower priv
+    ; 40 = accessed, set to 1 so cpu doesnt waste time doing so or if r/o
+ 
+    dq 0 ;null segment
+
+; KERNEL CODE 0x8
 code_offset equ $ - gdt64
-.code: equ $ - gdt64
+.code: equ $ - gdt64 ;0x8
     dq (1<<44) | (1<<47) | (1<<41) | (1<<43) | (1<<53)
+; KERNEL DATA 0x10
 data_offset equ $ - gdt64
-.data: equ $ - gdt64
+.data: equ $ - gdt64 ;0x10
     dq (1<<44) | (1<<47) | (1<<41)
+
+; USER CODE 0x18 | 0x3 = 0x1b
+user_code_offset equ $ - gdt64
+.user_code: equ $ - gdt64 ;0x18
+        
+    dq (1<<44) | (1<<47) | (1<<41) | (1<<43) | (1<<53) | (1<<46) | (1<<45)
+
+; USER DATA 0x20 | 0x3 = 0x23 
+user_data_offset equ $ - gdt64
+.user_data: equ $ - gdt64 ;0x20 
+    dq (1<<44) | (1<<47) | (1<<41) | (1<<46) | (1<<45)
+
+; TASK STATE SEGMENT 0x28
+tss_offset equ $ 
+.tss_entry: equ $ - gdt64
+;tss addr = base ; tss size = limit ; 0x89 p/e/a as access and 0x40 size bit as flags 
+   dq 0;( tss_size & 0xffff ) | ( (task_state_segment & 0xffffff) << 16) | (0x89 << 40) | ( (tss_size & 0xff0000 ) << 48) | (0x40 << 52) | ( ( task_state_segment & 0xff000000) << 56  )
+   dq 0;(task_state_segment & 0xffffffff00000000)
+
+; GTDR
 .pointer:
     dw .pointer - gdt64 - 1
     dq gdt64
+
+
+
+
 
 
 section .text
@@ -186,11 +237,13 @@ long_mode_start:
     mov rbp, stack_top
     mov rsp, rbp
 
+   
+
  
 
     call _init ; does this even do anything (NO!)
 
-    
+;     lgdt [gdt64.pointer]
    ; push qword [MB0]
    ; push qword [MB1]
     mov edi, [MB0]
@@ -203,3 +256,19 @@ long_mode_start:
     cli 
     hlt
     jmp $
+
+
+global load_tss:function
+
+load_tss:
+    ;reload gdt ?
+    lgdt [gdt64.pointer]
+    ; update selectors
+   ; mov ax, gdt64.data
+   ; mov ss, ax
+  ;  mov ds, ax
+   ; mov es, ax
+
+     ; load TSS
+    mov ax, 0x28
+    ltr ax

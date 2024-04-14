@@ -93,3 +93,23 @@ fix_isr_regs:
     mov rdx, rax
    mov rdi, rax
     int 13
+
+
+
+global jump_usermode
+
+asm_jump_usermode:
+	mov ax, 0x1b
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+
+	mov rax, rsp
+	push 0x43
+	push rax
+	pushf
+	push 0x3b
+	push rdi
+
+	iretq

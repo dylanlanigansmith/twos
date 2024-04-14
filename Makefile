@@ -43,6 +43,10 @@ OBJ_LINK_LIST:= $(OBJ) $(CPP_OBJ) $(ASM_OBJ)
 ISO_OUT:=randos.iso
 ISO_ROOTDIR:=iso
 
+#===QEMU======
+QEMU_UEFI:=/usr/share/ovmf/x64/OVMF.fd
+QEMU_ARGS_VM:=-accel kvm -device VGA,vgamem_mb=32 -audiodev pa,id=speaker -machine pcspk-audiodev=speaker -m 8G
+QEMU_ARGS_DBG:=-serial file:com1.log  -d int
 
 #====TARGETS======
 
@@ -53,8 +57,17 @@ run: clean all
 
 #let it be known that if i run with -machine type=q35 my memory allocations for heap map actually work at expected address but then i have to fix everything for that, likely why shit dont run in nothin else rn tho 
 #really frustrating but ill just stick with qemu and be HAPPY
-	$(VM) -accel kvm -cdrom $(ISO_OUT) -device VGA,vgamem_mb=32 -audiodev pa,id=speaker -machine pcspk-audiodev=speaker -serial file:com1.log -m 8G
+	$(VM)  -cdrom $(ISO_OUT) $(QEMU_ARGS_VM) $(QEMU_ARGS_DBG) 
 #add -s -S for dbg 
+
+urun: clean all
+	@echo "==Running in UEFI==="
+	$(VM)  -cdrom $(ISO_OUT) $(QEMU_ARGS_VM) -bios $(QEMU_UEFI) $(QEMU_ARGS_DBG) 
+
+runb: clean all
+#todo make this build with bochs flags for e9 hack or somethin
+	@echo "==Running BOCHS==="
+	bochs
 
 iso: kernel.bin
 	cp kernel.bin $(ISO_ROOTDIR)/boot/

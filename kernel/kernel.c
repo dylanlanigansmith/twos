@@ -21,13 +21,24 @@
 
 #include "task/task.h"
 #include "stdio/stdout.h"
-
+#include "gdt/gdt.h"
 
 #include "mem/page_alloc.h"
 
 extern unsigned long GDT_CODE_OFFSET;
 
 int cpp_test(int, int);
+
+void wtf(){
+     __asm__ volatile ( 
+        
+        " \
+        nop; nop; xor rax, rax; nop; \
+        int 3; \
+        hlt;   "
+
+    );
+}
 
 
 uint64_t start_tick = 0;
@@ -75,11 +86,22 @@ void task_draw_test(){
     }
 }
 
+
+
 void main(void *addr, void *magic)
 {
     if ((uint64_t)magic != MULTIBOOT2_BOOTLOADER_MAGIC){ /* uh how? */ }
     //we do check this in parse_multiboot_header() but that does happen rather late in the start process 
     disable_interupts();
+   
+   //make us a tss
+/*
+ dq 0;( tss_size & 0xffff ) | ( (task_state_segment & 0xffffff) << 16) | (0x89 << 40) | ( (tss_size & 0xff0000 ) << 48) | (0x40 << 52) | ( ( task_state_segment & 0xff000000) << 56  )
+   dq 0;(task_state_segment & 0xffffffff00000000)
+
+*/
+     make_tss();
+   
     PIC_init();
    
     init_idt();
@@ -127,9 +149,9 @@ void main(void *addr, void *magic)
      
       serial_println("\n==MEM INIT OK==\n");
     
-   
+    
 
-   
+  
     
     stdout_init();
     
@@ -144,10 +166,16 @@ void main(void *addr, void *magic)
     /*
         things to fix now
         - need physical memory management or at least a semblance of it
-        - page mapping - just use kmalloc and figure out physical address
-            - bonus points if it works in other emus again 
-        - make stdout not fucked
+        
+        MAKE TASKING BETTER
+            -HARD BC I CANT THINK OF ANY TASKS
+            -add task end
+            -add task yield
 
+        file system sorta thing
+
+
+        FIGURE OUT HOW TO JUMP TO USER MODE
         then we can jump 2 user mode
         - refactor when we add syscalls
             - take all this SHIT out of kernel
@@ -157,24 +185,27 @@ void main(void *addr, void *magic)
     */
 
     ASSERT(gfx_has_init());
+    println("randos up");
    // void* test = kmalloc(512);
   //  printf("trying virt to phys: %lx \n", virt_to_phys((uintptr_t)test) );
    // kfree(test);
 
    //
   
-     printf("tasking time :( %lx %lx \n", (uintptr_t)task_drawtimer, (uintptr_t)task_draw_test);
-    
+    //no pit in uefi
+    //no ps2 ???
+    // no itrps in general??
    // task_draw_test();
    // start_first_task();
-
+    
     size_t old_len = 0;
     char last_top = stdout_top();
-    printf("old len = %li last top %c", old_len, last_top);
-
+     __asm__ volatile("mov rdi, 0xcafebabe;  int 0x3");
+    printf("ticks %lu", old_len, last_top, tick);
+   
     uint64_t last_tick = 0;
     for(;;){
-        __asm__("hlt");
+      //  __asm__("hlt");
         //solve YOUR OLDLEN struggles with one simple TRICK
             //let stdout mark itself as dirty 
         while (old_len != stdout.index ){ //|| last_top != stdout_top() //for backspace 

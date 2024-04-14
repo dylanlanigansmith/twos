@@ -219,6 +219,68 @@ void start_task(task_t *task)
     //fn(); 
 }
 
+PID_t getpid(){
+    return sched.current_task->pid;
+}
+
+void enter_user_mode()
+{
+    //set up stack like we are in an interupt 
+    //iretq
+    //iretq  
+    /*
+    pushes:
+        ss 0x23
+        rsp
+        rflags
+        cs 0x1b
+        rip
+    
+    */
+    __asm__ volatile ( 
+        
+        " \
+        cli ; \
+        pop rbp; \
+        pop rbp ; \ 
+        mov ax, 0x23; \
+        mov ds, ax; \
+        mov es, ax; \
+        mov fs, ax; \
+        mov gs, ax; \
+        \
+        mov ax, 0x23; \
+        mov dx, 0x1b; \
+        mov rsi, rsp; \
+        mov rdi, user_mode; \
+        \
+        push rax; \
+        push rsi ; \
+        \
+        push 0x200 ; \
+        push rdx ; \
+        \
+        push rdi; \
+        iretq ; \
+    user_mode: \
+        nop; nop; xor rax, rax; nop; \
+        int 3; \
+        hlt; \
+                    " 
+
+    );
+
+
+  
+
+}
+
+
+
+
+
+
+//these are not used
 void switchTask(task_t* prev, task_t* new){
     //yk i love that you can use new as a name in c
     uint64_t return_address =  __builtin_return_address (1);
@@ -260,13 +322,4 @@ void yield(){
     
 }
 
-PID_t getpid(){
-    return sched.current_task->pid;
-}
 
-
-
-int fork()
-{
-    return 0;
-}

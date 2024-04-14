@@ -133,6 +133,7 @@ void isr_handler(uint64_t rdi, registers_t regs)
         isr_log(regs.int_no, regs.err_code);
 #endif
     bool recoverable = True;
+    print_isr_regs(&regs, 1);
     if(regs.int_no == ISR_InvalidOpcode) recoverable = False;
     switch (regs.int_no)
     {
