@@ -1,8 +1,27 @@
 #dls: makefile for randOS
-CC:=gcc
-CXX:=g++
-LD:=ld
-AS:=nasm
+
+USE_TOOLCHAIN:=1
+
+ifdef USE_TOOLCHAIN
+	@echo using toolchain
+	TOOLCHAIN_PATH:=toolchain/cross
+	@echo adding to path $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$(PATH)
+	export PATH := $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$(PATH)
+
+	TC_PREFIX:=smith-
+
+	CC:=$(TC_PREFIX)gcc
+	CXX:=$(TC_PREFIX)g++
+	LD:=$(TC_PREFIX)ld
+	AS:=nasm
+else
+	@echo no toolchain
+	CC:=gcc
+	CXX:=g++
+	LD:=ld
+	AS:=nasm
+
+endif
 
 VM:=qemu-system-x86_64
 BOOT_CREATE:=grub-mkrescue
@@ -102,9 +121,10 @@ kernel.bin: $(OBJ_LINK_LIST)
 
 #==== Other Util Targets ====
 
-
+.PHONY: configure
 configure:
 	@echo "Setting up buildenv and ensuring dependencies"
+	@echo "Note: This is for NO TOOLCHAIN and is now DEPRECATED"
 	@echo 
 	@echo "----Check Build Tools----"
 	@command -v $(CC) > /dev/null || (echo "Error: $(CC) is not installed."; exit 1)
@@ -124,7 +144,7 @@ configure:
 	@echo 
 	@echo "!!! Configured Successfully !!!"
 
-
+.PHONY: clean
 clean:
 #rewrite this
 	rm -rf *.bin *.dis *.o *.iso

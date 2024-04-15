@@ -25,6 +25,9 @@
         
 ### Building
 
+##TODO: Update for toolchain
+###if this todo never gets done, just run install_toolchain.sh in toolchain/ it's fairly self explanatory
+
 Assuming you are on a system with gcc, nasm, and grub-mkrescue all ready:
 
     git clone [this repo]
