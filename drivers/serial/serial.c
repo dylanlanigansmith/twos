@@ -1,10 +1,14 @@
 #include "serial.h"
 #include "../port/port.h"
 
-
+#include "../../kernel/sys/sysinfo.h"
+#include "../../kernel/stdlib/macro.h"
 static bool serial__has_init = False;
 
-#define CHECK_SERIAL_INIT() if(!serial__has_init) return;
+#define CHECK_SERIAL_INIT() if(unlikely(!serial__has_init)) return;
+
+
+static long use_e9 = 0lu;
 
 int serial_init()
 {
@@ -21,6 +25,9 @@ int serial_init()
  
    // Check if serial is faulty (i.e: not same byte as sent)
    if(port_byte_in(SERIAL_PORT_COM1 + 0) != 0xAE) {
+
+    //set up serial anyways with a prayer
+        serial__has_init = True;
       return 1;
    }
  
@@ -28,6 +35,7 @@ int serial_init()
    // (not-loopback with IRQs enabled and OUT#1 and OUT#2 bits enabled)
    port_byte_out(SERIAL_PORT_COM1 + 4, 0x0F);
    serial__has_init = True;
+   use_e9 = 0lu; //should be thru sysinfo but we check that really late argh catch 22
    return 0;
 }
 
@@ -43,30 +51,36 @@ void serial_write(char a)
    
     
 }
- //#define BOCHS
+
 void serial_print(const char *str)
 {
-     #ifdef BOCHS
+    CHECK_SERIAL_INIT();
+
+    if(likely(use_e9 == 0)){ 
+        
+        for(int c = 0; str[c] != 0; ++c)
+            serial_write(str[c]);
+
+        return;
+    }
+
+
      //apparently we can read 0xe9 and check for bochs
     for(int c = 0; str[c] != 0; ++c)
         port_e9_hack_out(str[c]);
+
     
-    #else
-    CHECK_SERIAL_INIT()
-    for(int c = 0; str[c] != 0; ++c)
-        serial_write(str[c]);
+    //port_e9_hack_out(0);
 
-
-   #endif
 }
 
 void serial_println(const char *str)
 {
     serial_print(str);
-    serial_write('\n');
+    serial_print("\n");
 }
 
-
+//deprecated
 void serial_printi(const char *str, int64_t i)
 {
     serial_print(str);
@@ -81,4 +95,9 @@ void serial_printh(const char *str, int64_t i)
     serial_print(": 0x");
     serial_print(lltoa(i, 16));
     serial_print(" \n");
+}
+
+void serial_set_e9()
+{
+    use_e9 = 1;
 }

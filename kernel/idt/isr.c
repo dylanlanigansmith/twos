@@ -7,7 +7,7 @@
 #include "../stdlib/memory.h"
 #include "../../drivers/serial/serial.h"
 
-#include "exception.h"
+#include "isr_exceptions.h"
 
 isr_t interupt_handlers[256];
 
@@ -69,7 +69,7 @@ void handle_error_generic(registers_t* regs, bool recover){
     }
     EXCEPTION_PRINTLN("=======");
     if(num == last_num || !recover)
-        panic("double exception! ");
+        KPANIC("double exception! ");
     
     last_num = num;
 
@@ -126,14 +126,10 @@ void handle_gpf(registers_t* regs){
 void isr_handler(uint64_t rdi, registers_t regs)
 { // really should get a pointer to stack where regs struct is instead of pass by ref
 #ifdef DEBUG
-    if (regs.err_code != 0)
-        isr_log(regs.int_no, regs.err_code);
-
-    else
-        isr_log(regs.int_no, regs.err_code);
+     print_isr_regs(&regs, 1); //we are frustrated and want these ASAP
 #endif
     bool recoverable = True;
-    print_isr_regs(&regs, 1);
+  
     if(regs.int_no == ISR_InvalidOpcode) recoverable = False;
     switch (regs.int_no)
     {

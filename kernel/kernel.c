@@ -27,7 +27,12 @@
 
 #include "acpi/madt.h"
 
-extern unsigned long GDT_CODE_OFFSET;
+void user_mode_test(){
+    __asm__ volatile("mov rdi, 0xcafebabe; mov rax, rdi; mov r12, rdi; mov rdx, rdi;  int 0x0; ");
+    for(;;){
+        __asm__("hlt");
+    }
+}
 
 int cpp_test(int, int);
 
@@ -88,6 +93,9 @@ void task_draw_test(){
     }
 }
 
+extern uint64_t has_cpuid();
+
+extern __attribute__((noreturn)) void jump_to_usermode(void* addr);
 
 
 void main(void *addr, void *magic)
@@ -96,16 +104,31 @@ void main(void *addr, void *magic)
     //we do check this in parse_multiboot_header() but that does happen rather late in the start process 
     disable_interupts();
    
-   //make us a tss
-/*
- dq 0;( tss_size & 0xffff ) | ( (task_state_segment & 0xffffff) << 16) | (0x89 << 40) | ( (tss_size & 0xff0000 ) << 48) | (0x40 << 52) | ( ( task_state_segment & 0xff000000) << 56  )
-   dq 0;(task_state_segment & 0xffffffff00000000)
+    serial_init(); //we can now debug and log! 
+    debug("boot start");
+    
+    if(port_byte_in(0xe9) == 0xe9){
+        serial_set_e9();
+        debug("Using Bochs E9 Hack for debug out\n"); //bochs
+    } else{
+        debug("using Serial COM1 for debug out \n"); //qemu (superior)
+    } //todo: https://wiki.osdev.org/Parallel_port and use that for kernel debug
+    
+    //should check if we can do this sooner!
 
-*/
-     make_tss();
+
+
+    //should check multiboot here while we have a working system
+
+    init_descriptor_table(2); //update gdt
+                            //add user mode segments 
+                            //add tss
    
+
+    //todo: APIC 
     PIC_init();
    
+    //our old friend
     init_idt();
     
     // register irq handlers
@@ -113,7 +136,8 @@ void main(void *addr, void *magic)
     timer_init(PIT_RATE);
 
     
-    serial_init(); //we can now debug and log! 
+   
+
     io_wait();
     serial_println("boot phase 1 complete"); 
    // serial_println("boot phase 1 complete"); 
@@ -127,12 +151,15 @@ void main(void *addr, void *magic)
     //so we gotta do this sooner in boot stage! 
     if(parse_multiboot_header(addr, (uint64_t)magic) == MB_HEADER_PARSE_ERROR){ //gets acpi, framebuffer, etc
 
-        panic("multiboot parse fail");
+        KPANIC("multiboot parse fail");
     }else{
-       port_e9_hack_out('M'); port_e9_hack_out('B'); port_e9_hack_out(0);
-
-       
+        //do shit like are we uefi, what vm is this etc etc etc 
+      
     }
+
+    
+    debugf("CPUID available = %s\n", (has_cpuid()) ? "YES" : "NO WTF");
+   
     // serial_println("\n===init mem===\n");
     make_page_struct(); //this also initializes heap, maps frame buffer
     //doing this pre-enable interupts now to see if stability improves 
@@ -151,7 +178,7 @@ void main(void *addr, void *magic)
     __asm__("sti");
     serial_println("enabled interupts"); 
 
-     
+    
      
       serial_println("\n==MEM INIT OK==\n");
     
@@ -169,21 +196,17 @@ void main(void *addr, void *magic)
     //we have gotten ourselves a system with two processes running
     // do a little dance or something 
 
-   
+    printf("highest bit of 0xffff = %i of 8 = %i ", get_highest_bit(0xffff), get_highest_bit(8) );
 
     ASSERT(gfx_has_init());
     println("randos up");
-   // void* test = kmalloc(512);
-  //  printf("trying virt to phys: %lx \n", virt_to_phys((uintptr_t)test) );
-   // kfree(test);
 
-   //
-  
-    //no pit in uefi
-    //no ps2 ???
-    // no itrps in general??
+    jump_to_usermode(&user_mode_test); //holy shit it worked
+ 
+    
+    
    // task_draw_test();
-    start_first_task();
+   // start_first_task();
     
     size_t old_len = 0;
     char last_top = stdout_top();

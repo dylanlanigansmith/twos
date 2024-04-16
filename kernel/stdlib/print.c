@@ -1,5 +1,8 @@
 #include "print.h"
 #include "assert.h"
+#include "binary.h"
+#include "stdbool.h"
+
 #ifdef PRINT_SERIAL
 #include "../../drivers/serial/serial.h"
 #endif
@@ -8,7 +11,6 @@
 #include "../../drivers/video/console.h"
 #endif
 
-#include "stdbool.h"
 #include "../stdio/stdout.h"
 
 size_t __print_stdout(const char* str){   
@@ -191,119 +193,6 @@ size_t sprintf(char *buf, size_t len, const char *fmt, ...)
 
 
 
-/*
-size_t __vprintf_bad(const char *fmt, char *buf_out, size_t len, va_list args)
-{
-    // should be an arg
-    __printf_out_fn _print = (buf_out && len) ? __sprint : __print;
-    serial_println(fmt);
-    // later we can check if buf is not 0 and use it vs printing
-    char bufarr[PRINTF_MAX];
-    char *buf = bufarr;
-    int k = 0;
-    size_t total = 0;
-    int last_fmt_len = 0;
-    for (int c = 0; fmt[c] != '\0'; ++c)
-    {
-        buf[k] = fmt[c];
-
-        if (fmt[c + 1] == '%' || fmt[c + 1] == '\0')
-        {
-
-            // buf[k] = '\0';
-            k = 0;
-
-            if (buf[0] != '%')
-            {
-                // not a format specifier
-                total += _print(buf, buf_out, len);
-            }
-            else
-            {
-                last_fmt_len = 0;
-                int j = 1;
-                char ch1 = 0;
-                int fp_precision = 0;
-                while ((ch1 = buf[j++]) < 58)
-                {
-                    fp_precision++;
-
-                    // 57 = 9 in ascii
-                } // loop used for like %2f vs just %i
-                // tldr it gets us to the format char in ch1
-                switch (ch1)
-                {
-                case 'i':
-                case 'd':
-                case 'u':
-                    // Integers:
-                    total += _print(__PRINT_ITOA(va_arg(args, int), 10), buf_out, len);
-                    last_fmt_len = 1;
-                    break;
-                case 'x':
-                    // Int but Hex
-                    total += _print(__PRINT_ITOA(va_arg(args, int), 16), buf_out, len);
-                    last_fmt_len = 1;
-                    break;
-                case 'c':
-                    // Characters
-                    char cb[2] = {va_arg(args, int), 0};
-                    total += _print(cb, buf_out, len);
-                    last_fmt_len = 1;
-                    break;
-                // Floats
-                case 'f':
-                    total += _print("no float impl", buf_out, len);
-                    last_fmt_len = 1 + fp_precision;
-                    printf("yeah we dont do floats yet fp: %i", fp_precision); // hell yeah
-                    break;
-                // Longs
-                case 'l':
-                case 'L': // okay so we just dont bother with longs and just use long long bc thats all its gonna be in this case but maybe ill regret this!
-                    char ch2 = buf[2];
-                    switch (ch2)
-                    {
-                    case 'x': // btw this will prefix with 0x by default!
-                        total += _print(__PRINT_HTOA(va_arg(args, unsigned long long)), buf_out, len);
-                        last_fmt_len = 2;
-
-                        break;
-                    case 'X': // out of spec but this doesnt prefix with 0x
-                        total += _print(__PRINT_LLTOA(va_arg(args, unsigned long long), 16), buf_out, len);
-                        last_fmt_len = 2;
-                        break;
-                    case 'f': // double, long double
-                        total += _print("no double impl", buf_out, len);
-                        last_fmt_len = 2 + fp_precision;
-                        printf("yeah we dont do doubles yet fp: %i", fp_precision); // hell yeah
-                        break;
-                    case 'u':
-                    case 'd':
-                        last_fmt_len = 1;
-                    default:
-                        total += _print(__PRINT_LLTOA(va_arg(args, unsigned long long), 10), buf_out, len);
-                        last_fmt_len++;
-                        break;
-                    }
-                    break;
-
-                case 's':
-                    total += _print(va_arg(args, char *), buf_out, len);
-                    last_fmt_len = 1;
-                    break;
-                default:
-                    total += _print(buf, buf_out, len);
-                    last_fmt_len = 1;
-                }
-            }
-        }
-    }
-    // buf[k] = '\0';
-    return total;
-}
-*/
-// we should have a bullet proof print for errors etc
-
 size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t len, va_list args)
 {
     
@@ -356,23 +245,29 @@ size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t 
                     break;
                 case 'x':
                     // Int but Hex
+                    total += _print("0x", buf_out, len); //make behaviour consistent with our messy HTOA and LLTOA funcs for 32 bit integers
                     total += _print(__PRINT_ITOA(va_arg(args, int), 16), buf_out, len);
                     last_fmt_len = 1;
                     break;
+                case 'B': //stoopid temp for 8 bit override 
                 case 'b':
-                case 'B':
+                case 'C': //dont add extra 0s (good for flags, bad for like examining entire entries (pages))
                         last_fmt_len = 1;
                         _print("0b", buf_out, len);
                         uint32_t num  = va_arg(args, int);
                         if(num == 0){ _print("0", buf_out, len); break;}
-                        for (int i = sizeof(num) * 8 - 1; i >= 0; i--) {
+                        int highest_bit = (ch1=='C') ? (get_highest_bit(num) * 8) : (sizeof(num) * 8 - 1);
+                        highest_bit = (ch1 == 'B') ? 7 : highest_bit;
+                        bool space = (ch1 != 'B');
+                       // ASSERT(highest_bit <= (sizeof(num) * 8));
+                        for (int i = highest_bit; i >= 0; i--) { // * 8 - 1; shouldnt need - 1 if highest_bit works
                                 if ((num >> i) & 1)
                                     _print("1", buf_out, len);
                                 else
                                      _print("0", buf_out, len);
 
-                                if (i % 4 == 0)
-                                     _print(" ", buf_out, len);;  // Add a space for better readability
+                                if (i % 4 == 0 && i != highest_bit && space)
+                                     _print(" ", buf_out, len); //0000 0000 0001 make head hurt less than 000001010101010
                             }
                         break;
                 case 'c':

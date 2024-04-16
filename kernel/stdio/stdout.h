@@ -24,6 +24,8 @@ typedef struct
     uint8_t lock;
 
     uint8_t dirty;
+
+    uint8_t has_fb; //todo: bitfields
 } stdout_t;
 
 extern stdout_t stdout; 
@@ -45,3 +47,7 @@ void stdout_putchar(uint8_t c);
 void stdout_bytein(uint8_t byte);
 
 static inline char stdout_top(){ return (stdout.index > 0) ?  stdout.buffer[stdout.index - 1] : stdout.buffer[0]; }
+
+
+void stdout_set_updating(uint8_t val);
+bool stdout_hasFB();

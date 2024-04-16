@@ -13,9 +13,42 @@ MAKE TASKING BETTER
 
 file system sorta thing
 
+WE CAN JUMP TO USER MODE!
+    - now what?
+    - need to expand tasking
+        - user tasks
+            -to make a user task:
+                -map a user address space
+                -load user executable or whatever
+                -call main
+            - if a user task faults we kill it
+        - kernel tasks
+            - are we gonna have stdout run as a kernel task ?
+            - we probs should move a lot of it to user space
+    - streams / buffers will be useful
+        - like for event queues etc and shit
 
-FIGURE OUT HOW TO JUMP TO USER MODE
-then we can jump 2 user mode
+
+    - need to add syscalls
+        - interupts 
+
+Should we figure out APIC before adding more IDT stuff ? 
+
+Should we do a VFS for loading user programs ?
+
+plan:
+
+
+
+1. VFS 
+2. MMAP from VFS
+3. Scheduler improvements
+4. Syscalls
+5. Doom
+
+notes: along the way maybe do PMM !
+
+
 - refactor when we add syscalls
     - take all this SHIT out of kernel
 - terminal
@@ -40,8 +73,23 @@ general todos/issues:
     - uefi prereq. 
     - mmap parsing prereq.
 
+STDOUT:
+
+- if we arent sure it is up and running then:
+- we should really just gfx_print (esp for interupts)
+    - basically the idea of SAFE PRINT
 
 
+
+stdlib:
+
+printf binary needs like %10b to only print 10 bits etc 
+
+
+
+
+- should make standardized more
+    - decide if we wanna use gcc stdint etc (sigh prob should)
 
 
 fun ideas:

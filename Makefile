@@ -3,9 +3,9 @@
 USE_TOOLCHAIN:=1
 
 ifdef USE_TOOLCHAIN
-	@echo using toolchain
+#	@echo using toolchain
 	TOOLCHAIN_PATH:=toolchain/cross
-	@echo adding to path $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$(PATH)
+#	@echo adding to path $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$(PATH)
 	export PATH := $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$(PATH)
 
 	TC_PREFIX:=smith-
@@ -40,9 +40,10 @@ CPP_OBJ = ${CPP_SOURCES:.cpp=.o}
 ASM_OBJ = ${ASM_SOURCES:.asm=.o}
 
 #for c++ to work, and not very well might i add
+#THIS IS BROKEN NOW
 CRTI_OBJ:=kernel/cpp/crti.o
-CRTBEGIN_OBJ:=$(shell g++ -print-file-name=crtbegin.o)
-CRTEND_OBJ:=$(shell g++ -print-file-name=crtend.o)
+CRTBEGIN_OBJ:=$(shell $(CXX) -print-file-name=crtbegin.o)
+CRTEND_OBJ:=$(shell $(CXX) -print-file-name=crtend.o)
 CRTN_OBJ:=kernel/cpp/crtn.o
 
 

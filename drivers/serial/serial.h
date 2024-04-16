@@ -13,3 +13,6 @@ void serial_print(const char* str);
 void serial_println(const char* str);
 void serial_printi(const char* str, int64_t i);
 void serial_printh(const char* str, int64_t i);
+
+
+void serial_set_e9();

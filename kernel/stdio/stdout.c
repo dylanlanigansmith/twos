@@ -14,13 +14,13 @@ void stdout_clear(){
 
 char* stdout_alloc(size_t size){
     char* tmp = kmalloc(size);
-    if(!tmp) panic("stdout buffer alloc fail");
+    if(!tmp) KPANIC("stdout buffer alloc fail");
 
     return tmp;
 }
 
 void stdout_lock(){
-    if(stdout.lock == 0xff) panic("attempt to lock stdout while locked");
+    if(stdout.lock == 0xff) KPANIC("attempt to lock stdout while locked");
     stdout.lock = 0xff;
 }
 void stdout_unlock(){
@@ -131,4 +131,14 @@ void stdout_bytein(uint8_t byte)
 
 
     stdout.buffer[stdout.index++] = byte;
+}
+
+void stdout_set_updating(uint8_t val) //half brained way to know when we arent actually updating stdout 
+{
+    stdout.has_fb = val;
+}
+
+bool stdout_hasFB()
+{
+    return stdout.has_fb;
 }

@@ -9,8 +9,7 @@ idt_entry_t idt[256];
 idtr_t idt_ptr;
 extern isr_t interupt_handlers[];
 extern void load_idt(uint64_t);
-extern unsigned long GDT_CODE_OFFSET;
-extern unsigned long GDT_DATA_OFFSET;
+
 //https://web.archive.org/web/20190206105749/http://www.jamesmolloy.co.uk/tutorial_html/4.-The%20GDT%20and%20IDT.html
 //https://wiki.osdev.org/Interrupts_Tutorial
 

@@ -38,7 +38,7 @@
 00000000000i[USBCTL] Pluggable USB devices
 00000000000i[USBCTL]   floppy mouse tablet keypad keyboard hub disk cdrom
 00000000000i[USBCTL]   printer
-00000000000i[MEM0  ] allocated memory at 0x7e2c19600010. after alignment, vector=0x7e2c19601000
+00000000000i[MEM0  ] allocated memory at 0x7d64de600010. after alignment, vector=0x7d64de601000
 00000000000i[MEM0  ] 4096.00MB
 00000000000i[MEM0  ] mem block size = 0x00020000, blocks=32768
 00000000000i[MEM0  ] rom at 0xfffe0000/131072 ('/usr/share/bochs/BIOS-bochs-latest')
@@ -50,7 +50,7 @@
 00000000000i[DEV   ] PIIX3 PCI-to-ISA bridge present at device 1, function 0
 00000000000i[PLUGIN] init_dev of 'cmos' plugin device by virtual method
 00000000000i[CMOS  ] Using local time for initial clock
-00000000000i[CMOS  ] Setting initial clock to: Sun Apr 14 03:09:35 2024 (time0=1713078575)
+00000000000i[CMOS  ] Setting initial clock to: Tue Apr 16 16:04:26 2024 (time0=1713297866)
 00000000000i[PLUGIN] init_dev of 'dma' plugin device by virtual method
 00000000000i[DMA   ] channel 4 used by cascade
 00000000000i[PLUGIN] init_dev of 'pic' plugin device by virtual method
@@ -62,9 +62,6 @@
 00000000000i[VGA   ] VSYNC using realtime mode
 00000000000i[MEM0  ] Register memory access handlers: 0x0000e0000000 - 0x0000e0ffffff
 00000000000i[BXVGA ] VBE Bochs Display Extension Enabled
-00000000000i[XGUI  ] test_alloc_colors: 16 colors available out of 16 colors tried
-00000000000i[XGUI  ] font 8 wide x 16 high, display depth = 24
-00000000000i[XGUI  ] maximum host resolution: x=4480 y=1390
 00000000000i[MEM0  ] rom at 0xc0000/38400 ('/usr/share/bochs/VGABIOS-lgpl-latest')
 00000000000i[PLUGIN] init_dev of 'floppy' plugin device by virtual method
 00000000000i[DMA   ] channel 2 used by Floppy Drive
@@ -85,7 +82,7 @@
 00000000000i[CD1   ] load cdrom with path='randos.iso'
 00000000000i[CD1   ] Opening image file as a cd.
 00000000000i[HD    ] Media present in CD-ROM drive
-00000000000i[HD    ] Capacity is 14099 sectors (27.54 MB)
+00000000000i[HD    ] Capacity is 14103 sectors (27.54 MB)
 00000000000i[PLUGIN] init_dev of 'pci_ide' plugin device by virtual method
 00000000000i[DEV   ] PIIX3 PCI IDE controller present at device 1, function 1
 00000000000i[PLUGIN] init_dev of 'unmapped' plugin device by virtual method
@@ -235,7 +232,6 @@
 00001133952i[ACPI  ] new PM base address: 0xb000
 00001133966i[ACPI  ] new SM base address: 0xb100
 00001133994i[PCI   ] setting SMRAM control register to 0x4a
-00001291291i[XGUI  ] charmap update. Font is 9 x 16
 00001298129i[CPU0  ] Enter to System Management Mode
 00001298139i[CPU0  ] RSM: Resuming from System Management Mode
 00001462195i[PCI   ] setting SMRAM control register to 0x0a
@@ -250,73 +246,73 @@
 00001616880i[BXVGA ] VBE known Display Interface b0c5
 00001619523i[VBIOS ] VBE Bios $Id: vbe.c 292 2021-06-03 12:24:22Z vruppert $
 00005240970i[BIOS  ] IDE time out
-00022145574i[XGUI  ] charmap update. Font is 9 x 16
-13574961131i[BIOS  ] Booting from 07c0:0000
-13646336858i[BXVGA ] VBE set bpp (32)
-13646336877i[BXVGA ] VBE set xres (1024)
-13646336896i[BXVGA ] VBE set yres (768)
-13646336984i[BXVGA ] VBE enabling x 1024, y 768, bpp 32, 3145728 bytes visible
-13653585146d[SER   ] com1 register write to  address: 0x03f9 = 0x00
-13653585161d[SER   ] com1 register write to  address: 0x03fb = 0x80
-13653585176d[SER   ] com1 register write to  address: 0x03f8 = 0x01
-13653585191d[SER   ] com1 register write to  address: 0x03f9 = 0x00
-13653585206d[SER   ] com1 register write to  address: 0x03fb = 0x02
-13653585221d[SER   ] com1 register write to  address: 0x03fa = 0xc7
-13653585221i[SER   ] com1: FIFO enabled
-13653585236d[SER   ] com1 register write to  address: 0x03fc = 0x0b
-13653585251d[SER   ] com1 register write to  address: 0x03fc = 0x1e
-13653585266d[SER   ] com1 register write to  address: 0x03f8 = 0xae
-13653585279d[SER   ] com1 register read from address: 0x03f8 = 0x2e
-13653585351d[SER   ] com1 register read from address: 0x03fd = 0x60
-13653585375d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-13653590669d[SER   ] com1 register read from address: 0x03fd = 0x60
-13653590693d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-13653590910d[SER   ] com1 register read from address: 0x03fd = 0x60
-13653590934d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-13653783343d[SER   ] com1 register read from address: 0x03fd = 0x61
-13653783367d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-13653786621d[SER   ] com1 register read from address: 0x03fd = 0x61
-13653786645d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-13653827130d[SER   ] com1 register read from address: 0x03fd = 0x61
-13653827154d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-13653904837d[SER   ] com1 register read from address: 0x03fd = 0x61
-13653904861d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-13653959290d[SER   ] com1 register read from address: 0x03fd = 0x61
-13653959314d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-13654070867d[SER   ] com1 register read from address: 0x03fd = 0x61
-13654070891d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-13654127500d[SER   ] com1 register read from address: 0x03fd = 0x61
-13654127524d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-13654127573d[SER   ] com1 register read from address: 0x03fd = 0x61
-13654127597d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
-83534584620i[      ] Ctrl-C detected in signal handler.
-83534584630i[      ] dbg: Quit
-83534584630i[CPU0  ] CPU is in long mode (halted)
-83534584630i[CPU0  ] CS.mode = 64 bit
-83534584630i[CPU0  ] SS.mode = 64 bit
-83534584630i[CPU0  ] EFER   = 0x00000500
-83534584630i[CPU0  ] | RAX=00000000000000ec  RBX=000000000011fb40
-83534584630i[CPU0  ] | RCX=000000000000002a  RDX=00000000000000eb
-83534584630i[CPU0  ] | RSP=0000000000115fc0  RBP=0000000000115ff0
-83534584630i[CPU0  ] | RSI=00000000ff000000  RDI=0000004800000032
-83534584630i[CPU0  ] |  R8=00000000001045f6   R9=0000000000000001
-83534584630i[CPU0  ] | R10=0000000000000000  R11=0000000000000000
-83534584630i[CPU0  ] | R12=0000000000000000  R13=0000000000000000
-83534584630i[CPU0  ] | R14=0000000000000000  R15=0000000000000000
-83534584630i[CPU0  ] | IOPL=0 id vip vif ac vm rf nt of df IF tf sf ZF af PF cf
-83534584630i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
-83534584630i[CPU0  ] |  CS:0008( 0001| 0|  0) 00000000 00000000 0 0
-83534584630i[CPU0  ] |  DS:0010( 0002| 0|  0) 00000000 00000000 0 0
-83534584630i[CPU0  ] |  SS:0010( 0002| 0|  0) 00000000 00000000 0 0
-83534584630i[CPU0  ] |  ES:0010( 0002| 0|  0) 00000000 00000000 0 0
-83534584630i[CPU0  ] |  FS:0010( 0002| 0|  0) 00000000 00000000 0 0
-83534584630i[CPU0  ] |  GS:0010( 0002| 0|  0) 00000000 00000000 0 0
-83534584630i[CPU0  ] |  MSR_FS_BASE:0000000000000000
-83534584630i[CPU0  ] |  MSR_GS_BASE:0000000000000000
-83534584630i[CPU0  ] | RIP=00000000001013ac (00000000001013ac)
-83534584630i[CPU0  ] | CR0=0xe0010011 CR2=0x0000000000000000
-83534584630i[CPU0  ] | CR3=0x0000000000118000 CR4=0x00000030
-83534584630d[SER   ] Exit
-83534584630i[CMOS  ] Last time is 1713079768 (Sun Apr 14 03:29:28 2024)
-83534584630i[XGUI  ] Exit
-83534584630i[SIM   ] quit_sim called with exit code 0
+12069696913i[BIOS  ] Booting from 07c0:0000
+12149763303i[BXVGA ] VBE set bpp (32)
+12149763322i[BXVGA ] VBE set xres (1024)
+12149763341i[BXVGA ] VBE set yres (768)
+12149763429i[BXVGA ] VBE enabling x 1024, y 768, bpp 32, 3145728 bytes visible
+12156980186d[SER   ] com1 register write to  address: 0x03f9 = 0x00
+12156980201d[SER   ] com1 register write to  address: 0x03fb = 0x80
+12156980216d[SER   ] com1 register write to  address: 0x03f8 = 0x01
+12156980231d[SER   ] com1 register write to  address: 0x03f9 = 0x00
+12156980246d[SER   ] com1 register write to  address: 0x03fb = 0x02
+12156980261d[SER   ] com1 register write to  address: 0x03fa = 0xc7
+12156980261i[SER   ] com1: FIFO enabled
+12156980276d[SER   ] com1 register write to  address: 0x03fc = 0x0b
+12156980291d[SER   ] com1 register write to  address: 0x03fc = 0x1e
+12156980306d[SER   ] com1 register write to  address: 0x03f8 = 0xae
+12156980319d[SER   ] com1 register read from address: 0x03f8 = 0x2e
+12156980392d[SER   ] com1 register read from address: 0x03fd = 0x60
+12156980416d[SER   ] com1 register write to  address: 0x03f8 = 0x62
+12156980458d[SER   ] com1 register read from address: 0x03fd = 0x60
+12156980482d[SER   ] com1 register write to  address: 0x03f8 = 0x6f
+12156980524d[SER   ] com1 register read from address: 0x03fd = 0x60
+12156980548d[SER   ] com1 register write to  address: 0x03f8 = 0x6f
+12156980590d[SER   ] com1 register read from address: 0x03fd = 0x60
+12156980614d[SER   ] com1 register write to  address: 0x03f8 = 0x74
+12156980656d[SER   ] com1 register read from address: 0x03fd = 0x60
+12156980680d[SER   ] com1 register write to  address: 0x03f8 = 0x20
+12156980722d[SER   ] com1 register read from address: 0x03fd = 0x60
+12156980746d[SER   ] com1 register write to  address: 0x03f8 = 0x73
+12156980788d[SER   ] com1 register read from address: 0x03fd = 0x60
+12156980812d[SER   ] com1 register write to  address: 0x03f8 = 0x74
+12156980854d[SER   ] com1 register read from address: 0x03fd = 0x60
+12156980878d[SER   ] com1 register write to  address: 0x03f8 = 0x61
+12156980920d[SER   ] com1 register read from address: 0x03fd = 0x60
+12156980944d[SER   ] com1 register write to  address: 0x03f8 = 0x72
+12156980986d[SER   ] com1 register read from address: 0x03fd = 0x60
+12156981010d[SER   ] com1 register write to  address: 0x03f8 = 0x74
+12156981177d[SER   ] com1 register read from address: 0x03fd = 0x60
+12156981201d[SER   ] com1 register write to  address: 0x03f8 = 0x0a
+30693250000e[SDL   ] sdl keysym 0 not mapped
+31587500000e[SDL   ] sdl keysym 0 not mapped
+55400912400i[      ] Ctrl-C detected in signal handler.
+55400912401i[      ] dbg: Quit
+55400912401i[CPU0  ] CPU is in long mode (active)
+55400912401i[CPU0  ] CS.mode = 64 bit
+55400912401i[CPU0  ] SS.mode = 64 bit
+55400912401i[CPU0  ] EFER   = 0x00000500
+55400912401i[CPU0  ] | RAX=000000000000342b  RBX=0000025800000005
+55400912401i[CPU0  ] | RCX=0000000000000025  RDX=000000000000348f
+55400912401i[CPU0  ] | RSP=ffffbeefed2035f4  RBP=ffffbeefed203604
+55400912401i[CPU0  ] | RSI=00000000ff000000  RDI=0000026600000029
+55400912401i[CPU0  ] |  R8=00000000000a0000   R9=0000001074df0000
+55400912401i[CPU0  ] | R10=0000000000000000  R11=0000000000000000
+55400912401i[CPU0  ] | R12=0000000000000000  R13=0000000000000000
+55400912401i[CPU0  ] | R14=0000000000000000  R15=0000000000000000
+55400912401i[CPU0  ] | IOPL=0 id vip vif ac vm rf nt of df IF tf sf zf af PF cf
+55400912401i[CPU0  ] | SEG sltr(index|ti|rpl)     base    limit G D
+55400912401i[CPU0  ] |  CS:0008( 0001| 0|  0) 00000000 00000000 0 0
+55400912401i[CPU0  ] |  DS:0010( 0002| 0|  0) 00000000 00000000 0 0
+55400912401i[CPU0  ] |  SS:0010( 0002| 0|  0) 00000000 00000000 0 0
+55400912401i[CPU0  ] |  ES:0010( 0002| 0|  0) 00000000 00000000 0 0
+55400912401i[CPU0  ] |  FS:0010( 0002| 0|  0) 00000000 00000000 0 0
+55400912401i[CPU0  ] |  GS:0010( 0002| 0|  0) 00000000 00000000 0 0
+55400912401i[CPU0  ] |  MSR_FS_BASE:0000000000000000
+55400912401i[CPU0  ] |  MSR_GS_BASE:0000000000000000
+55400912401i[CPU0  ] | RIP=00000000001010f3 (00000000001010f3)
+55400912401i[CPU0  ] | CR0=0xe0010011 CR2=0x0000000000000000
+55400912401i[CPU0  ] | CR3=0x000000000011a000 CR4=0x00000030
+55400912401d[SER   ] Exit
+55400912401i[CMOS  ] Last time is 1713298657 (Tue Apr 16 16:17:37 2024)
+55400912401i[SIM   ] quit_sim called with exit code 0

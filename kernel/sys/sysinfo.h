@@ -5,7 +5,21 @@
 #include "../acpi/acpi.h"
 
 #define ACPI_ENTRIES_MAX 8
+
+enum HOST_TYPES {
+    UNSURE = 0u, //if we dont know we dont care
+    PHYSICAL = 0u,
+    QEMU, 
+    BOCHS,
+    OTHER_VM,
+};
+
+
+
 typedef struct {
+    uint8_t is_uefi;
+
+
     void* multiboot2;
     void* vbe_mode_info;
     void* framebuffer_common;
@@ -21,6 +35,8 @@ typedef struct {
     uint8_t fadt_idx, madt_idx;
     uintptr_t rsdt_entries[ACPI_ENTRIES_MAX] ; //this can be bad like this for now because idek if im brave enough to do ACPI 
                                                 //but its important that we COULD/CAN 
+
+    uint8_t host_type;
                       
 } sysinfo_t;
 

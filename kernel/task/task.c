@@ -51,8 +51,8 @@ task_t* create_task( const char* name, task_entry_fn task_entry, uint64_t rflags
 {
     uint64_t new_stack = kmalloc(KERNEL_TASK_STACK_SIZE) + KERNEL_TASK_STACK_SIZE - sizeof(task_t);
     task_t* task = (task_t*)new_stack; //task goes up from stack addr, stack goes downwards, nice! 
-    if(!new_stack) panic("task allocation failed!");
-    if(strlen(name) >= 31) panic("you only made task names 31 chars long!");
+    if(!new_stack) KPANIC("task allocation failed!");
+    if(strlen(name) >= 31) KPANIC("you only made task names 31 chars long!");
         
 
     task->pid = sched.pid_last + 1;

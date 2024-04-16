@@ -96,20 +96,24 @@ fix_isr_regs:
 
 
 
-global jump_usermode
+global jump_to_usermode:function
 
-asm_jump_usermode:
-	mov ax, 0x1b
+USER_CS equ 0x1b
+USER_DS equ 0x23
+
+;takes ptr to jump as arg
+jump_to_usermode:
+	mov ax, USER_CS
 	mov ds, ax
 	mov es, ax
 	mov fs, ax
 	mov gs, ax
 
 	mov rax, rsp
-	push 0x43
+	push USER_DS
 	push rax
-	pushf
-	push 0x3b
+	pushfq
+	push USER_CS
 	push rdi
 
 	iretq
