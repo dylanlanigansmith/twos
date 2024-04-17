@@ -36,6 +36,11 @@ typedef struct {
     uintptr_t rsdt_entries[ACPI_ENTRIES_MAX] ; //this can be bad like this for now because idek if im brave enough to do ACPI 
                                                 //but its important that we COULD/CAN 
 
+    struct {
+        uintptr_t start;
+        uintptr_t end;
+    } initrd;
+
     uint8_t host_type;
                       
 } sysinfo_t;

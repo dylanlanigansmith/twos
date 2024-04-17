@@ -27,6 +27,8 @@
 
 #include "acpi/madt.h"
 
+#include "fs/initrd.h"
+
 void user_mode_test(){
     __asm__ volatile("mov rdi, 0xcafebabe; mov rax, rdi; mov r12, rdi; mov rdx, rdi;  int 0x0; ");
     for(;;){
@@ -156,7 +158,7 @@ void main(void *addr, void *magic)
         //do shit like are we uefi, what vm is this etc etc etc 
       
     }
-
+    
     
     debugf("CPUID available = %s\n", (has_cpuid()) ? "YES" : "NO WTF");
    
@@ -180,7 +182,9 @@ void main(void *addr, void *magic)
 
     
      
-      serial_println("\n==MEM INIT OK==\n");
+    serial_println("\n==MEM INIT OK==\n");
+
+    initrd(sysinfo.initrd.start, sysinfo.initrd.end - sysinfo.initrd.start);
     
     
 

@@ -1,9 +1,9 @@
 boot start
 using Serial COM1 for debug out 
 ==init GDT, TSS==
-gdt ptr = 0x10b3f0 tss - gdt = 0x28
-stack top = 0x118000 end = 0x114000 size = 0x4000
-copied GDT tss to 0x10c194
+gdt ptr = 0x10c670 tss - gdt = 0x28
+stack top = 0x119000 end = 0x115000 size = 0x4000
+copied GDT tss to 0x10d194
 ==Reloaded GDT, Loaded TSS==
 ===DUMP GDT===
 gdt->kernel_cs:
@@ -64,7 +64,7 @@ gdt->user_ds:
   base_24_31: 0x0
 gdt->tss:
   size: 0x67
-  base_0_15: 0xd0e0
+  base_0_15: 0xe100
   base_16_23: 0x10
   ---access bit--- 
   	accessed: 0x1
@@ -81,8 +81,10 @@ gdt->tss:
 === END GDT DUMP === 
  
 boot phase 1 complete
-multiboot2 addr = 0x121d48 magic = 0x36d76289 
+multiboot2 addr = 0xf81c80 magic = 0x36d76289 
 parse_multiboot_header()
+MULTIBOOT_TAG_TYPE_MODULE
+mod start = 0x123000 end = 0xf81c7a size = 15068282 
 ===MULTIBOOT_TAG_TYPE_MMAP===
 mmaps->entry_size: 24 
 mmaps->entry_version: 0x0 
@@ -101,15 +103,15 @@ mmap [11]:{ @0x0 - 0x1b00000000 } size 0x1b00000000 |  mem_avail 1
 mmap [12]:{ @0x10000000000000 - 0x10100000000000 } size 0x100000000000 |  mem_unknown 0 
 mmap [13]:{ @0x0 - 0x800000000 } size 0x800000000 |  mem_unknown 0 
 mmap [14]:{ @0x2100000000 - 0x2700000001 } size 0x600000001 |  mem_unknown 0 
-mmap [15]:{ @0x200000000000 - 0x9c4c00000000 } size 0x7c4c00000000 |  mem_unknown 0 
+mmap [15]:{ @0x200000000000 - 0xa16c00000000 } size 0x816c00000000 |  mem_unknown 0 
 mmap [16]:{ @0x1000000000 - 0x1000000000 } size 0x0 |  mem_unknown 0 
-mmap [17]:{ @0x600000001 - 0x108c5200000001 } size 0x108c4c00000000 |  mem_unknown 0 
+mmap [17]:{ @0x600000001 - 0x10917200000001 } size 0x10916c00000000 |  mem_unknown 0 
 mmap [18]:{ @0x2200000000 - 0x2200000000 } size 0x0 |  mem_unknown 0 
 mmap [19]:{ @0x0 - 0x4000000000 } size 0x4000000000 |  mem_avail 1 
-mmap [20]:{ @0x108c6e00000000 - 0x1128dc00000000 } size 0x9c6e00000000 |  mem_unknown 0 
+mmap [20]:{ @0x10918e00000000 - 0x11331c00000000 } size 0xa18e00000000 |  mem_unknown 0 
 mmap [21]:{ @0x0 - 0x200000000 } size 0x200000000 |  mem_unknown 0 
 mmap [22]:{ @0x5b00000000 - 0x6100000001 } size 0x600000001 |  mem_unknown 0 
-mmap [23]:{ @0x9cd800000000 - 0x9d0400000000 } size 0x2c00000000 |  mem_unknown 0 
+mmap [23]:{ @0xa1f800000000 - 0xa22400000000 } size 0x2c00000000 |  mem_unknown 0 
 found VBE
 fb @ 0xfc000000 h= 768 p= 4096 
 ===MULTIBOOT_TAG_TYPE_ACPI_OLD===
@@ -120,11 +122,11 @@ rsdp->Checksum: 57
 rsdp->RsdtAddress: 0xbffe1c40 
 parsed mb2 header successfully
 CPUID available = YES
-cr3 = : 0x11a000 
-address p4 = : 0x11a000 
-address p4real = : 0x11a000 
-address p3 = : 0x11b000 
-address p3 via p4[0] = : 0x11b023 
+cr3 = : 0x11b000 
+address p4 = : 0x11b000 
+address p4real = : 0x11b000 
+address p3 = : 0x11c000 
+address p3 via p4[0] = : 0x11c023 
 Extended VA: : 0xfc000000 
 idx for VA : 0xfc000000 
 p4 idx : 0 
@@ -140,8 +142,8 @@ mapped : 0xfc000000
 to physical addresss: 0xfc000000 
 ==flushed TLB==
 invalidated: 0xfc000000 
-0 > p4 : 0x11b023 
-cr3 = : 0x11a000 
+0 > p4 : 0x11c023 
+cr3 = : 0x11b000 
 Extended VA: : 0xffffbeefed000000 
 idx for VA : 0xffffbeefed000000 
 p4 idx : 381 
@@ -153,7 +155,7 @@ p1 idx : 0
 NEW mapping virtual : 0xffffbeefed000000 
 mapping physical : 0x80000000 
 pages = : 4 
-map_new: p3 = 0x111000
+map_new: p3 = 0x112000
 mapped : 0xffffbeefed000000 
 to physical addresss: 0x80000000 
 ==flushed TLB==
@@ -168,7 +170,7 @@ p2 idx : 128
 p1 idx : 0 
  p4 =0  p3 = 1 p2 = 128 p1 = 0 
  p4 =0  p3 = 1 p2 = 128 p1 = 0 
-map_identity( p2 = 0x112000 p3 = 0x11b000 p4 = 0x11a000 addr = 0x50000000 num = 2)
+map_identity( p2 = 0x113000 p3 = 0x11c000 p4 = 0x11b000 addr = 0x50000000 num = 2)
 ID mapped : 0x50000000 
 ==flushed TLB==
 invalidated: 0x50000000 
@@ -182,7 +184,7 @@ p2 idx : 0
 p1 idx : 0 
  p4 =256  p3 = 0 p2 = 0 p1 = 0 
  p4 =256  p3 = 0 p2 = 0 p1 = 0 
-initial p3 = 0x0 p4 = 0x11a000 
+initial p3 = 0x0 p4 = 0x11b000 
 alloc new page table at 0x50000000, index now 1 
 alloc new page table at 0x50001000, index now 2 
 made new: p3 = 0x50000000 p2 = 0x50001000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0101 0000 0000 0000 0000 0000 0000 0011  
@@ -240,6 +242,40 @@ enabled interupts
 
 ==MEM INIT OK==
 
+===initrd: loading 15068282 bytes from 0x123000===
+initrd: header CRC ok! 
+initrd: header:
+ 15 files, 8 dirs
+initrd: footer CRC ok! 
+initrd: footer: total ramdisk size = 15068270 
+initrd: processing directories:
+    found dir: local [5] CRC=1
+    found dir: libnest [7] CRC=1
+    found dir: lib [6] CRC=1
+    found dir: usr [3] CRC=1
+    found dir: books [2] CRC=1
+    found dir: etc [1] CRC=1
+    found dir: birds [8] CRC=1
+    found dir: bin [4] CRC=1
+initrd: processing files:
+    found file at +0x470! ulysses.txt [1552215 bytes], dir[0]
+    found file at +0x17b464! LICENSE.txt [564 bytes], dir[0]
+    found file at +0x17b735! initrd.txt [47 bytes], dir[0]
+    found file at +0x17b801! test.txt [32 bytes], dir[1]
+    found file at +0x17b8be! manyfiles.txt [1279 bytes], dir[1]
+    found file at +0x17be5a! etsee.file [1024 bytes], dir[1]
+    found file at +0x17c2f7! romanempire.txt [10491513 bytes], dir[2]
+    found file at +0xb7da0d! make_initrd [17000 bytes], dir[4]
+    found file at +0xb81d12! ls [17 bytes], dir[4]
+    found file at +0xb81dc0! loco.txt [48 bytes], dir[5]
+    found file at +0xb81e8d! usrlocal.txt [5173 bytes], dir[5]
+    found file at +0xb8335f! imaginehavingalongfilenamewellyoudonthavetoanymore.txt [693 bytes], dir[6]
+    found file at +0xb836b1! greenland.bmp [2995046 bytes], dir[6]
+    found file at +0xe5eab4! birdnest.nice [65 bytes], dir[8]
+    found file at +0xe5eb92! testcase.txt [63 bytes], dir[7]
+initrd validated; contains 15064779 bytes of files!
+==initrd load success!== 
+
 making new block at 0xffffbeefed200000 size=4121 /  footer @ 0xffffbeefed20100d 
  added to alloc map, new # allocs = 1 
 Heap Usage: 25/100 
@@ -253,135 +289,12 @@ Heap Usage: 25/100
 we found no space to fit size 0x2000, making new block at 0xffffbeefed2016d3 size=8217 /  footer @ 0xffffbeefed2036e0 
  added to alloc map, new # allocs = 3 
 Heap Usage: 25/100 
-create_task task_drawtimer pid 1 rip 0x1010e7 !
+create_task task_drawtimer pid 1 rip 0x10111d !
 added initial task  pid 0 !
 adding task task_draw_test pid 1 !
 we found no space to fit size 0x2000, making new block at 0xffffbeefed2036ec size=8217 /  footer @ 0xffffbeefed2056f9 
  added to alloc map, new # allocs = 4 
 Heap Usage: 25/100 
-create_task task_draw_test pid 1 rip 0x101170 !
+create_task task_draw_test pid 1 rip 0x1011a6 !
 highest bit of 0xffff = 15 of 8 = 3 randos up
-===isr[0xe] err{0x5}====
-err_code = 0x5
-rbp = 0x117ff0
-rip = 0x1010bc
-ss:rsp = 0x117fb8
-cs = 0x1b
-rflags = 0x10246
-ds = 0x1b
-ss = 0x23
-rax = 0x117fb8
-rbx = 0x3
-rcx = 0xffffbeefed20000d
-rdx = 0x1
-rdi = 0x1010bc
-rsi = 0xa
-r8 = 0x1053cb
-r9 = 0x1
-r10 = 0x0
-r11 = 0x0
-r12 = 0x0
-r13 = 0x0
-r14 = 0x0
-r15 = 0x0
-
-== PAGE FAULT ==
-Error: 5 
-At Address [CR2]: 0x1010bc 
-USER
-READ
-PAGE-PROTECTION VIOLATION
-==============
-===isr[0xe] err{0x5}====
-err_code = 0x5
-rbp = 0x117ff0
-rip = 0x1010bc
-ss:rsp = 0x117fb8
-cs = 0x1b
-rflags = 0x10246
-ds = 0x1b
-ss = 0x23
-rax = 0x117fb8
-rbx = 0x3
-rcx = 0xffffbeefed20000d
-rdx = 0x1
-rdi = 0x1010bc
-rsi = 0xa
-r8 = 0x1053cb
-r9 = 0x1
-r10 = 0x0
-r11 = 0x0
-r12 = 0x0
-r13 = 0x0
-r14 = 0x0
-r15 = 0x0
-
-== PAGE FAULT ==
-Error: 5 
-At Address [CR2]: 0x1010bc 
-USER
-READ
-PAGE-PROTECTION VIOLATION
-==============
-===isr[0xe] err{0x5}====
-err_code = 0x5
-rbp = 0x117ff0
-rip = 0x1010bc
-ss:rsp = 0x117fb8
-cs = 0x1b
-rflags = 0x10246
-ds = 0x1b
-ss = 0x23
-rax = 0x117fb8
-rbx = 0x3
-rcx = 0xffffbeefed20000d
-rdx = 0x1
-rdi = 0x1010bc
-rsi = 0xa
-r8 = 0x1053cb
-r9 = 0x1
-r10 = 0x0
-r11 = 0x0
-r12 = 0x0
-r13 = 0x0
-r14 = 0x0
-r15 = 0x0
-
-== PAGE FAULT ==
-Error: 5 
-At Address [CR2]: 0x1010bc 
-USER
-READ
-PAGE-PROTECTION VIOLATION
-==============
-===isr[0xe] err{0x5}====
-err_code = 0x5
-rbp = 0x117ff0
-rip = 0x1010bc
-ss:rsp = 0x117fb8
-cs = 0x1b
-rflags = 0x10246
-ds = 0x1b
-ss = 0x23
-rax = 0x117fb8
-rbx = 0x3
-rcx = 0xffffbeefed20000d
-rdx = 0x1
-rdi = 0x1010bc
-rsi = 0xa
-r8 = 0x1053cb
-r9 = 0x1
-r10 = 0x0
-r11 = 0x0
-r12 = 0x0
-r13 = 0x0
-r14 = 0x0
-r15 = 0x0
-
-== PAGE FAULT ==
-Error: 5 
-At Address [CR2]: 0x1010bc 
-USER
-READ
-PAGE-PROTECTION VIOLATION
-==============
+ticks 0

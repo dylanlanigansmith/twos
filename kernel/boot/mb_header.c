@@ -182,6 +182,19 @@ int parse_multiboot_header(void *header, uint64_t magic)
                 serial_println("===MMULTIBOOT_TAG_TYPE_ACPI_NEW===");
                //xtsd is backwards compat
          }
+
+
+         if(tag->type == MULTIBOOT_TAG_TYPE_MODULE){
+            debugf("MULTIBOOT_TAG_TYPE_MODULE\n");
+
+            struct multiboot_tag_module* mod = (struct multiboot_tag_module*)tag;
+
+            debugf("mod start = %x end = %x size = %u \n", mod->mod_start, mod->mod_end, mod->mod_end - mod->mod_start);
+
+            sysinfo.initrd.start = mod->mod_start;
+            sysinfo.initrd.end = mod->mod_end;
+        
+         }
     }
     serial_println("parsed mb2 header successfully");
     return MB_HEADER_PARSE_SUCCESS;
