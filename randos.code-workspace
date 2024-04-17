@@ -90,7 +90,11 @@
 			"streambuf": "cpp",
 			"thread": "cpp",
 			"cinttypes": "cpp",
-			"hash_set": "c"
+			"hash_set": "c",
+			"csignal": "cpp",
+			"strstream": "cpp",
+			"shared_mutex": "cpp",
+			"typeindex": "cpp"
 		}
 	}
 }

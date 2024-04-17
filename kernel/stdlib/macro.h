@@ -8,9 +8,9 @@
 #define alloca_align(size, al)  __builtin_alloca_with_align(size, al) 
 
 
-//#define likely(x, y) __builtin_expect(x,y)
 
-//the linux kernel does !! for magic reasons I do not understand
+
+//stolen from kernel, doing !! is really smart.
 #define likely(x)       __builtin_expect(!!(x), 1)
 #define unlikely(x)     __builtin_expect(!!(x), 0)
 

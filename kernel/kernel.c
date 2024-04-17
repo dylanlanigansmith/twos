@@ -201,7 +201,7 @@ void main(void *addr, void *magic)
     ASSERT(gfx_has_init());
     println("randos up");
 
-    jump_to_usermode(&user_mode_test); //holy shit it worked
+    //jump_to_usermode(&user_mode_test); //holy shit it worked
  
     
     

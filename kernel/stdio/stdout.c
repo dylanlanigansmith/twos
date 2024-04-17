@@ -134,11 +134,11 @@ void stdout_bytein(uint8_t byte)
 }
 
 void stdout_set_updating(uint8_t val) //half brained way to know when we arent actually updating stdout 
-{
+{                                       //hey! full brain here! before you add this shitty code, why not just make stdout_display_update() a function!? 
     stdout.has_fb = val;
 }
 
-bool stdout_hasFB()
+bool stdout_hasFB() //see stdout_set_updating
 {
     return stdout.has_fb;
 }
