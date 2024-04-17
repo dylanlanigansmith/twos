@@ -6,27 +6,39 @@
     - x86 64 bit
     - Multiboot2 spec. compatible
     - VGA/VBE Graphics Drivers, up to 1024x768 32 bit color support
+    - Filesystem
     - Multi-tasking Kernel
     - The only thing that isn't from scratch is the use GRUB/Multiboot bootloader 
         - Built completely freestanding, custom libc, from scratch standard library, etc.
         - Custom memory allocator/heap, custom scheduler
-    - C and C++ Support 
-        - C++ is a little rough until I build a proper toolchain/cross-compiler (no static initialization)
-    - Kernel is written in primarily C and ASM 
+    - C and C++ Support, Custom Toolchain/Cross Compiler via GCC/Binutils
+        - Automated Installation and setup! 
+    - Kernel is written in primarily C and Assembly 
         - C++ will be used for OS APIs accessible from User Mode
+        - I keep saying I will use C++ after being a huge proponent of it for a long time, but then write more C
+        - I am not an addict I swear (clutches copy of 'The C Programming Language')
+
 ## In Progress
     - physical memory manager to support paging/heap systems
 
-    - the leap to user mode, and syscall interface for kernel->user/user->kernel stuff
+    - syscall interface for kernel->user/user->kernel stuff
+
+    - elf parser for running executables from our file system
+
+    - all these little things as we jump to userspace processes! 
 
     - once we reach user mode a lot of kernel code can be tidied up and moved to userspace, or refactored into a API for usage from user space
+
+    - switching to APIC from legacy PICs, UEFI support 
     
 ## Planned
     - Vsync and double buffering
     - Port DOOM (as a user mode process)
-    - Cross compiler for easier use of our standard library
-    - UEFI Support to boot on real hardware
+    - Cross compiler for easier use of our standard library [x]
+        - Need to do libc and setup for building usermode programs
+    - UEFI Support to boot on real hardware [x]
         - I don't have anything old with decent BIOS support kicking around
+        - Need to parse mmaps from bootloader better and switch to APIC for full UEFI
 
 
 
@@ -45,6 +57,8 @@
 - a stdout-type buffer and text renderer
 
 - custom standard library, with strings, printf, malloc, memory functions, etc. all implemented from scratch
+
+- custom initrd filesystem and VFS implementation, with subdirs, etc. 
 
 - A lot more, TODO
 

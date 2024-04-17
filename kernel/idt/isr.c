@@ -150,21 +150,22 @@ void irq_handler(uint64_t rdi, registers_t regs)
 #ifdef DEBUG
     irq_log(regs.int_no, regs.err_code);
 #endif
-
-    PIC_sendEOI(regs.int_no);
+     PIC_sendEOI(regs.int_no); //dunno
     if (interupt_handlers[(uint8_t)(regs.int_no & 0xff)] != 0)
     {
+        
         isr_t handler = interupt_handlers[regs.int_no];
         handler(&regs);
     }
+
+   
 }
 
 void register_interupt_handler(uint8_t n, isr_t handler_fn)
 {
     interupt_handlers[n] = handler_fn;
-#ifdef DEBUG
-    print("registered interupt handler for [");
-    print(itoa(n, 10));
-    print("]\n");
-#endif
+
+    debugf("registered interupt handler for [%i] at %lx\n", n, (uintptr_t)handler_fn);
+ 
+
 }

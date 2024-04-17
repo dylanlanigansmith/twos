@@ -14,6 +14,7 @@
 #include "boot/mb_header.h"
 
 #include "sys/sysinfo.h"
+#include "sys/syscall.h"
 #include "../drivers/serial/serial.h"
 
 #include "mem/page.h"
@@ -137,7 +138,7 @@ void main(void *addr, void *magic)
     keyboard_init();
     timer_init(PIT_RATE);
 
-    
+    syscall_init();
    
 
     io_wait();
@@ -175,6 +176,8 @@ void main(void *addr, void *magic)
         ACPI_discover_SDTs( (void*)(rsdt), ACPI_ADDR, sysinfo.rsdp->RsdtAddress);
 
         madt_discover();
+        //todo: apic
+
     }
 
     __asm__("sti");
@@ -185,7 +188,13 @@ void main(void *addr, void *magic)
     serial_println("\n==MEM INIT OK==\n");
 
     if(initrd(sysinfo.initrd.start, sysinfo.initrd.end - sysinfo.initrd.start) == 0){
-        
+        //blah blah blah 
+        //so what we wrote our own filesystem from scratch after skimming "the history of filesystems"
+        // what youre gonna be all proud and happy about it?
+        // you think its super cool?
+        // yeah?
+        // well youre right this shit is incredible
+        // my understanding of computers grows in ways i never knew it could
     }
     
     
@@ -209,14 +218,8 @@ void main(void *addr, void *magic)
 
     //jump_to_usermode(&user_mode_test); //holy shit it worked
     
-    
-    
-   // task_draw_test();
+    __asm__ volatile ("int 0x69");
    // start_first_task();
-    
-    size_t old_len = 0;
-    char last_top = stdout_top();
-   //  __asm__ volatile("mov rdi, 0xcafebabe;  int 0x0");
     
    
     uint64_t last_tick = 0;
@@ -230,10 +233,8 @@ void main(void *addr, void *magic)
     uint64_t sc = tick;
     size_t offset = 512;
     for(;;){
-      //  __asm__("hlt");
-        //solve YOUR OLDLEN struggles with one simple TRICK
-            //let stdout mark itself as dirty 
-        if (stdout_dirty() ){ //|| last_top != stdout_top() //for backspace 
+     
+        if (stdout_dirty() ){ 
            
           
             gfx_clear_text();
@@ -255,15 +256,6 @@ void main(void *addr, void *magic)
         
     }
 
-    /*
-    
-    Scheduler:
-        test: one process that reads a bunch of values and updates stdout
-
-        task 1-5: changing values etc
-
-        PIT runs for x interval, then switches task
-    */
     for(;;){
         __asm__("hlt");
     }

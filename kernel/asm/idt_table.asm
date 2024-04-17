@@ -128,6 +128,9 @@ isr_no_err_stub 28
 isr_no_err_stub 29
 isr_err_stub    30
 isr_no_err_stub 31
+
+
+
 irq 0, 32
 irq 1, 33
 irq 2, 34
@@ -145,6 +148,15 @@ irq 13, 45
 irq 14, 46
 irq 15, 47
 
+
+global isr_syscall
+isr_syscall:
+    cli
+    push  qword 0 
+    push  qword 0x69
+    jmp irq_shared_stub
+
+
 global isr_stub_table
 isr_stub_table:
 %assign i 0 
@@ -157,7 +169,7 @@ isr_stub_table:
     dq irq_%+i 
 %assign i i+1 
 %endrep
-
+    dq isr_syscall
 
 
 
