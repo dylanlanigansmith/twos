@@ -1,8 +1,10 @@
 #include "memory.h"
 
 void* memcpy(void* dest, void* src, size_t num_bytes){
-    for(int i = 0; i < num_bytes; ++i)
-        *((uint8_t*)dest + i) = *((uint8_t*)src + i);
+    char *d = dest;
+    const char *s = src;
+    while (num_bytes--)
+        *d++ = *s++;
     return dest;
 }
 

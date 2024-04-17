@@ -15,6 +15,21 @@
 
 namespace fs = std::filesystem; //sorry its so long
 
+/*
+./make_initrd [./rootdir/] [outfile]
+This bad boy takes the folder at arg 1: rootdir, and maps whatever directories and files are in it into our 
+    proprietary ram disk format, writing it to arg2; outfile
+
+Then with the ram disk in the boot iso it is loaded by multiboot2 and able to be mounted within the OS
+
+
+Issues:
+    -not hashing the full paths for directory processing, so like: "example/example/example.txt" would cause issues
+        - easy fix once the OS side of things is working, not important now
+
+*/
+
+
 int main(int argc, char** argv){
 
     if(argc != 3){

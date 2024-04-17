@@ -69,7 +69,7 @@ void gfx_clear_text()
     
     
     color clr = gfx_state.clear_color;
-    gfx_clear_to_pos(color_white, pos); //so we really only need to clear current row / last two rows for performance
+    gfx_clear_to_pos(clr, pos); //so we really only need to clear current row / last two rows for performance
     
     reset_last_draw();
 }

@@ -51,3 +51,5 @@ static inline char stdout_top(){ return (stdout.index > 0) ?  stdout.buffer[stdo
 
 void stdout_set_updating(uint8_t val);
 bool stdout_hasFB();
+
+void stdout_clear();

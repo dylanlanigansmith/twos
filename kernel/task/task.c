@@ -3,7 +3,7 @@
 #include "../../drivers/video/gfx.h"
 #include "../timer/timer.h"
 
-#define DEBUGT(fmt, ...) printf(fmt, __VA_ARGS__)
+#define DEBUGT(fmt, ...) debugf(fmt, __VA_ARGS__)
 
 extern void capture_regs(regs_t* regs);
 extern void restore_regs(regs_t* regs);

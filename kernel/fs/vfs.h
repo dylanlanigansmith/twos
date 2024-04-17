@@ -8,7 +8,7 @@ aw man turns out we wanna be somewhat POSIX adjacent
 */
 
 #define VFS_NAME_LEN 128
-#define VFS_DIR_MAX_ENTRIES 128
+#define VFS_DIR_MAX_ENTRIES 32 //this is silly doesnt matter
 
 enum VFS_TYPES
 {
@@ -23,11 +23,25 @@ enum VFS_TYPES
     VFS_DEVWTF,
 };
 
-typedef struct // POSIX.
-{
-  char name[VFS_NAME_LEN]; // Filename.
-  uint32_t inode;     // Inode 
-} dir_entry;
+enum VFS_IMPL{
+    VFS_IMPL_NONE = 0u,
+    VFS_IMPL_INITRD,
+    VFS_IMPL_DEV,
+    VFS_IMPL_PROC,
+    VFS_IMPL_DUNNODONTCAREWHOASKED
+};
+
+
+
+struct vfs_node;
+
+typedef struct {
+    uint32_t dir_inode; //idk if ill use this but i suspect life will be easier if I do. update i was hella right
+    uint8_t size;
+    uint32_t entries[VFS_DIR_MAX_ENTRIES]; //HMM WILL I REGRET MAKING THIS POINTERS IF I DO ? YES IT WILL REMAIN INODES 
+    uint32_t parent_inode;
+    struct vfs_node* parent; //owner 
+} __attribute__((packed)) vfs_dir_info;
 
 typedef struct {
     uint8_t D : 1; //is directory
@@ -39,13 +53,13 @@ typedef struct {
 }__attribute__((packed)) vfs_perms;
 static_assert(sizeof(vfs_perms) == 1, "vfs_perms size not what you want!");
 
-struct vfs_node;
+
                                 //node      file/buf offset   size         buffer to read to write from
-typedef uint32_t (*vfs_read_fn)(struct vfs_node*, uint64_t , size_t, uint8_t*);
-typedef uint32_t (*vfs_write_fn)(struct vfs_node*, uint64_t , size_t, uint8_t*);
+typedef size_t (*vfs_read_fn)(struct vfs_node*, uint64_t , size_t, uint8_t*);
+typedef size_t (*vfs_write_fn)(struct vfs_node*, uint64_t , size_t, uint8_t*);
 typedef void (*vfs_open_fn)(struct vfs_node*);
 typedef void (*vfs_close_fn)(struct vfs_node*);
-typedef dir_entry* (*vfs_readdir_fn)(struct vfs_node*, uint32_t);
+typedef struct vfs_node* (*vfs_readdir_fn)(struct vfs_node*, uint32_t); //uh just return vfs_node*
 typedef struct vfs_node* (*vfs_finddir_fn)(struct vfs_node*, const char*);
 
 typedef struct {
@@ -68,6 +82,11 @@ typedef struct {
     vfs_fns fn; 
 
     uint32_t inode;
+    union{
+        void* addr;
+        vfs_dir_info* dirinfo;
+    };
+    
     size_t length;
     uint8_t impl;
 
@@ -75,15 +94,13 @@ typedef struct {
 } __attribute__((packed)) vfs_node;
 
 
-typedef struct {
-    uint32_t dir_inode; //idk if ill use this but i suspect life will be easier if I do
-    uint8_t size;
-    uint32_t entries[VFS_DIR_MAX_ENTRIES];
-
-    vfs_node* parent; //owner 
-} __attribute__((packed)) vfs_dir_info;
 
 
 extern vfs_node* vfs_root;
 
 vfs_node* init_vfs(uintptr_t ptr, size_t size);
+
+
+void vfs_printfile(vfs_node* node, size_t len);
+
+void vfs_printfile_at(vfs_node* node,size_t offset, size_t len);

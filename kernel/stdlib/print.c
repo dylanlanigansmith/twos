@@ -39,6 +39,16 @@ void debug_string(const char *str)
         serial_write(str[c]);
 }
 int gfx_ok = 0;
+
+void putc(char c)
+{
+    if(gfx_ok){
+        stdout_bytein(c);
+    }
+
+    serial_write(c);
+}
+
 void print(const char *str)
 {
 
@@ -85,6 +95,8 @@ void println(const char *str)
     __PRINT_PRINTSTR("\n");
 }
 
+
+
 void printi(int i)
 {
     __PRINT_PRINTSTR(__PRINT_ITOA(i, 10));
@@ -117,8 +129,6 @@ void printf(const char *fmt, ...)
 void debug(const char *str)
 {
     serial_print(str);
-     size_t len = strlen(str);
-    if(str[len - 1] != '\n') serial_print("\n");
 }
 void debugf(const char *fmt, ...)
 {

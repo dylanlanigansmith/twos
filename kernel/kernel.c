@@ -158,7 +158,7 @@ void main(void *addr, void *magic)
         //do shit like are we uefi, what vm is this etc etc etc 
       
     }
-    
+
     
     debugf("CPUID available = %s\n", (has_cpuid()) ? "YES" : "NO WTF");
    
@@ -184,7 +184,9 @@ void main(void *addr, void *magic)
      
     serial_println("\n==MEM INIT OK==\n");
 
-    initrd(sysinfo.initrd.start, sysinfo.initrd.end - sysinfo.initrd.start);
+    if(initrd(sysinfo.initrd.start, sysinfo.initrd.end - sysinfo.initrd.start) == 0){
+        
+    }
     
     
 
@@ -200,13 +202,13 @@ void main(void *addr, void *magic)
     //we have gotten ourselves a system with two processes running
     // do a little dance or something 
 
-    printf("highest bit of 0xffff = %i of 8 = %i ", get_highest_bit(0xffff), get_highest_bit(8) );
+    
 
     ASSERT(gfx_has_init());
     println("randos up");
 
     //jump_to_usermode(&user_mode_test); //holy shit it worked
- 
+    
     
     
    // task_draw_test();
@@ -215,37 +217,41 @@ void main(void *addr, void *magic)
     size_t old_len = 0;
     char last_top = stdout_top();
    //  __asm__ volatile("mov rdi, 0xcafebabe;  int 0x0");
-    printf("ticks %lu", old_len, last_top, tick);
+    
    
     uint64_t last_tick = 0;
+
+    initrd_demo();
+       
+    vfs_node* file = initrd_findfile(initrd_root, "ulysses.txt");
+    if(file){
+        vfs_printfile(file, 512);
+    }
+    uint64_t sc = tick;
+    size_t offset = 512;
     for(;;){
       //  __asm__("hlt");
         //solve YOUR OLDLEN struggles with one simple TRICK
             //let stdout mark itself as dirty 
-        while (old_len != stdout.index ){ //|| last_top != stdout_top() //for backspace 
+        if (stdout_dirty() ){ //|| last_top != stdout_top() //for backspace 
            
-           // if(!stdout_update()) continue;
+          
             gfx_clear_text();
-         //   gfx_clear(gfx_state.clear_color);
+        
             gfx_print(get_stdout());
-            //for(int i = 0; i < stdout.index; ++i)
-           //     gfx_putc(stdout.buffer[stdout.index]);
+        
            
-         //   gfx_putc(stdout_top());
-           
-            old_len = stdout.index;
-            last_top = stdout_top();
-            break;
-             
-          //  if(last_top) stdout_putchar('$');
-        }
-      ///  if((last_tick + 100) < tick  ){
-             //   serial_printi("t=", tick);
-         //       gfx_clear_line(598, 24);
-        //        last_tick = tick;
-       //         gfx_print_pos(lltoa(tick, 10), v2(5, 600));
-         //   }
+            stdout_flush();
+
          
+        }
+
+        if(tick > sc + 2000 ){
+            stdout_clear();
+             vfs_printfile_at(file, offset, 2048);
+             offset += 1024;
+             sc = tick;
+        }
         
     }
 

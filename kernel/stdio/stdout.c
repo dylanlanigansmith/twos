@@ -10,6 +10,7 @@ void stdout_clear(){
     stdout.index = 0; 
     memset(stdout.buffer, 0, stdout.size);
     stdout.buffer[stdout.index] = '>';
+    stdout.dirty = 1;
 }
 
 char* stdout_alloc(size_t size){

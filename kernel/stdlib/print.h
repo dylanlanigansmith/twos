@@ -26,9 +26,13 @@ void oprintf(uint8_t out, const char* fmt, ...);
 void print(const char* str);
 void println(const char* str);
 
+void putc(char c);
+
 void printh(uint64_t hex);
 void printi(int i);
 void printl(uint64_t ll, int base);
+
+
 
 
 #define PRINTF_MAX 1024

@@ -19,6 +19,8 @@ size_t strlen(const char* str);
 
 int strncmp(const char* str1, const char* str2, size_t num);
 
+int strcmp(const char* str1, const char* str2);
+
 #ifdef __cplusplus
 }
 #endif
