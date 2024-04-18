@@ -12,7 +12,7 @@ static void timer_handler(registers_t* reg){
     tick++;
     
 
-    if(sched.current_task == 0) return;
+    if(sched.current_task == 0 && sched.active == 0) return;
    on_timer_tick(tick, reg);
    #ifdef VGA_MODE_CHAR
     uint16_t old_cursor = get_cursor();

@@ -1,8 +1,8 @@
 #include "syscall.h"
 
 #include "../idt/isr.h"
-
-#define SYSCALL_TOTAL 1
+#include "../task/task.h"
+#define SYSCALL_TOTAL 3
 
 void* syscall_test(registers_t* regs){
     print("your sis called ;)");
@@ -10,11 +10,31 @@ void* syscall_test(registers_t* regs){
     return 0;
 }
 
+
+void* sys_print(registers_t* regs){
+    if(regs->rdi != 0){
+        print((char*)regs->rdi);
+    }
+
+    return 0;
+}
+
+
+void* sys_exit(registers_t* regs){
+    exit(regs->rdi);
+
+    return 0;
+}
+
+
+
 typedef void* (*syscall_fn)(registers_t* regs);
 
 static void* syscalls[SYSCALL_TOTAL] =
 {
-    &syscall_test
+    &syscall_test,
+    &sys_print,
+    &sys_exit,
 };
 
 

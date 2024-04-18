@@ -185,7 +185,7 @@ size_t _free(void* addr){
     heap_footer_t* footer = (heap_header_t*)( (uintptr_t)addr + header->block_size - sizeof(heap_footer_t));
     HEAPDBG("freeing block at %lx / block_size=%lu \n", (uintptr_t)header, header->block_size);
     //lets make sure we ok
-    ASSERT(header->crc == footer->crc);
+    ASSERT(header->crc == footer->crc && header->crc == HEAP_CRC) ;
     ASSERT(footer->header == header);
 
     //okay we didnt fuck that up

@@ -21,6 +21,7 @@
 #include "mem/heap.h"
 
 #include "task/task.h"
+#include "task/elf.h"
 #include "stdio/stdout.h"
 #include "gdt/gdt.h"
 
@@ -85,16 +86,92 @@ void task_draw_test(){
                   stdout_flush();
                   __asm__ volatile ("sti");
             }
+             last_tick2 = tick; //might break
+     
+            }
+    }
+}
+
+void task_bg_test(){
+    register uint64_t last = tick;
+    serial_print("task bg test \n");
+    
+    for(;;){
+        __asm__("hlt");
+        if((last + 1000) < tick  ){
+
+            if( gfx_state.clear_color.argb == color_red.argb)
+                 gfx_state.clear_color = color_green;
+            else
+                 gfx_state.clear_color = color_red;
              
+            serial_print("bg");
+
+            last = tick;
          //   gfx_clear(gfx_state.clear_color);
            
              //   serial_printi("t=", tick);
               //  gfx_clear_line(498, 24);
                // last_tick2 = tick;
                 //gfx_print_pos(lltoa(tick, 10), v2(5, 500));
-            }
+        }
     }
 }
+
+void task_test_2(){
+    register uint64_t last = tick;
+    serial_print("task test 2 \n");
+    
+    for(;;){
+        __asm__("hlt");
+        if((last + 2000) < tick  ){
+
+            
+             
+            serial_print("test 2");
+
+            last = tick;
+         //   gfx_clear(gfx_state.clear_color);
+           
+             //   serial_printi("t=", tick);
+              //  gfx_clear_line(498, 24);
+               // last_tick2 = tick;
+                //gfx_print_pos(lltoa(tick, 10), v2(5, 500));
+        }
+    }
+}
+
+
+void task_test3(){
+    
+    serial_print("task test 3 \n");
+    serial_print("im outta here \n");
+    exit(0);
+}
+
+void task_test4(){
+     register uint64_t last = tick;
+     for(;;){
+        if((last + 4000) < tick  ){
+
+            
+             
+            serial_print("yield");
+
+            last = tick;
+         //   gfx_clear(gfx_state.clear_color);
+           
+             //   serial_printi("t=", tick);
+              //  gfx_clear_line(498, 24);
+               // last_tick2 = tick;
+                //gfx_print_pos(lltoa(tick, 10), v2(5, 500));
+        }
+        else{
+            yield();
+        }
+    }
+}
+
 
 extern uint64_t has_cpuid();
 
@@ -197,7 +274,10 @@ void main(void *addr, void *magic)
         // my understanding of computers grows in ways i never knew it could
     }
     
-    
+    vfs_node* elf = initrd_findfile(initrd_root, "usermode");
+    if(elf){
+       load_elf(elf);
+    }
 
   
     
@@ -208,6 +288,10 @@ void main(void *addr, void *magic)
     
     tasking_init(&task_drawtimer); //first task should be on our main stack as its new kernel main 
     add_task("task_draw_test",task_draw_test);
+    add_task("task_bg_test",task_bg_test);
+    add_task("task_test2",task_test_2);
+    add_task("task_test_exit", task_test3);
+    add_task("task_test_yield", task_test4);
     //we have gotten ourselves a system with two processes running
     // do a little dance or something 
 
@@ -218,8 +302,8 @@ void main(void *addr, void *magic)
 
     //jump_to_usermode(&user_mode_test); //holy shit it worked
     
-    __asm__ volatile ("int 0x69");
-   // start_first_task();
+   // __asm__ volatile ("int 0x69");
+    start_first_task();
     
    
     uint64_t last_tick = 0;

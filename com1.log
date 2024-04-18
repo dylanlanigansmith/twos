@@ -1,8 +1,8 @@
 boot startusing Serial COM1 for debug out 
 ==init GDT, TSS==
-gdt ptr = 0x10d870 tss - gdt = 0x28
+gdt ptr = 0x10dad0 tss - gdt = 0x28
 stack top = 0x11a000 end = 0x116000 size = 0x4000
-copied GDT tss to 0x10e19c
+copied GDT tss to 0x10e1b4
 ==Reloaded GDT, Loaded TSS==
 ===DUMP GDT===gdt->kernel_cs:
   limit_0_15: 0x0
@@ -78,14 +78,14 @@ gdt->tss:
   reserved0: 0x0
 === END GDT DUMP === 
  
-registered interupt handler for [33] at 0x108689
-registered interupt handler for [32] at 0x1084e1
-registered interupt handler for [105] at 0x10798e
+registered interupt handler for [33] at 0x108b87
+registered interupt handler for [32] at 0x1089d4
+registered interupt handler for [105] at 0x107c3e
 boot phase 1 complete
-multiboot2 addr = 0x1242b8 magic = 0x36d76289 
+multiboot2 addr = 0x124418 magic = 0x36d76289 
 parse_multiboot_header()
 MULTIBOOT_TAG_TYPE_MODULE
-mod start = 0x125000 end = 0xf83c7a size = 15068282 
+mod start = 0x125000 end = 0xf81f0c size = 15060748 
 ===MULTIBOOT_TAG_TYPE_MMAP===
 mmaps->entry_size: 24 
 mmaps->entry_version: 0x0 
@@ -104,15 +104,15 @@ mmap [11]:{ @0x0 - 0x1b00000000 } size 0x1b00000000 |  mem_avail 1
 mmap [12]:{ @0x10000000000000 - 0x10100000000000 } size 0x100000000000 |  mem_unknown 0 
 mmap [13]:{ @0x0 - 0x800000000 } size 0x800000000 |  mem_unknown 0 
 mmap [14]:{ @0x2100000000 - 0x2700000001 } size 0x600000001 |  mem_unknown 0 
-mmap [15]:{ @0x200000000000 - 0xb0bc00000000 } size 0x90bc00000000 |  mem_unknown 0 
+mmap [15]:{ @0x200000000000 - 0xb5bc00000000 } size 0x95bc00000000 |  mem_unknown 0 
 mmap [16]:{ @0x1000000000 - 0x1000000000 } size 0x0 |  mem_unknown 0 
-mmap [17]:{ @0x600000001 - 0x10a0c200000001 } size 0x10a0bc00000000 |  mem_unknown 0 
+mmap [17]:{ @0x600000001 - 0x10a5c200000001 } size 0x10a5bc00000000 |  mem_unknown 0 
 mmap [18]:{ @0x2200000000 - 0x2200000000 } size 0x0 |  mem_unknown 0 
 mmap [19]:{ @0x0 - 0x4000000000 } size 0x4000000000 |  mem_avail 1 
-mmap [20]:{ @0x10a0de00000000 - 0x1151bc00000000 } size 0xb0de00000000 |  mem_unknown 0 
+mmap [20]:{ @0x10a5de00000000 - 0x115bbc00000000 } size 0xb5de00000000 |  mem_unknown 0 
 mmap [21]:{ @0x0 - 0x200000000 } size 0x200000000 |  mem_unknown 0 
 mmap [22]:{ @0x5b00000000 - 0x6100000001 } size 0x600000001 |  mem_unknown 0 
-mmap [23]:{ @0xb14800000000 - 0xb17400000000 } size 0x2c00000000 |  mem_unknown 0 
+mmap [23]:{ @0xb64800000000 - 0xb67400000000 } size 0x2c00000000 |  mem_unknown 0 
 found VBE
 fb @ 0xfc000000 h= 768 p= 4096 
 ===MULTIBOOT_TAG_TYPE_ACPI_OLD===
@@ -242,12 +242,12 @@ enabled interupts
 
 ==MEM INIT OK==
 
-===initrd: loading 15068282 bytes from 0x125000===
+===initrd: loading 15060748 bytes from 0x125000===
 initrd: header CRC ok! 
 initrd: header:
- 15 files, 8 dirs
+ 14 files, 8 dirs
 initrd: footer CRC ok! 
-initrd: footer: total ramdisk size = 15068270 
+initrd: footer: total ramdisk size = 15060736 
 initrd: processing directories:
     found dir: local [5] CRC=1
     found dir: libnest [7] CRC=1
@@ -265,19 +265,18 @@ initrd: processing files:
     found file at +0x17b8be! manyfiles.txt [1279 bytes], dir[1]
     found file at +0x17be5a! etsee.file [1024 bytes], dir[1]
     found file at +0x17c2f7! romanempire.txt [10491513 bytes], dir[2]
-    found file at +0xb7da0d! make_initrd [17000 bytes], dir[4]
-    found file at +0xb81d12! ls [17 bytes], dir[4]
-    found file at +0xb81dc0! loco.txt [48 bytes], dir[5]
-    found file at +0xb81e8d! usrlocal.txt [5173 bytes], dir[5]
-    found file at +0xb8335f! imaginehavingalongfilenamewellyoudonthavetoanymore.txt [693 bytes], dir[6]
-    found file at +0xb836b1! greenland.bmp [2995046 bytes], dir[6]
-    found file at +0xe5eab4! birdnest.nice [65 bytes], dir[8]
-    found file at +0xe5eb92! testcase.txt [63 bytes], dir[7]
-initrd validated; contains 15064779 bytes of files!
-making new block at 0xffffbeefed200000 size=4800 /  footer @ 0xffffbeefed2012b4 
+    found file at +0xb7da0d! usermode [9640 bytes], dir[4]
+    found file at +0xb80052! loco.txt [48 bytes], dir[5]
+    found file at +0xb8011f! usrlocal.txt [5173 bytes], dir[5]
+    found file at +0xb815f1! imaginehavingalongfilenamewellyoudonthavetoanymore.txt [693 bytes], dir[6]
+    found file at +0xb81943! greenland.bmp [2995046 bytes], dir[6]
+    found file at +0xe5cd46! birdnest.nice [65 bytes], dir[8]
+    found file at +0xe5ce24! testcase.txt [63 bytes], dir[7]
+initrd validated; contains 15057402 bytes of files!
+making new block at 0xffffbeefed200000 size=4609 /  footer @ 0xffffbeefed2011f5 
  added to alloc map, new # allocs = 1 
 Heap Usage: 25/100 
-we found no space to fit size 0x519, making new block at 0xffffbeefed2012c0 size=1330 /  footer @ 0xffffbeefed2017e6 
+we found no space to fit size 0x519, making new block at 0xffffbeefed201201 size=1330 /  footer @ 0xffffbeefed201727 
  added to alloc map, new # allocs = 2 
 Heap Usage: 25/100 
 added dir node local 
@@ -295,8 +294,7 @@ added file node test.txt
 added file node manyfiles.txt 
 added file node etsee.file 
 added file node romanempire.txt 
-added file node make_initrd 
-added file node ls 
+added file node usermode 
 added file node loco.txt 
 added file node usrlocal.txt 
 added file node imaginehavingalongfilenamewellyoudonthavetoanymore.txt 
@@ -305,171 +303,64 @@ added file node birdnest.nice
 added file node testcase.txt 
 ==initrd load success!== 
 
-we found no space to fit size 0x1000, making new block at 0xffffbeefed2017f2 size=4121 /  footer @ 0xffffbeefed2027ff 
+file usermode is valid elf64. loading..
+entry pt is at 0x10a3b4c, file 0xca2aaa, offset 0x4010a2
+we found no space to fit size 0x1000, making new block at 0xffffbeefed201733 size=4121 /  footer @ 0xffffbeefed202740 
  added to alloc map, new # allocs = 3 
 Heap Usage: 25/100 
 
-=== stdout init @ 0xffffbeefed2017ff size 4096 idx 0  ready = 1 ===
+=== stdout init @ 0xffffbeefed201740 size 4096 idx 0  ready = 1 ===
 Graphics Init 1024 x 768 x 32 ready = 1 
 tasking init
 
-we found no space to fit size 0x6a1, making new block at 0xffffbeefed20280b size=1722 /  footer @ 0xffffbeefed202eb9 
+we found no space to fit size 0x2000, making new block at 0xffffbeefed20274c size=8217 /  footer @ 0xffffbeefed204759 
  added to alloc map, new # allocs = 4 
 Heap Usage: 25/100 
-we found no space to fit size 0x2000, making new block at 0xffffbeefed202ec5 size=8217 /  footer @ 0xffffbeefed204ed2 
+stack  0xffffbeefed204684 isn't aligned! repairing to = 0xffffbeefed204680 
+create_task task_kmain pid 0 rip 0x1010ac !
+added initial task task_kmain pid 0 !
+adding task task_draw_test, pid_last = 1 !
+we found no space to fit size 0x2000, making new block at 0xffffbeefed204765 size=8217 /  footer @ 0xffffbeefed206772 
  added to alloc map, new # allocs = 5 
 Heap Usage: 25/100 
-create_task task_drawtimer pid 1 rip 0x1010ac !
-added initial task  pid 0 !
-adding task task_draw_test pid 1 !
-we found no space to fit size 0x2000, making new block at 0xffffbeefed204ede size=8217 /  footer @ 0xffffbeefed206eeb 
+stack  0xffffbeefed20669d isn't aligned! repairing to = 0xffffbeefed206690 
+create_task task_draw_test pid 1 rip 0x101135 !
+scheduler: added task task_draw_test, pid = 1 !
+adding task task_bg_test, pid_last = 2 !
+we found no space to fit size 0x2000, making new block at 0xffffbeefed20677e size=8217 /  footer @ 0xffffbeefed20878b 
  added to alloc map, new # allocs = 6 
 Heap Usage: 25/100 
-create_task task_draw_test pid 1 rip 0x101135 !
+stack  0xffffbeefed2086b6 isn't aligned! repairing to = 0xffffbeefed2086b0 
+create_task task_bg_test pid 2 rip 0x1011b0 !
+scheduler: added task task_bg_test, pid = 2 !
+adding task task_test2, pid_last = 3 !
+we found no space to fit size 0x2000, making new block at 0xffffbeefed208797 size=8217 /  footer @ 0xffffbeefed20a7a4 
+ added to alloc map, new # allocs = 7 
+Heap Usage: 25/100 
+stack  0xffffbeefed20a6cf isn't aligned! repairing to = 0xffffbeefed20a6c0 
+create_task task_test2 pid 3 rip 0x10121b !
+scheduler: added task task_test2, pid = 3 !
+adding task task_test_exit, pid_last = 4 !
+we found no space to fit size 0x2000, making new block at 0xffffbeefed20a7b0 size=8217 /  footer @ 0xffffbeefed20c7bd 
+ added to alloc map, new # allocs = 8 
+Heap Usage: 25/100 
+stack  0xffffbeefed20c6e8 isn't aligned! repairing to = 0xffffbeefed20c6e0 
+create_task task_test_exit pid 4 rip 0x10125c !
+scheduler: added task task_test_exit, pid = 4 !
+adding task task_test_yield, pid_last = 5 !
+we found no space to fit size 0x2000, making new block at 0xffffbeefed20c7c9 size=8217 /  footer @ 0xffffbeefed20e7d6 
+ added to alloc map, new # allocs = 9 
+Heap Usage: 25/100 
+stack  0xffffbeefed20e701 isn't aligned! repairing to = 0xffffbeefed20e700 
+create_task task_test_yield pid 5 rip 0x101281 !
+scheduler: added task task_test_yield, pid = 5 !
 randos up
-your sis called ;)initrd demo: expanding fs: 
-
-initrd/
-
-    lib/
-        libnest/
-            birds/
-                birdnest.nice
-            testcase.txt
-        imaginehavingalongfilenamewellyoudonthavetoanymore.txt
-        greenland.bmp
-    usr/
-        local/
-            loco.txt
-            usrlocal.txt
-        bin/
-            make_initrd
-            ls
-    etc/
-        books/
-            romanempire.txt
-        test.txt
-        manyfiles.txt
-        etsee.file
-    ulysses.txt
-    LICENSE.txt
-    initrd.txt
-
-conclude initrd demo i hope you are impressed
-Ulysses by James Joyce
-
-— I —
-[ 1 ]
-
-Stately, plump Buck Mulligan came from the stairhead, bearing a bowl of
-lather on which a mirror and a razor lay crossed. A yellow
-dressinggown, ungirdled, was sustained gently behind him on the mild
-morning air. He held the bowl aloft and intoned:
-
-—_Introibo ad altare Dei_.
-
-Halted, he peered down the dark winding stairs and called out coarsely:
-
-—Come up, Kinch! Come up, you fearful jesuit!
-
-Solemnly he came forward and mounted the round gunrest. He faced about
-and blessed gravely thrice the tower, the surrounding land and the
-awaking mountains. Then, catching sight of Stephen Dedalus, he bent
-towards him and made rapid crosses in the air, gurgling in his throat
-and shaking his head. Stephen Dedalus, displeased and sleepy, leaned
-his arms on the top of the staircase and looked coldly at the shaking
-gurgling face that blessed him, equine in its length, and at the light
-untonsured hair, grained and hued like pale oak.
-
-Buck Mulligan peeped an instant under the mirror and then covered the
-bowl smartly.
-
-—Back to barracks! he said sternly.
-
-He added in a preacher’s tone:
-
-—For this, O dearly beloved, is the genuine Christine: body and soul
-and blood and ouns. Slow music, please. Shut your eyes, gents. One
-moment. A little trouble about those white corpuscles. Silence, all.
-
-He peered sideways up and gave a long slow whistle of call, then paused
-awhile in rapt attention, his even white teeth glistening here and
-there with gold points. Chrysostomos. Two strong shrill whistles
-answered through the calm.
-
-—Thanks, old chap, he cried briskly. That will do nicely. Switch off
-the current, will you?
-
-He skipped off the gunrest and looked gravely at his watcher, gathering
-about his legs the loose folds of his gown. The plump shadowed face and
-sullen oval jowl recalled a prelate, patron of arts in the middle ages.
-A pleasant smile broke quietly over his lips.
-
-—The mockery of it! he said gaily. Your absurd name, an ancient Greek!
-
-He pointed his finger in friendly jest and went over to the parapet,
-laughing to himself. Stephen Dedalus stepped up, followed him wearily
-halfway and sat down on the edge of the gunrest, watching him still as
-he propped his mirror on the parapet, dipped the brush in the bowl and
-lathered cheeks and neck.
-
-Buck Mulligan’s gay voice went on.
-
-—My name is absurd too: Malachi Mulligan, two dactyls. But it has a
-Hellenic ring, hasn’t it? Tripping and sunny like the buck himself. We
-must go to Athens. Will you come if I can get the aunt to forkill whistles
-answered through the calm.
-
-—Thanks, old chap, he cried briskly. That will do nicely. Switch off
-the current, will you?
-
-He skipped off the gunrest and looked gravely at his watcher, gathering
-about his legs the loose folds of his gown. The plump shadowed face and
-sullen oval jowl recalled a prelate, patron of arts in the middle ages.
-A pleasant smile broke quietly over his lips.
-
-—The mockery of it! he said gaily. Your absurd name, an ancient Greek!
-
-He pointed his finger in friendly jest and went over to the parapet,
-laughing to himself. Stephen Dedalus stepped up, followed him wearily
-halfway and sat down on the edge of the gunrest, watching him still as
-he propped his mirror on the parapet, dipped the brush in the bowl and
-lathered cheeks and neck.
-
-Buck Mulligan’s gay voice went on.
-
-—My name is absurd too: Malachi Mulligan, two dactyls. But it has a
-Hellenic ring, hasn’t it? Tripping and sunny like the buck himself. We
-must go to Athens. Will you come if I can get the aunt to fork out
-twenty quid?
-
-He laid the brush aside and, laughing with delight, cried:
-
-—Will he come? The jejune jesuit!
-
-Ceasing, he began to shave with care.
-
-—Tell me, Mulligan, Stephen said quietly.
-
-—Yes, my love?
-
-—How long is Haines going to stay in this tower?
-
-Buck Mulligan showed a shaven cheek over his right shoulder.
-
-—God, isn’t he dreadful? he said frankly. A ponderous Saxon. He thinks
-you’re not a gentleman. God, these bloody English! Bursting with money
-and indigestion. Because he comes from Oxford. You know, Dedalus, you
-have the real Oxford manner. He can’t make you out. O, my name for you
-is the best: Kinch, the knife-blade.
-
-He shaved warily over his chin.
-
-—He was raving all night about a black panther, Stephen said. Where is
-his guncase?
-
-—A woful lunatic! Mulligan said. Were you in a funk?
-
-—I was, Stephen said with energy and growing fear. Out here in the dark
-with a man I don’t know raving and moaning to himself about shooting a
-black panther. You saved men from drowni
+task draw timer 
+task draw test 
+task bg test 
+task test 2 
+task test 3 
+im outta here 
+task 4 exited with code: 0
+found task task_test2 pointing to del task task_test_exit
+bgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2

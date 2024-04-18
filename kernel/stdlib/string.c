@@ -62,6 +62,25 @@ char* strcpy(char* dest, const char* src)
 	return memcpy(dest, src, strlen(src) + 1); //add one for null term
 }
 
+char *strncpy(char *dest, const char *src, size_t max)
+{
+	const size_t len_src = strnlen(src, max);
+	if(len_src < max){
+		memcpy(dest, src, len_src);
+
+
+		//memset(dest + len_src, 0, max - len_src);
+		//okay some impls of libc seem to memset rest of dst to 0, but im just gonna do the first char after 
+		//bc i foresee myself accidentally memseting unintended areas when destlen isnt sufficient
+
+		dest[len_src] = 0;
+
+		return dest; 
+	} else{
+		return memcpy(dest, src, len_src);
+	}
+   
+}
 
 char* strcat(char* dest, const char* src)
 {
@@ -79,6 +98,17 @@ size_t strlen(const char* str){ //could be more robust but we dont have malloc s
 	while(str[len] != 0) len++;
 	return len;
 }
+
+size_t strnlen(const char *str, size_t max)
+{
+	size_t len = 0;
+
+	for (len = 0; len < max; ++len){
+		if(str[len] == 0) break;
+	}
+	return len;
+	
+}	
 
 int strncmp(const char *str1, const char* str2, size_t num)
 {

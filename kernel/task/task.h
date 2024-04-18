@@ -8,8 +8,8 @@ typedef int PID_t;
 
 typedef void (*task_entry_fn)();
 
-#define MAX_TASK 8
-
+#define MAX_TASK 128
+#define ARBITRARY_SWITCH_INTERVAL 100
 typedef struct{
         uint64_t rsp, rbp; //stack
         uint64_t rip; //inst
@@ -26,14 +26,25 @@ typedef struct{
     regs_t regs;
     uint64_t cr3;
     uint64_t reserved;
+
+    struct {
+        uint8_t no_swap : 1;
+        uint8_t is_user : 1;
+        uint8_t _zero : 6;
+    } flags;
+
     struct task_t* next;
 }__attribute__((packed)) task_t;
 
 
-typedef struct{
-    task_t** tasks;
-    task_t* current_task;   
 
+typedef struct{
+    //task_t* tasks[MAX_TASK]; //we can just do this for now despite it being shitty 
+                            //just go all in on linked list 
+    task_t* current_task;   
+    task_t* newest_task; //use this instead of tasks array! ^
+
+    task_t* root_task;
 
     struct
     {
@@ -41,10 +52,14 @@ typedef struct{
         uint64_t cr3;
     }defaults;
     
+    
     uint64_t timer;
     uint64_t next_switch;
 
+    uint32_t tasks;
     PID_t pid_last;
+
+    uint8_t active;
 } scheduler_t;
 
 extern scheduler_t sched;
@@ -60,11 +75,10 @@ void on_timer_tick(uint64_t ticks, registers_t* reg);
 
 void start_task(task_t* task);
 
-
-
+//__attribute__((noreturn))
+void  exit(int err);
 
 void yield(); 
 
 PID_t getpid();
 
-void enter_user_mode();
