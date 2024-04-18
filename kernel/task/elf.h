@@ -99,7 +99,11 @@ typedef struct
 #define PT_LOPROC 0x70000000 //Processor-specific use
 #define PT_HIPROC 0x7FFFFFFF
 
-
+#define PF_X 0x1 //Execute permission
+#define PF_W 0x2 //Write permission
+#define PF_R 0x4 //Read permission
+#define PF_MASKOS 0x00FF0000  //resv
+#define  PF_MASKPROC 0xFF000000 //resv
 
 
 

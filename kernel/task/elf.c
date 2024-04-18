@@ -2,6 +2,8 @@
 /*
 Info and structs from: https://uclibc.org/docs/elf-64-gen.pdf
 
+
+also this https://stackoverflow.com/a/71367851 made everything clear
 */
 
 uint8_t elf_verify_magic(Elf64_Ehdr* eheader){
@@ -40,10 +42,65 @@ uint64_t load_elf(vfs_node* file)
 
     debugf("entry pt is at %lx, file %lx, offset %lx",(uintptr_t)file->addr + eheader->e_entry, (uintptr_t)file->addr, eheader->e_entry);
 
-    Elf64_Phdr* phdr = (file->addr + eheader->e_phoff);
+    //go thru program headers
+    //for now we are just trying to find an entry point 
+    uintptr_t entry = 0;
+
+    for(int i = 0; i < eheader->e_phnum; ++i){
+        Elf64_Phdr* phdr = (file->addr + eheader->e_phoff + (sizeof( Elf64_Phdr) * i)  );
+
+        if(phdr->p_type == PT_LOAD){
+
+            if(phdr->p_flags & PF_X){
+                debugf("found prog header for executable, loadable segment [%i] offset %lx, vm %lx,  size file: %lx \n", i, phdr->p_offset, phdr->p_vaddr,phdr->p_filesz);
+
+                if(phdr->p_vaddr <= eheader->e_entry && eheader->e_entry <= phdr->p_vaddr + phdr->p_memsz){
+
+                    entry = (eheader->e_entry - phdr->p_vaddr) + phdr->p_offset;
+                    debugf("entry point found, %lx from start of file\n", entry);
+
+                    break;
+                }
+
+
+            }
+        }
+
+    }
+
+
+    /*
+    well shit
+
+    we gotta rewrite everything LOL
+
+    so to load an executable as a process
+    parse elf headers, figure out what is wanted at what virt addrs, etc.
+        -basically there
+    
+    then we have to make p4,p3,p2 for entire damn process
+
+    then we have to modify scheduler a tonne
+        -seperate user and kernel tasks
+
+    and theres no real good way to test this
+
+    isnt that fun!?
 
     
+    deps:
+        finding physical memory
 
-    uintptr_t entry = 0;
+        somewhere to put pages
+
+        scheduler cr3 fixin
+    
+
+    aghhghgghghghghghghhghghg
+    */
+    
+    
+
+   
     return entry;
 }

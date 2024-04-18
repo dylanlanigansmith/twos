@@ -1,6 +1,6 @@
 boot startusing Serial COM1 for debug out 
 ==init GDT, TSS==
-gdt ptr = 0x10dad0 tss - gdt = 0x28
+gdt ptr = 0x10db50 tss - gdt = 0x28
 stack top = 0x11a000 end = 0x116000 size = 0x4000
 copied GDT tss to 0x10e1b4
 ==Reloaded GDT, Loaded TSS==
@@ -78,8 +78,8 @@ gdt->tss:
   reserved0: 0x0
 === END GDT DUMP === 
  
-registered interupt handler for [33] at 0x108b87
-registered interupt handler for [32] at 0x1089d4
+registered interupt handler for [33] at 0x108c82
+registered interupt handler for [32] at 0x108acf
 registered interupt handler for [105] at 0x107c3e
 boot phase 1 complete
 multiboot2 addr = 0x124418 magic = 0x36d76289 
@@ -104,15 +104,15 @@ mmap [11]:{ @0x0 - 0x1b00000000 } size 0x1b00000000 |  mem_avail 1
 mmap [12]:{ @0x10000000000000 - 0x10100000000000 } size 0x100000000000 |  mem_unknown 0 
 mmap [13]:{ @0x0 - 0x800000000 } size 0x800000000 |  mem_unknown 0 
 mmap [14]:{ @0x2100000000 - 0x2700000001 } size 0x600000001 |  mem_unknown 0 
-mmap [15]:{ @0x200000000000 - 0xb5bc00000000 } size 0x95bc00000000 |  mem_unknown 0 
+mmap [15]:{ @0x200000000000 - 0xb6bc00000000 } size 0x96bc00000000 |  mem_unknown 0 
 mmap [16]:{ @0x1000000000 - 0x1000000000 } size 0x0 |  mem_unknown 0 
-mmap [17]:{ @0x600000001 - 0x10a5c200000001 } size 0x10a5bc00000000 |  mem_unknown 0 
+mmap [17]:{ @0x600000001 - 0x10a6c200000001 } size 0x10a6bc00000000 |  mem_unknown 0 
 mmap [18]:{ @0x2200000000 - 0x2200000000 } size 0x0 |  mem_unknown 0 
 mmap [19]:{ @0x0 - 0x4000000000 } size 0x4000000000 |  mem_avail 1 
-mmap [20]:{ @0x10a5de00000000 - 0x115bbc00000000 } size 0xb5de00000000 |  mem_unknown 0 
+mmap [20]:{ @0x10a6de00000000 - 0x115dbc00000000 } size 0xb6de00000000 |  mem_unknown 0 
 mmap [21]:{ @0x0 - 0x200000000 } size 0x200000000 |  mem_unknown 0 
 mmap [22]:{ @0x5b00000000 - 0x6100000001 } size 0x600000001 |  mem_unknown 0 
-mmap [23]:{ @0xb64800000000 - 0xb67400000000 } size 0x2c00000000 |  mem_unknown 0 
+mmap [23]:{ @0xb74800000000 - 0xb77400000000 } size 0x2c00000000 |  mem_unknown 0 
 found VBE
 fb @ 0xfc000000 h= 768 p= 4096 
 ===MULTIBOOT_TAG_TYPE_ACPI_OLD===
@@ -305,6 +305,8 @@ added file node testcase.txt
 
 file usermode is valid elf64. loading..
 entry pt is at 0x10a3b4c, file 0xca2aaa, offset 0x4010a2
+found prog header for executable, loadable segment [1] offset 0x1000, vm 0x401000,  size file: 0xb3 
+entry point found, 0x10a2 from start of file
 we found no space to fit size 0x1000, making new block at 0xffffbeefed201733 size=4121 /  footer @ 0xffffbeefed202740 
  added to alloc map, new # allocs = 3 
 Heap Usage: 25/100 
@@ -363,4 +365,44 @@ task test 3
 im outta here 
 task 4 exited with code: 0
 found task task_test2 pointing to del task task_test_exit
-bgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2
+bgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yield=======
+ISR_DivisionError: 0 
+===isr[0x0] err{0x0}====
+err_code = 0x0
+rbp = 0xffffbeefed204658
+rip = 0x10781f
+ss:rsp = 0xffffbeefed204658
+cs = 0x8
+rflags = 0x10206
+ds = 0x10
+ss = 0x10
+rax = 0xffffbeefed204658
+rbx = 0x25800000005
+rcx = 0xffff0000
+rdx = 0x0
+rdi = 0x164940
+rsi = 0x0
+r8 = 0x108fa7
+r9 = 0xf000f859f000e739
+=======
+=======
+ISR_DivisionError: 0 
+===isr[0x0] err{0x0}====
+err_code = 0x0
+rbp = 0xffffbeefed204658
+rip = 0x10781f
+ss:rsp = 0xffffbeefed204658
+cs = 0x8
+rflags = 0x10206
+ds = 0x10
+ss = 0x10
+rax = 0xffffbeefed204658
+rbx = 0x25800000005
+rcx = 0xffff0000
+rdx = 0x0
+rdi = 0x164940
+rsi = 0x0
+r8 = 0x108fa7
+r9 = 0xf000f859f000e739
+=======
+Kernel Panic: double exception!  [kernel/idt/isr.c](72)
