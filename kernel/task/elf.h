@@ -47,6 +47,27 @@ typedef struct
     Elf64_Xword sh_addralign; /* Address alignment boundary */
     Elf64_Xword sh_entsize;   /* Size of entries, if section has table */
 } Elf64_Shdr;
+#define SHT_NULL        0   /* Marks an unused section header */
+#define SHT_PROGBITS    1   /* Contains information defined by the program */
+#define SHT_SYMTAB      2   /* Contains a linker symbol table */
+#define SHT_STRTAB      3   /* Contains a string table */
+#define SHT_RELA        4   /* Contains “Rela” type relocation entries */
+#define SHT_HASH        5   /* Contains a symbol hash table */
+#define SHT_DYNAMIC     6   /* Contains dynamic linking tables */
+#define SHT_NOTE        7   /* Contains note information */
+#define SHT_NOBITS      8   /* Contains uninitialized space; does not occupy any space in the file */
+#define SHT_REL         9   /* Contains “Rel” type relocation entries */
+#define SHT_SHLIB       10  /* Reserved */
+#define SHT_DYNSYM      11  /* Contains a dynamic loader symbol table */
+#define SHT_LOOS        0x60000000  /* Environment-specific use */
+#define SHT_HIOS        0x6FFFFFFF
+#define SHT_LOPROC      0x70000000  /* Processor-specific use */
+#define SHT_HIPROC      0x7FFFFFFF
+#define SHF_WRITE       0x1 /* Section contains writable data */
+#define SHF_ALLOC       0x2 /* Section is allocated in memory image of program */
+#define SHF_EXECINSTR   0x4 /* Section contains executable instructions */
+#define SHF_MASKOS      0x0F000000  /* Environment-specific use */
+#define SHF_MASKPROC    0xF0000000  /* Processor-specific use */
 
 typedef struct
 {

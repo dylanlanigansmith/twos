@@ -1,7 +1,7 @@
 
 #include "initrd.h"
 #include "../mem/heap.h"
-
+#include "../pmm/pmm.h"
 initrd_header* header;
 initrd_footer* footer;
 
@@ -184,9 +184,27 @@ void initrd_add_file_node(vfs_node* node, initrd_file_header* file, uint32_t ino
     debugf("added file node %s \n", node->name);
 }
 
+void initrd_reserve_space(uintptr_t addr, size_t size)
+{
+    if (!addr || ! size){
+        debugf("can't reserved space for initrd! invalid address, invalid size"); return;
+    } 
+
+      //we gotta set wherever bootloader stuck this as reserved! 
+    pmm_mark_frames_used(addr, size);
+}
 
 int initrd(uintptr_t addr, size_t size)
 {
+    //blah blah blah 
+        //so what we wrote our own filesystem from scratch after skimming "the history of filesystems"
+        // what youre gonna be all proud and happy about it?
+        // you think its super cool?
+        // yeah?
+        // well youre right this shit is incredible
+        // my understanding of computers grows in ways i never knew it could
+    //okay now that you arent all proud about this clean this function up holy
+
     //TODO: check if addr has virtual/id map!!!!!
         //bochs also loaded at 0x123000 so multiboot might be blessin us up
     header = footer = 0;
@@ -196,33 +214,35 @@ int initrd(uintptr_t addr, size_t size)
 
     debugf("===initrd: loading %lu bytes from %lx===\n", size, addr);
 
+  
+
     header = (initrd_header*)(addr);
 
     if (header->crc != INITRD_CRC){ debugf("initrd: header CRC INVALID! \n"); return 1; }
-    debugf("initrd: header CRC ok! \n");
-    debugf("initrd: header:\n %u files, %u dirs\n", header->num_files, header->num_dirs);
+   // debugf("initrd: header CRC ok! \n");
+  //  debugf("initrd: header:\n %u files, %u dirs\n", header->num_files, header->num_dirs);
 
     footer = (initrd_footer*)(addr + size - sizeof(initrd_footer));
     if (footer->crc != INITRD_CRC){ debugf("initrd: footer CRC INVALID! \n"); return 1; }
-    debugf("initrd: footer CRC ok! \n");
-    debugf("initrd: footer: total ramdisk size = %lu \n", footer->size); //redundant but makes me happy
+   // debugf("initrd: footer CRC ok! \n");
+   // debugf("initrd: footer: total ramdisk size = %lu \n", footer->size); //redundant but makes me happy
 
     initrd_dir_info* dirs = (initrd_dir_info*)(  addr + sizeof(initrd_header) );
-    debugf("initrd: processing directories:\n");
-    for(int i = 0; i < header->num_dirs; ++i){
-        printf("    found dir: %s [%u] CRC=%i\n", dirs[i].name, dirs[i].dir_inode, (dirs[i].crc == INITRD_CRC));
-    }
+   // debugf("initrd: processing directories:\n");
+   // for(int i = 0; i < header->num_dirs; ++i){
+   //     printf("    found dir: %s [%u] CRC=%i\n", dirs[i].name, dirs[i].dir_inode, (dirs[i].crc == INITRD_CRC));
+   // }
 
     initrd_file_header* files[header->num_files];
     size_t offset = addr + sizeof(initrd_header) + (sizeof(initrd_dir_info) * header->num_dirs);
     
     size_t total_file_size = 0;
-    debugf("initrd: processing files:\n");
+  //  debugf("initrd: processing files:\n");
     for(int i = 0; i < header->num_files; ++i){
         files[i] = (initrd_file_header*)(offset);
         if(files[i]->crc != INITRD_CRC) { debugf("initrd: fileheader[%i] CRC INVALID! \n", i); return 1; }
         
-        debugf("    found file at +%lx! %s [%lu bytes], dir[%u]\n", files[i]->offset, files[i]->name, files[i]->size, files[i]->parent_dir);
+      //  debugf("    found file at +%lx! %s [%lu bytes], dir[%u]\n", files[i]->offset, files[i]->name, files[i]->size, files[i]->parent_dir);
         total_file_size += files[i]->size;
         offset += (sizeof(initrd_file_header) + files[i]->size);
     }
@@ -279,17 +299,12 @@ int initrd(uintptr_t addr, size_t size)
     }
 
 
-    for(int i = 0; i < header->num_files; ++i){
+    for(int i = 0; i < header->num_files; ++i){ //add all files to dirs 
         initrd_add_file_node(&initrd_nodes[node_idx], files[i], node_idx);
         node_idx++; //gonna stray away from undef. behaviour here at the sake of looking less fancy
     }
 
-    //add all files to dirs 
-
-
-
-
-
+    
 
     debugf("==initrd load success!== \n\n");
     return 0;
@@ -324,6 +339,4 @@ void initrd_demo()
     itr_dir(initrd_root, 1); 
     print("\n");
     debugf("conclude initrd demo i hope you are impressed\n");
-
-
 }

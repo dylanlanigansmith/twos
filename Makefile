@@ -48,8 +48,8 @@ CRTN_OBJ:=kernel/cpp/crtn.o
 
 
 
-C_FLAGS:= -masm=intel -m64 -ffreestanding -fno-pie -fno-stack-protector -mno-shstk -fmacro-prefix-map=/home/dylan/code/randos=.
-CPP_FLAGS:=-nostdlib -nostartfiles -fno-exceptions -fno-rtti
+C_FLAGS:= -masm=intel -ffreestanding -nostdlib -fno-pie -fno-stack-protector -mno-shstk -mno-red-zone -fmacro-prefix-map=/home/dylan/code/randos=.
+CPP_FLAGS:=-nostartfiles -fno-exceptions -fno-rtti
 
 #Linking
 LD_FLAGS:=--nmagic --script=linker.ld -no-pie 

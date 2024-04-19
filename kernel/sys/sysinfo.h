@@ -14,10 +14,20 @@ enum HOST_TYPES {
     OTHER_VM,
 };
 
-
+extern uint64_t _end;
 
 typedef struct {
-    uint8_t is_uefi;
+
+    struct{
+        char bl_name[16];
+        char cmdline[64];
+        uintptr_t kernel_base;
+        uintptr_t kernel_end;
+        uint8_t is_uefi;
+    }boot;
+
+    
+   
 
 
     void* multiboot2;
@@ -27,7 +37,12 @@ typedef struct {
         uintptr_t addr; 
         uint32_t w, h, pitch, bpp;
     }fb;
-    void* mb_mmaps;
+    struct{
+        void* mb_map;
+        size_t mb_size;
+    }mem;
+  
+   
 
     RSDP_t* rsdp;
     uintptr_t rsdt;
@@ -50,5 +65,5 @@ extern sysinfo_t sysinfo;
 static inline void sysinfo_create(sysinfo_t* sys){
     memset(sys, 0, sizeof(sysinfo_t));
 
-    memset(sysinfo.rsdt_entries,0, ACPI_ENTRIES_MAX * sizeof(uintptr_t) );
+    sysinfo.boot.kernel_end = &_end;
 }

@@ -31,7 +31,7 @@ typedef struct {
 #define K_ID_MAP_END 0x40000000LLU
 #define K_ID_MAP_SIZE (size_t)(K_ID_MAP_END - K_ID_MAP_START)
 
-void make_page_struct();
+void paging_init();
 
 size_t expand_heap(void* heap_ptr, size_t size_to_add);
 
@@ -43,4 +43,10 @@ uintptr_t map_phys_addr(uintptr_t virt, uintptr_t phys, size_t size, uint64_t fl
 //https://wiki.osdev.org/images/thumb/6/6b/64-bit_page_tables2.png/412px-64-bit_page_tables2.png
 static inline page_table_t* pt_addr(uintptr_t entry){ 
     return (page_table_t*)(entry & 0xFFFFFFFFFFFFFF00ull);
+}
+
+
+static inline uintptr_t round_up_to_page(uintptr_t addr){
+    if(addr % PAGE_SIZE == 0) return addr;
+    return (addr + (PAGE_SIZE - (addr % PAGE_SIZE)));
 }

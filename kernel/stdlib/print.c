@@ -301,9 +301,10 @@ size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t 
                     {
                     case 'b':
                     case 'B':
+                         last_fmt_len = 2;
                         _print("0b", buf_out, len);
                         uint64_t num  = va_arg(args, unsigned long long);
-                        if(num == 0){ _print("0", buf_out, len); break;}
+                        if(num == 0){ _print("0000", buf_out, len); break;}
                         for (int i = sizeof(num) * 8 - 1; i >= 0; i--) {
                                 if ((num >> i) & 1)
                                     _print("1", buf_out, len);
@@ -313,7 +314,7 @@ size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t 
                                 if (i % 4 == 0)
                                      _print(" ", buf_out, len);;  // Add a space for better readability
                             }
-                        last_fmt_len = 2;
+                       
                         break;
                     case 'x': // btw this will prefix with 0x by default!
                         total += _print(__PRINT_HTOA(va_arg(args, unsigned long long)), buf_out, len);
@@ -331,7 +332,9 @@ size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t 
                         break;
                     case 'u':
                     case 'd':
-                        last_fmt_len = 1;
+                    case 'i':
+                        last_fmt_len = 1; //since default probs means was no ch2 we let it inc for these cases,
+                                                    // where we want default case of printing as decimal long
                     default:
                         total += _print(__PRINT_LLTOA(va_arg(args, unsigned long long), 10), buf_out, len);
                         last_fmt_len++;

@@ -248,6 +248,7 @@ struct multiboot_tag_mmap
   struct multiboot_mmap_entry entries[0];  
 };
 
+
 struct multiboot_vbe_info_block
 {
   multiboot_uint8_t external_specification[512];

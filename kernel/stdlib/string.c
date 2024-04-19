@@ -54,6 +54,22 @@ char* htoa(uint64_t val)
 	return strcat(buf, lltoa(val, 16));
 }
 
+uint32_t atou(const char *str) //returns max uint32 on failure
+{
+    uint32_t result = 0;
+   
+    for (int i = 0; str[i] != '\0'; ++i) {
+        if (str[i] >= '0' && str[i] <= '9') {
+			result *= 10;
+            result += (str[i] - '0');
+        } else {
+            return UINT32_MAX;
+        }
+    }
+
+	return result;
+}
+
 char* strcpy(char* dest, const char* src)
 {
 	if(!dest || !src) return nullptr; 
@@ -127,7 +143,7 @@ int strncmp(const char *str1, const char* str2, size_t num)
 
 		> 0 when greater first not match in 1 v 2
 	*/ //this is gonna be wrong bc i wrote it to return num matching chars earlier 
-	if(matching == num) return 0;
+	if(matching == num) return 0; //this is broken
 	if(str1[c] > str2[c]) return -1; 
 	else return 1; 
 

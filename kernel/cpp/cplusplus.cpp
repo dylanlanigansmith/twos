@@ -5,7 +5,8 @@
  #include "cplusplus.hpp"
 #include "string.hpp"
 #include "../stdlib/print.h"
-
+//we never ended up using cpp in kernel
+//linus was right
 extern "C" void _init_cpp(){
 
 }

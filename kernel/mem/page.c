@@ -3,19 +3,14 @@
 #include "../../drivers/serial/serial.h"
 #include "../../kernel/sys/sysinfo.h"
 #include "page_alloc.h"
+
+#include "../pmm/pmm.h"
 extern uint64_t get_cr3();
 
 extern uintptr_t p2_table;
 extern uintptr_t p3_table;
 extern uintptr_t p4_table;
 
-page_table_t p2_vram;
-
-page_table_t p2_heap;
-page_table_t p3_heap;
-
-
-page_table_t p2_palloc;
 
 page_table_t* get_p4(){
     return (page_table_t*)(get_cr3());
@@ -190,84 +185,65 @@ void map_identity(page_table_t* p2, page_table_t* p4, uint64_t addr, int num_pag
 
 void init_heap()
 {
-    memset(&p2_heap, 0, 512 * 8);
+  //  map_to_physical_new(&p2_heap, &p3_heap, p4, HEAP_PHYS, HEAP_VIRT, HEAP_SIZE);
+    uintptr_t heap_phys = pmm_kalloc(HEAP_SIZE);
+    ASSERT(heap_phys);
 
-    memset(&p3_heap, 0, 512 * 8);
-    uintptr_t cr3 = get_cr3();
-    serial_printh("cr3 = ", cr3);
-
-    
-    page_table_t* p4 = (page_table_t*)(cr3);
-    map_to_physical_new(&p2_heap, &p3_heap, p4, HEAP_PHYS, HEAP_VIRT, HEAP_SIZE);
+    ASSERT(map_phys_addr(HEAP_VIRT, heap_phys, HEAP_SIZE, 0));
 
     alloc_init();
-
-
-    //init palloc
-    memset(&p2_palloc, 0, sizeof(page_table_t));
- 
-    map_identity(&p2_palloc, p4, PALLOC_BASE, 2);
-    palloc_init();
-    //map_to_physical_new(&p2_palloc, &p3_palloc, p4, PALLOC_BASE, PALLOC_BASE, PALLOC_SIZE);
 }
 
-void make_page_struct()
+void paging_init()
 {
-    memset(&p2_vram, 0, 512 * 8);
-    
-    
-    
-
+    //reserve framebuffer first
+    pmm_mark_frames_used(sysinfo.fb.addr, 0x300000ULL); //it already should be reserved anyhow but jic
+  
+    palloc_init();
     uintptr_t cr3 = get_cr3();
-    serial_printh("cr3 = ", cr3);
+  
 
     page_table_t* p4 = (page_table_t*)(cr3);
-   
-    serial_printh("address p4 = ", (uintptr_t)p4);
-    serial_printh("address p4real = ", (uintptr_t)&p4_table);
-
     page_table_t* p3 =  (page_table_t*) (&p3_table);
-    serial_printh("address p3 = ", (uintptr_t)p3);
-    serial_printh("address p3 via p4[0] = ", (uintptr_t)p4->entries[0]);
- 
-    page_table_t* p2 =  (page_table_t*) &p2_table;
 
-    uint64_t virtual_address = 0x0;
-    uint64_t physical_address = 0x100000; //same as linker
-   
-   
- 
-    map_to_physical(&p2_vram, p3, p4, (uint64_t)sysinfo.fb.addr, (uint64_t)VIRTMAP,  0x300000ULL);
+   page_table_t* p2_vram = palloc();
+   if(!p2_vram) KPANIC("palloc failure: framebuffer map");
+                                                    //its hella problematic that we are mapping the framebuffer to qemu default address
+                                                    //so at least we should ID map it instead of VIRTMAP bullcrap.. TODO
+   map_to_physical(p2_vram, p3, p4, (uint64_t)sysinfo.fb.addr, (uint64_t)VIRTMAP,  0x300000ULL); 
+   //also trash this function please ^^^^^^^
     
-   // serial_printh("address p2_vram = ", (uintptr_t)&p2_vram);
-  //  dump_pt(p3, "p3", 1);
-    dump_pt(p4, "p4 ", True);
-   // dump_pt(p2, "p2", 1);   
-   // dump_pt(&p2_vram, "p2 vram", 1);   
-
- 
-
     init_heap();
-   // dump_pt(p3);
-
+   //so for user heap we just write an allocator in our libc !
 }
+
+
+
 
 size_t expand_heap(void* heap_ptr, size_t size_to_add)
 {
     heap_t* heap = (heap_t*)(heap_ptr);
     int num_pages = calc_num_pages(size_to_add);
-    printf("expanding heap by %lx, adding %i pages\n", size_to_add, num_pages);
 
-    //should we turn off itrps ? 
-    //god paging code is bad 
-    
+    debugf("expanding heap by %lx, adding %i pages\n", size_to_add, num_pages);
+
     uintptr_t cr3 = get_cr3();   
     page_table_t* p4 = (page_table_t*)(cr3);
     size_t new_heap_size = heap->size + (num_pages * PAGE_SIZE);
     if(new_heap_size > HEAP_MAX_SIZE){
         return 0; 
     }
-    map_to_physical_new(&p2_heap, &p3_heap, p4, HEAP_PHYS, HEAP_VIRT, new_heap_size);
+
+    //love when new good code coexists with old bad code
+    uintptr_t heap_phys = pmm_kalloc(num_pages * PAGE_SIZE);
+    ASSERT(heap_phys);
+
+    uintptr_t heap_virtual = round_up_to_page(HEAP_VIRT + heap->size);
+    debugf("heap virtual %lx, from heap addr @ %lx", heap->addr, heap_virtual);
+
+
+    ASSERT(map_phys_addr(heap_virtual, heap_phys, num_pages * PAGE_SIZE, 0));
+
     flush_tlb();
     heap->size = new_heap_size;
 
@@ -381,7 +357,7 @@ uintptr_t map_phys_addr(uintptr_t virt, uintptr_t phys, size_t size, uint64_t fl
         p4->entries[ind.p4] = (uintptr_t)p3 |  PT_FLAGS; //>:(
 
 
-        debugf("made new: p3 = %lx p2 = %lx entry = %lb \n", p3, p2,  p4->entries[ind.p4] );
+        debugf("made new: **p3 = %lx p2 = %lx entry = %lb \n", p3, p2,  p4->entries[ind.p4] );
         //set p2 phys since we made it
        
     }
@@ -391,7 +367,7 @@ uintptr_t map_phys_addr(uintptr_t virt, uintptr_t phys, size_t size, uint64_t fl
             p2 = palloc();
             ASSERT(p2);
             //set p2 phys since we made it via malloc (returns virtual address)
-          
+            debugf("made new: p2\n");
         } 
     }
     debugf("we have: p3 = %lx p2 = %lx \n", (uintptr_t)p3, (uintptr_t)p2); //we should have a valid p3 and p2 now

@@ -12,7 +12,7 @@
 #include "../drivers/sound/sound.h"
 #include "boot/multiboot2.h"
 #include "boot/mb_header.h"
-
+#include "boot/cmdline.h"
 #include "sys/sysinfo.h"
 #include "sys/syscall.h"
 #include "../drivers/serial/serial.h"
@@ -31,25 +31,12 @@
 
 #include "fs/initrd.h"
 
-void user_mode_test(){
-    __asm__ volatile("mov rdi, 0xcafebabe; mov rax, rdi; mov r12, rdi; mov rdx, rdi;  int 0x0; ");
-    for(;;){
-        __asm__("hlt");
-    }
-}
+#include "pmm/pmm.h"
+
 
 int cpp_test(int, int);
 
-void wtf(){
-     __asm__ volatile ( 
-        
-        " \
-        nop; nop; xor rax, rax; nop; \
-        int 3; \
-        hlt;   "
 
-    );
-}
 
 
 uint64_t start_tick = 0;
@@ -180,29 +167,43 @@ extern __attribute__((noreturn)) void jump_to_usermode(void* addr);
 
 void main(void *addr, void *magic)
 {
-    if ((uint64_t)magic != MULTIBOOT2_BOOTLOADER_MAGIC){ /* uh how? */ }
-    //we do check this in parse_multiboot_header() but that does happen rather late in the start process 
     disable_interupts();
    
-    serial_init(); //we can now debug and log! 
-    debug("boot start");
-    
-    if(port_byte_in(0xe9) == 0xe9){
-        serial_set_e9();
-        debug("Using Bochs E9 Hack for debug out\n"); //bochs
-    } else{
-        debug("using Serial COM1 for debug out \n"); //qemu (superior)
-    } //todo: https://wiki.osdev.org/Parallel_port and use that for kernel debug
-    
-    //should check if we can do this sooner!
-
-
+    if(get_multiboot_initial_info(addr, magic) == MB_HEADER_PARSE_ERROR){
+        //uh what?
+        serial_init(); debugf("mb2 header parse error. magic =%lx", magic); return;
+        //we can at least try and do something, this is why we need to implement bulletproof printk
+    }
+    if(cmdline_numargs())
+    {
+        if(cmdline_is_true("serial")){
+            serial_init(); //we can now debug and log! 
+            if(cmdline_is_true("dbg")) //eventually use as verbositiy level
+            {
+                if(port_byte_in(0xe9) == 0xe9){
+                    serial_set_e9();
+                    debug("Using Bochs E9 Hack for debug out\n"); //bochs
+                } else{
+                    debug("using Serial COM1 for debug out \n"); //qemu (superior)
+                } //todo: https://wiki.osdev.org/Parallel_port and use that for kernel debug
+            }
+        }
+       
+    }
+     /*
+        we should try and bootstrap up printk like linux does
+            - callable in any context! 
+        aka parse multiboot ASAP and see if we can get a frame buffer going - otherwise buffer printk's and send to serial as well
+    */    
+   
+    debugf("boot start\n");
 
     //should check multiboot here while we have a working system
 
-    init_descriptor_table(2); //update gdt
+    init_descriptor_table(GDT_INIT_QUIET); //update gdt
                             //add user mode segments 
                             //add tss
+   
    
 
     //todo: APIC 
@@ -218,33 +219,34 @@ void main(void *addr, void *magic)
     syscall_init();
    
 
-    io_wait();
-    serial_println("boot phase 1 complete"); 
-   // serial_println("boot phase 1 complete"); 
-   // serial_println("boot phase 1 complete"); 
-   // serial_println("boot phase 1 complete"); 
 
-    
-    debugf("multiboot2 addr = %lx magic = %lx \n",  (uintptr_t)addr, (uint64_t)magic);
-    
-
+    debugf("interupts initialized\n==boot initial phase complete==\n\n"); 
+   
+    debugf("CPUID available = %s\n", (has_cpuid()) ? "YES" : "NO WTF");
     //so we gotta do this sooner in boot stage! 
     if(parse_multiboot_header(addr, (uint64_t)magic) == MB_HEADER_PARSE_ERROR){ //gets acpi, framebuffer, etc
-
         KPANIC("multiboot parse fail");
     }else{
         //do shit like are we uefi, what vm is this etc etc etc 
-      
     }
 
+
+    //we are doing the new and improved... lower half kernel!!!!
+
+    //aka i dont wanna do higher half, i dont like it the bootstrapping required
+    //so we will try and keep the kernel under 1gb
+    pmm_init();
+    initrd_reserve_space(sysinfo.initrd.start, sysinfo.initrd.end - sysinfo.initrd.start);
     
-    debugf("CPUID available = %s\n", (has_cpuid()) ? "YES" : "NO WTF");
    
-    // serial_println("\n===init mem===\n");
-    make_page_struct(); //this also initializes heap, maps frame buffer
-    //doing this pre-enable interupts now to see if stability improves 
-    _init_cpp(); //bc we cant get global constructors to work & by we i mean I
+   
+    paging_init(); //this also initializes heap, maps frame buffer, page allocator, etc.
     
+
+
+    //no cpp in kernel atm
+    _init_cpp(); //todo fix global constructors and actually write some cpp
+                    //or just save it for user space where it belongs :))))
 
     if(sysinfo.rsdp){  
 
@@ -256,31 +258,28 @@ void main(void *addr, void *magic)
         //todo: apic
 
     }
-
+    debugf("\n==MEM INIT OK==\n");
     __asm__("sti");
-    serial_println("enabled interupts"); 
+    debugf("enabled interupts.\n==boot second phase complete==\n"); 
 
     
      
-    serial_println("\n==MEM INIT OK==\n");
+   
 
     if(initrd(sysinfo.initrd.start, sysinfo.initrd.end - sysinfo.initrd.start) == 0){
-        //blah blah blah 
-        //so what we wrote our own filesystem from scratch after skimming "the history of filesystems"
-        // what youre gonna be all proud and happy about it?
-        // you think its super cool?
-        // yeah?
-        // well youre right this shit is incredible
-        // my understanding of computers grows in ways i never knew it could
+        
     }
     
+    
+
+
     vfs_node* elf = initrd_findfile(initrd_root, "usermode");
     if(elf){
        load_elf(elf);
     }
 
-  
-    
+   
+
     stdout_init();
     
     gfx_init(color_cyan);

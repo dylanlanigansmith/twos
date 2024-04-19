@@ -11,6 +11,8 @@ char* lltoa(uint64_t val, int base);
 
 char* htoa(uint64_t val); 
 
+uint32_t atou(const char* str);
+
 char* strcpy(char* dest, const char* src);
 
 char* strncpy(char* dest, const char* src, size_t num);

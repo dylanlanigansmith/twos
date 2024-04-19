@@ -1,133 +1,51 @@
-boot startusing Serial COM1 for debug out 
+using Serial COM1 for debug out 
+boot start
 ==init GDT, TSS==
-gdt ptr = 0x10db50 tss - gdt = 0x28
-stack top = 0x11a000 end = 0x116000 size = 0x4000
-copied GDT tss to 0x10e1b4
+gdt ptr = 0x10eed0 tss - gdt = 0x28
+stack top = 0x11b000 end = 0x117000 size = 0x4000
+copied GDT tss to 0x10f1b4
 ==Reloaded GDT, Loaded TSS==
-===DUMP GDT===gdt->kernel_cs:
-  limit_0_15: 0x0
-  base_0_15: 0x0
-  base_16_23: 0x0
-  ---access bit--- 
-  	accessed: 0x1
-  	RW: 0x1
-  	DC: 0x0
-  	exec: 0x1
-  	not_sys: 0x1
-  	priv: 0x0
-  	present: 0x1
-  limit_16_19_and_flags: 0x20 0b00100000
-  base_24_31: 0x0
-gdt->kernel_ds:
-  limit_0_15: 0x0
-  base_0_15: 0x0
-  base_16_23: 0x0
-  ---access bit--- 
-    accessed: 0x1
-  	RW: 0x1
-    DC: 0x0
-    exec: 0x0
-    not_sys: 0x1
-    priv: 0x0
-    present: 0x1
-  limit_16_19_and_flags: 0x0 0b0
-  base_24_31: 0x0
-gdt->user_cs:
-  limit_0_15: 0x0
-  base_0_15: 0x0
-  base_16_23: 0x0
-  ---access bit--- 
-  	accessed: 0x0
-  	RW: 0x1
-  	DC: 0x0
-  	exec: 0x1
-  	not_sys: 0x1
-  	priv: 0x3
-  	present: 0x1
-  limit_16_19_and_flags: 0x20 0b00100000
-  base_24_31: 0x0
-gdt->user_ds:
-  limit_0_15: 0x0
-  base_0_15: 0x0
-  base_16_23: 0x0
-  ---access bit--- 
-  	accessed: 0x0
-  	RW: 0x1
-  	DC: 0x0
-  	exec: 0x0
-  	not_sys: 0x1
-  	priv: 0x3
-  	present: 0x1
-  limit_16_19_and_flags: 0x0 0b0
-  base_24_31: 0x0
-gdt->tss:
-  size: 0x67
-  base_0_15: 0xf140
-  base_16_23: 0x10
-  ---access bit--- 
-  	accessed: 0x1
-  	RW: 0x1
-  	DC: 0x0
- 	exec: 0x1
-  	not_sys: 0x0
-  	priv: 0x0
- 	present: 0x1
-  flags: 0x0
-  base_24_31: 0x0
-  base_31_64: 0x0
-  reserved0: 0x0
-=== END GDT DUMP === 
- 
-registered interupt handler for [33] at 0x108c82
-registered interupt handler for [32] at 0x108acf
-registered interupt handler for [105] at 0x107c3e
-boot phase 1 complete
-multiboot2 addr = 0x124418 magic = 0x36d76289 
-parse_multiboot_header()
-MULTIBOOT_TAG_TYPE_MODULE
-mod start = 0x125000 end = 0xf81f0c size = 15060748 
-===MULTIBOOT_TAG_TYPE_MMAP===
-mmaps->entry_size: 24 
-mmaps->entry_version: 0x0 
-mmap [0]:{ @0x0 - 0x9fc00 } size 0x9fc00 |  mem_avail 1 
-mmap [1]:{ @0x9fc00 - 0xa0000 } size 0x400 |  mem_reserved 2 
-mmap [2]:{ @0xf0000 - 0x100000 } size 0x10000 |  mem_reserved 2 
-mmap [3]:{ @0x100000 - 0xbffe0000 } size 0xbfee0000 |  mem_avail 1 
-mmap [4]:{ @0xbffe0000 - 0xc0000000 } size 0x20000 |  mem_reserved 2 
-mmap [5]:{ @0xfeffc000 - 0xff000000 } size 0x4000 |  mem_reserved 2 
-mmap [6]:{ @0xfffc0000 - 0x100000000 } size 0x40000 |  mem_reserved 2 
-mmap [7]:{ @0x100000000 - 0x240000000 } size 0x140000000 |  mem_avail 1 
-mmap [8]:{ @0x41400000009 - 0x45400000019 } size 0x4000000010 |  mem_unknown 15 
-mmap [9]:{ @0x0 - 0x0 } size 0x0 |  mem_unknown 0 
-mmap [10]:{ @0x0 - 0x0 } size 0x0 |  mem_unknown 0 
-mmap [11]:{ @0x0 - 0x1b00000000 } size 0x1b00000000 |  mem_avail 1 
-mmap [12]:{ @0x10000000000000 - 0x10100000000000 } size 0x100000000000 |  mem_unknown 0 
-mmap [13]:{ @0x0 - 0x800000000 } size 0x800000000 |  mem_unknown 0 
-mmap [14]:{ @0x2100000000 - 0x2700000001 } size 0x600000001 |  mem_unknown 0 
-mmap [15]:{ @0x200000000000 - 0xb6bc00000000 } size 0x96bc00000000 |  mem_unknown 0 
-mmap [16]:{ @0x1000000000 - 0x1000000000 } size 0x0 |  mem_unknown 0 
-mmap [17]:{ @0x600000001 - 0x10a6c200000001 } size 0x10a6bc00000000 |  mem_unknown 0 
-mmap [18]:{ @0x2200000000 - 0x2200000000 } size 0x0 |  mem_unknown 0 
-mmap [19]:{ @0x0 - 0x4000000000 } size 0x4000000000 |  mem_avail 1 
-mmap [20]:{ @0x10a6de00000000 - 0x115dbc00000000 } size 0xb6de00000000 |  mem_unknown 0 
-mmap [21]:{ @0x0 - 0x200000000 } size 0x200000000 |  mem_unknown 0 
-mmap [22]:{ @0x5b00000000 - 0x6100000001 } size 0x600000001 |  mem_unknown 0 
-mmap [23]:{ @0xb74800000000 - 0xb77400000000 } size 0x2c00000000 |  mem_unknown 0 
+registered interupt handler for [33] at 0x109ddd
+registered interupt handler for [32] at 0x109c26
+registered interupt handler for [105] at 0x108c77
+interupts initialized
+==boot initial phase complete==
+
+CPUID available = YES
+==Parsing Multiboot2 Header==
+Unhandled Multiboot Tag: 10
+Found Multiboot Module at 0x126000. Total: 1
+Unhandled Multiboot Tag: 9
+Unhandled Multiboot Tag: 5
 found VBE
 fb @ 0xfc000000 h= 768 p= 4096 
 ===MULTIBOOT_TAG_TYPE_ACPI_OLD===
-rsdp->Signature: 'RSD PTR ' 
-rsdp->OEMID: 'BOCHS ' 
-rsdp->Revision: 0 
-rsdp->Checksum: 57 
-rsdp->RsdtAddress: 0xbffe1c40 
-parsed mb2 header successfully
-CPUID available = YES
-cr3 = : 0x11c000 
-address p4 = : 0x11c000 
-address p4real = : 0x11c000 
-address p3 = : 0x11d000 
-address p3 via p4[0] = : 0x11d023 
+==parsed mb2 header==
+boot info: BIOS [GRUB 2.12] cmdline='dbg=1 serial=1 hackz=1337' kernel_base=0x100000
+
+==PMM Init==
+Available Memory Region [0]:{ @0x0 - 0x9fc00 } size 0x9fc00 [0 MiB] 
+Available Memory Region [3]:{ @0x100000 - 0xbffe0000 } size 0xbfee0000 [3070 MiB] 
+Available Memory Region [7]:{ @0x100000000 - 0x240000000 } size 0x140000000 [5120 MiB] 
+Total Memory:
+    8388095 KiB  /  8191 MiB  /  7 GiB
+ Total Pages: 4095 
+
+for region 0x0 - 0x9fc00 there are 0 pages (r 639 kb) to set free
+for region 0x100000 - 0xbffe0000 there are 1535 pages (r 896 kb) to set free
+aligned start 0x200000 - aligned end 0xbfe00000 (1 1) 
+for region 0x100000000 - 0x240000000 there are 2560 pages (r 0 kb) to set free
+marking from kernel start 0x100000 to kernel end 0x121000 as used
+mark region used: 0x100000 - 0x121000
+marking from 0x0 - 0x200000 as used, total pages = 1
+==PMM End==
+mark region used: 0x126000 - 0xf82f0c
+marking from 0x0 - 0xeb9e18 as used, total pages = 7
+mark region used: 0xfc000000 - 0xfc300000
+marking from 0xfc000000 - 0xfc400000 as used, total pages = 2
+pmm_kalloc(0x400000): found space for 2 pages at 0xe00000
+page allocator ready
+alloc new page table at 0xe00000, index now 1 
 Extended VA: : 0xfc000000 
 idx for VA : 0xfc000000 
 p4 idx : 0 
@@ -143,8 +61,8 @@ mapped : 0xfc000000
 to physical addresss: 0xfc000000 
 ==flushed TLB==
 invalidated: 0xfc000000 
-0 > p4 : 0x11d023 
-cr3 = : 0x11c000 
+pmm_kalloc(0x800000): found space for 4 pages at 0x1400000
+map_phys_addr():  0x1400000 -> 0xffffbeefed000000 | 4 pages 
 Extended VA: : 0xffffbeefed000000 
 idx for VA : 0xffffbeefed000000 
 p4 idx : 381 
@@ -153,28 +71,23 @@ p2 idx : 360
 p1 idx : 0 
  p4 =381  p3 = 447 p2 = 360 p1 = 0 
  p4 =381  p3 = 447 p2 = 360 p1 = 0 
-NEW mapping virtual : 0xffffbeefed000000 
-mapping physical : 0x80000000 
-pages = : 4 
-map_new: p3 = 0x113000
-mapped : 0xffffbeefed000000 
-to physical addresss: 0x80000000 
+initial p3 = 0x0 p4 = 0x11d000 
+alloc new page table at 0xe01000, index now 2 
+alloc new page table at 0xe02000, index now 3 
+made new: **p3 = 0xe01000 p2 = 0xe02000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1110 0000 0001 0000 0000 0011  
+we have: p3 = 0xe01000 p2 = 0xe02000 
+entry 0 @ 0xe07a00 = 0x1400083 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0100 0000 0000 0000 1000 0011 
+entry 1 @ 0xe07a40 = 0x1600083 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0110 0000 0000 0000 1000 0011 
+entry 2 @ 0xe07a80 = 0x1800083 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 1000 0000 0000 0000 1000 0011 
+entry 3 @ 0xe07ac0 = 0x1a00083 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 1010 0000 0000 0000 1000 0011 
 ==flushed TLB==
 invalidated: 0xffffbeefed000000 
 bmap [ 0xffffbeefed000000 ] size=0 
 max size = 262130 max_size_bytes = 0x200000 
-Extended VA: : 0x50000000 
-idx for VA : 0x50000000 
-p4 idx : 0 
-p3 idx : 1 
-p2 idx : 128 
-p1 idx : 0 
- p4 =0  p3 = 1 p2 = 128 p1 = 0 
- p4 =0  p3 = 1 p2 = 128 p1 = 0 
-map_identity( p2 = 0x114000 p3 = 0x11d000 p4 = 0x11c000 addr = 0x50000000 num = 2)
-ID mapped : 0x50000000 
-==flushed TLB==
-invalidated: 0x50000000 
 note: page aligning requested physaddr (0xbffe1c40) to 0xbfe00000
 map_phys_addr():  0xbfe00000 -> 0xffff800000000000 | 2 pages 
 Extended VA: : 0xffff800000000000 
@@ -185,14 +98,14 @@ p2 idx : 0
 p1 idx : 0 
  p4 =256  p3 = 0 p2 = 0 p1 = 0 
  p4 =256  p3 = 0 p2 = 0 p1 = 0 
-initial p3 = 0x0 p4 = 0x11c000 
-alloc new page table at 0x50000000, index now 1 
-alloc new page table at 0x50001000, index now 2 
-made new: p3 = 0x50000000 p2 = 0x50001000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0101 0000 0000 0000 0000 0000 0000 0011  
-we have: p3 = 0x50000000 p2 = 0x50001000 
-entry 0 @ 0x50001000 = 0xbfe00081 
+initial p3 = 0x0 p4 = 0x11d000 
+alloc new page table at 0xe03000, index now 4 
+alloc new page table at 0xe04000, index now 5 
+made new: **p3 = 0xe03000 p2 = 0xe04000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1110 0000 0011 0000 0000 0011  
+we have: p3 = 0xe03000 p2 = 0xe04000 
+entry 0 @ 0xe04000 = 0xbfe00081 
  0b0000 0000 0000 0000 0000 0000 0000 0000 1011 1111 1110 0000 0000 0000 1000 0001 
-entry 1 @ 0x50001040 = 0xc0000081 
+entry 1 @ 0xe04040 = 0xc0000081 
  0b0000 0000 0000 0000 0000 0000 0000 0000 1100 0000 0000 0000 0000 0000 1000 0001 
 ==flushed TLB==
 invalidated: 0xffff800000000000 
@@ -238,47 +151,16 @@ MADT: ending on madt entry 4, total 8
 madt io_apic id = 0 addr =0x gsi = 0xa0200000000
 ===end madt=== 
  
-enabled interupts
 
 ==MEM INIT OK==
-
-===initrd: loading 15060748 bytes from 0x125000===
-initrd: header CRC ok! 
-initrd: header:
- 14 files, 8 dirs
-initrd: footer CRC ok! 
-initrd: footer: total ramdisk size = 15060736 
-initrd: processing directories:
-    found dir: local [5] CRC=1
-    found dir: libnest [7] CRC=1
-    found dir: lib [6] CRC=1
-    found dir: usr [3] CRC=1
-    found dir: books [2] CRC=1
-    found dir: etc [1] CRC=1
-    found dir: birds [8] CRC=1
-    found dir: bin [4] CRC=1
-initrd: processing files:
-    found file at +0x470! ulysses.txt [1552215 bytes], dir[0]
-    found file at +0x17b464! LICENSE.txt [564 bytes], dir[0]
-    found file at +0x17b735! initrd.txt [47 bytes], dir[0]
-    found file at +0x17b801! test.txt [32 bytes], dir[1]
-    found file at +0x17b8be! manyfiles.txt [1279 bytes], dir[1]
-    found file at +0x17be5a! etsee.file [1024 bytes], dir[1]
-    found file at +0x17c2f7! romanempire.txt [10491513 bytes], dir[2]
-    found file at +0xb7da0d! usermode [9640 bytes], dir[4]
-    found file at +0xb80052! loco.txt [48 bytes], dir[5]
-    found file at +0xb8011f! usrlocal.txt [5173 bytes], dir[5]
-    found file at +0xb815f1! imaginehavingalongfilenamewellyoudonthavetoanymore.txt [693 bytes], dir[6]
-    found file at +0xb81943! greenland.bmp [2995046 bytes], dir[6]
-    found file at +0xe5cd46! birdnest.nice [65 bytes], dir[8]
-    found file at +0xe5ce24! testcase.txt [63 bytes], dir[7]
+enabled interupts.
+==boot second phase complete==
+===initrd: loading 15060748 bytes from 0x126000===
 initrd validated; contains 15057402 bytes of files!
 making new block at 0xffffbeefed200000 size=4609 /  footer @ 0xffffbeefed2011f5 
  added to alloc map, new # allocs = 1 
-Heap Usage: 25/100 
 we found no space to fit size 0x519, making new block at 0xffffbeefed201201 size=1330 /  footer @ 0xffffbeefed201727 
  added to alloc map, new # allocs = 2 
-Heap Usage: 25/100 
 added dir node local 
 added dir node libnest 
 added dir node lib 
@@ -304,12 +186,22 @@ added file node testcase.txt
 ==initrd load success!== 
 
 file usermode is valid elf64. loading..
-entry pt is at 0x10a3b4c, file 0xca2aaa, offset 0x4010a2
-found prog header for executable, loadable segment [1] offset 0x1000, vm 0x401000,  size file: 0xb3 
-entry point found, 0x10a2 from start of file
+phdr load  vaddr = 0x400000, aligned to 4096, //R  
+phdr load  vaddr = 0x401000, aligned to 4096, X//R  
+phdr load  vaddr = 0x402000, aligned to 4096, //R  
+section type 0 vaddr = 0x0, aligned to 0 
+section type 7 vaddr = 0x400200, aligned to 8 
+section type 7 vaddr = 0x400230, aligned to 4 
+section type 1 vaddr = 0x401000, aligned to 1 
+section type 1 vaddr = 0x402000, aligned to 1 
+section type 1 vaddr = 0x402038, aligned to 4 
+section type 1 vaddr = 0x402068, aligned to 8 
+section type 1 vaddr = 0x0, aligned to 1 
+section type 2 vaddr = 0x0, aligned to 8 
+section type 3 vaddr = 0x0, aligned to 1 
+section type 3 vaddr = 0x0, aligned to 1 
 we found no space to fit size 0x1000, making new block at 0xffffbeefed201733 size=4121 /  footer @ 0xffffbeefed202740 
  added to alloc map, new # allocs = 3 
-Heap Usage: 25/100 
 
 === stdout init @ 0xffffbeefed201740 size 4096 idx 0  ready = 1 ===
 Graphics Init 1024 x 768 x 32 ready = 1 
@@ -317,44 +209,38 @@ tasking init
 
 we found no space to fit size 0x2000, making new block at 0xffffbeefed20274c size=8217 /  footer @ 0xffffbeefed204759 
  added to alloc map, new # allocs = 4 
-Heap Usage: 25/100 
 stack  0xffffbeefed204684 isn't aligned! repairing to = 0xffffbeefed204680 
-create_task task_kmain pid 0 rip 0x1010ac !
+create_task task_kmain pid 0 rip 0x10106f !
 added initial task task_kmain pid 0 !
 adding task task_draw_test, pid_last = 1 !
 we found no space to fit size 0x2000, making new block at 0xffffbeefed204765 size=8217 /  footer @ 0xffffbeefed206772 
  added to alloc map, new # allocs = 5 
-Heap Usage: 25/100 
 stack  0xffffbeefed20669d isn't aligned! repairing to = 0xffffbeefed206690 
-create_task task_draw_test pid 1 rip 0x101135 !
+create_task task_draw_test pid 1 rip 0x1010f8 !
 scheduler: added task task_draw_test, pid = 1 !
 adding task task_bg_test, pid_last = 2 !
 we found no space to fit size 0x2000, making new block at 0xffffbeefed20677e size=8217 /  footer @ 0xffffbeefed20878b 
  added to alloc map, new # allocs = 6 
-Heap Usage: 25/100 
 stack  0xffffbeefed2086b6 isn't aligned! repairing to = 0xffffbeefed2086b0 
-create_task task_bg_test pid 2 rip 0x1011b0 !
+create_task task_bg_test pid 2 rip 0x101173 !
 scheduler: added task task_bg_test, pid = 2 !
 adding task task_test2, pid_last = 3 !
 we found no space to fit size 0x2000, making new block at 0xffffbeefed208797 size=8217 /  footer @ 0xffffbeefed20a7a4 
  added to alloc map, new # allocs = 7 
-Heap Usage: 25/100 
 stack  0xffffbeefed20a6cf isn't aligned! repairing to = 0xffffbeefed20a6c0 
-create_task task_test2 pid 3 rip 0x10121b !
+create_task task_test2 pid 3 rip 0x1011de !
 scheduler: added task task_test2, pid = 3 !
 adding task task_test_exit, pid_last = 4 !
 we found no space to fit size 0x2000, making new block at 0xffffbeefed20a7b0 size=8217 /  footer @ 0xffffbeefed20c7bd 
  added to alloc map, new # allocs = 8 
-Heap Usage: 25/100 
 stack  0xffffbeefed20c6e8 isn't aligned! repairing to = 0xffffbeefed20c6e0 
-create_task task_test_exit pid 4 rip 0x10125c !
+create_task task_test_exit pid 4 rip 0x10121f !
 scheduler: added task task_test_exit, pid = 4 !
 adding task task_test_yield, pid_last = 5 !
 we found no space to fit size 0x2000, making new block at 0xffffbeefed20c7c9 size=8217 /  footer @ 0xffffbeefed20e7d6 
  added to alloc map, new # allocs = 9 
-Heap Usage: 25/100 
 stack  0xffffbeefed20e701 isn't aligned! repairing to = 0xffffbeefed20e700 
-create_task task_test_yield pid 5 rip 0x101281 !
+create_task task_test_yield pid 5 rip 0x101244 !
 scheduler: added task task_test_yield, pid = 5 !
 randos up
 task draw timer 
@@ -365,44 +251,4 @@ task test 3
 im outta here 
 task 4 exited with code: 0
 found task task_test2 pointing to del task task_test_exit
-bgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yield=======
-ISR_DivisionError: 0 
-===isr[0x0] err{0x0}====
-err_code = 0x0
-rbp = 0xffffbeefed204658
-rip = 0x10781f
-ss:rsp = 0xffffbeefed204658
-cs = 0x8
-rflags = 0x10206
-ds = 0x10
-ss = 0x10
-rax = 0xffffbeefed204658
-rbx = 0x25800000005
-rcx = 0xffff0000
-rdx = 0x0
-rdi = 0x164940
-rsi = 0x0
-r8 = 0x108fa7
-r9 = 0xf000f859f000e739
-=======
-=======
-ISR_DivisionError: 0 
-===isr[0x0] err{0x0}====
-err_code = 0x0
-rbp = 0xffffbeefed204658
-rip = 0x10781f
-ss:rsp = 0xffffbeefed204658
-cs = 0x8
-rflags = 0x10206
-ds = 0x10
-ss = 0x10
-rax = 0xffffbeefed204658
-rbx = 0x25800000005
-rcx = 0xffff0000
-rdx = 0x0
-rdi = 0x164940
-rsi = 0x0
-r8 = 0x108fa7
-r9 = 0xf000f859f000e739
-=======
-Kernel Panic: double exception!  [kernel/idt/isr.c](72)
+bgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bg

@@ -63,15 +63,15 @@ size_t get_total_block_size(size_t alloc_size){
 uintptr_t get_heap_end(){//end address
     return (uintptr_t)(HEAP_VIRT_REAL) + heap.size;
 } 
-
+//WRONG DOESNT COUNT FOR FREED BLOCKS! 
 size_t get_heap_use(){ //used space
     return heap.addr - (uintptr_t)(HEAP_VIRT_REAL);
 }
-
+//WRONG DOESNT COUNT FOR FREED BLOCKS! 
 size_t get_heap_free(){ //free space
-    return  get_heap_end() - heap.addr;
+    return  get_heap_end() - heap.addr; 
 }
-
+//WRONG DOESNT COUNT FOR FREED BLOCKS! 
 int get_heap_use_percent(){
     int64_t usage = (get_heap_use() * 10000LL ) / heap.size ;
     return (int)(usage / 100LL);
@@ -163,7 +163,7 @@ void* _malloc(size_t size){
         }
         HEAPDBG(" added to alloc map, new # allocs = %i \n", heap.allocs->size); 
 
-        HEAPDBG("Heap Usage: %i/100 \n", get_heap_use_percent());
+       
         return alloc_addr; 
     } else{
         heap_header_t* header = (heap_header_t*)(bmap_get(heap.allocs, space));
@@ -199,7 +199,7 @@ size_t _free(void* addr){
     //debug
     
 
-    HEAPDBG("heap use current: %lx heap remaining: %lx \n", get_heap_use() , get_heap_free() );
+    
 
 }
 
@@ -216,19 +216,12 @@ paging would work then btw
 
 
 
-uintptr_t resize_heap(){
-    serial_println("resizing heap. HA YOU WISH");
-    return 0;
-}
+
 uintptr_t kmalloc_bootstrap(uint64_t size)
 {
+    //used to get heap data structures going 
     uintptr_t ret  = heap.addr;
     heap.addr += size;
-    if(heap.addr > (heap.addr + heap.size)){
-        if(!resize_heap())
-            return KMALLOC_FAIL;
-    }
-
     return ret;
 }
 

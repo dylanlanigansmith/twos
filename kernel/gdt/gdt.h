@@ -26,6 +26,11 @@
 // tss
 
 
+
+#define GDT_INIT_QUIET 0
+#define GDT_INIT_VERBOSE 1
+#define GDT_INIT_ALL 2
+
 void init_descriptor_table(const uint8_t dump);
 
 

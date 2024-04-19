@@ -3,6 +3,8 @@
 #include "vfs.h"
 
 
+void initrd_reserve_space(uintptr_t addr, size_t size);
+
 int initrd(uintptr_t addr, size_t size);
 
 
