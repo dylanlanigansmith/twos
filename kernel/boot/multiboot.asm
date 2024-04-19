@@ -34,6 +34,9 @@ global start
 section .text
 [extern main]
 
+
+HIGH_START equ 0xffffff8000000000 ;p4[511] p3  0 p2 0
+PAGE_SIZE equ 0x200000
 start:
     mov [MB0], ebx
     mov [MB1], eax
@@ -59,9 +62,7 @@ start:
     or eax, 0b11
     mov dword [p3_table + 0], eax
     
-   ; mov eax, p2_table2
-   ; or eax, 0b11
-   ; mov dword [p3_table + 8], eax
+ 
 
     ; point each page table level two entry to a page
     mov ecx, 0         ; counter variable
@@ -77,17 +78,25 @@ start:
 
 
    
-;
-;   mov ecx, 0         ; counter variable
-;.map_p2_table2:
-;    mov eax, 0x200000  ; 2MiB
-;    mul ecx
-;    or eax, 0b10000011
-;    mov [p2_table + ecx * 8], eax;
+    mov eax, p3_higher
+    or eax, 0b11 ;
+    mov dword [p4_table + 8 * 511], eax
 
-;    inc ecx
-;    cmp ecx, 512 ; map 512 * 2mib of memory = 1gib total
-;    jne .map_p2_table2
+    mov eax, p2_higher
+    or eax, 0b11
+    mov dword [p3_higher + 0], eax
+
+
+    mov ecx, 0         ; counter variable
+.map_high_table:
+    mov eax, 0x200000  ; 2MiB
+    mul ecx
+    or eax, 0b10000011
+    mov [p2_higher + ecx * 8], eax;
+
+    inc ecx
+    cmp ecx, 32 ; map 32 * 2mib of memory = 64mib
+    jne .map_high_table
 
 
     ; move page table address to cr3
@@ -162,7 +171,9 @@ section .bss
         resb 4096
 
     align 4096
-    p2_table2:
+    p2_higher:
+        resb 4096
+    p3_higher:
         resb 4096
 
 section .rodata

@@ -168,7 +168,7 @@ extern __attribute__((noreturn)) void jump_to_usermode(void* addr);
 void main(void *addr, void *magic)
 {
     disable_interupts();
-   
+   KPANIC("ss");
     if(get_multiboot_initial_info(addr, magic) == MB_HEADER_PARSE_ERROR){
         //uh what?
         serial_init(); debugf("mb2 header parse error. magic =%lx", magic); return;
@@ -248,7 +248,7 @@ void main(void *addr, void *magic)
     _init_cpp(); //todo fix global constructors and actually write some cpp
                     //or just save it for user space where it belongs :))))
 
-    if(sysinfo.rsdp){  
+    if(sysinfo.rsdp && 0){  
 
         uintptr_t rsdt = map_phys_addr(ACPI_ADDR, sysinfo.rsdp->RsdtAddress, PAGE_SIZE * 2, 0b10000001LLU ) ;
                                         // base mapping and offset from it 
@@ -303,7 +303,7 @@ void main(void *addr, void *magic)
    // add_task("task_test_exit", task_test3);
    // add_task("task_test_yield", task_test4);
 
-    add_user_task("usermode", &usr);
+  //  add_user_task("usermode", &usr);
     //we have gotten ourselves a system with two processes running
     // do a little dance or something 
 

@@ -44,7 +44,7 @@ typedef struct {
 void get_page_index_vm(uint64_t virtual_addr, page_indices_t* idx){
 
     serial_printh("Extended VA: ", virtual_addr);
-    serial_printh("idx for VA ", virtual_addr);
+    debugf("idx for VA: %lx [%lb] ", virtual_addr, virtual_addr);
     idx->p4 = (virtual_addr >> 39) & 0x1FF;
     
     serial_printi("p4 idx ", idx->p4);
@@ -220,6 +220,9 @@ void paging_init()
    //so for user heap we just write an allocator in our libc !
 
    user_palloc_init();
+
+    page_indices_t ind;
+    get_page_index_vm(0xffffff8000000000, &ind);
 }
 
 
