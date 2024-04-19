@@ -37,7 +37,20 @@ size_t expand_heap(void* heap_ptr, size_t size_to_add);
 
 uintptr_t virt_to_phys(uintptr_t virt);
 
+
+#define PAGE_FLAGS_DEFAULT 0b10000011LLU
+
+#define PAGE_FLAGS_USER 0b100
 uintptr_t map_phys_addr(uintptr_t virt, uintptr_t phys, size_t size, uint64_t flags);
+uintptr_t unmap_phys_addr(uintptr_t virt,  size_t size);
+
+typedef struct {
+    page_table_t* p4;
+    page_table_t* p3;
+    page_table_t* p2;
+} user_pt_t;
+
+uintptr_t map_user_page_tables(uintptr_t virt, uintptr_t phys, size_t size, page_table_t* p4, page_table_t* p3, page_table_t* p2);
 
 //LOOK AT THIS!!!
 //https://wiki.osdev.org/images/thumb/6/6b/64-bit_page_tables2.png/412px-64-bit_page_tables2.png

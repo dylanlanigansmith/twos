@@ -1,7 +1,8 @@
+#pragma once
 #include "../stdlib.h"
 
 #include "../fs/vfs.h"
-
+#include "../mem/page.h"
 typedef uintptr_t Elf64_Addr;
 typedef uint64_t Elf64_Off;
 typedef uint16_t Elf64_Half;
@@ -187,6 +188,7 @@ enum ELF_Ident
 
 
 
+
 static inline unsigned long elf64_hash(const unsigned char *name)          
 {
     unsigned long h = 0, g;
@@ -200,4 +202,21 @@ static inline unsigned long elf64_hash(const unsigned char *name)
     return h;
 }
 
-uint64_t load_elf(vfs_node* file);
+
+typedef struct 
+{
+    user_pt_t pt;
+    uintptr_t entry;
+    uintptr_t phys;
+    size_t size;
+    struct 
+    {
+        uintptr_t h,l;
+    }vaddr;
+    struct{
+        uintptr_t top,bot;
+    }stack;
+} user_vas_t;
+
+
+uint64_t load_elf(vfs_node* file, user_vas_t* usr);

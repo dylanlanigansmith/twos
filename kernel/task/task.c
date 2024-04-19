@@ -152,6 +152,31 @@ int add_task(const char* name, task_entry_fn main_fn) //note that this isnt safe
     return 0;
 }
 
+int add_user_task(const char *name, user_vas_t *usr)
+{
+    DEBUGT("adding USER task %s, pid_last = %i !\n", name, sched.pid_last);
+    
+    task_entry_fn entry = usr->entry;
+    task_t* new_task = create_task(name, entry, sched.defaults.rflags); //our stack is gonna be wrong
+    
+    new_task->regs.rsp = usr->stack.top;
+    new_task->regs.rbp = usr->stack.top;
+    new_task->regs.cr3 = new_task->cr3 = (uintptr_t)(usr->pt.p4);
+
+    new_task->flags.is_user = 1;
+
+    sched.newest_task->next = new_task;
+
+    new_task->next =  sched.root_task;; //point new task to start of tasks since this is our top task 
+                                                            //when another task is added this will be swapped with it, and so on 
+
+   
+    sched.newest_task = new_task;
+    DEBUGT("scheduler: added USER task %s, pid = %i !\n", name, new_task->pid);
+
+    
+    return 0;
+}
 
 task_t* remove_current_task() //itrps are off for this
 {
@@ -256,6 +281,7 @@ void on_timer_tick(uint64_t ticks, registers_t* reg) //dont get me started on th
         sched.current_task->regs.r14 = reg->r14;
         sched.current_task->regs.r15 = reg->r15;
 
+        
 
         sched.current_task = sched.current_task->next;
     }
@@ -266,7 +292,10 @@ void on_timer_tick(uint64_t ticks, registers_t* reg) //dont get me started on th
         sched.current_task = sched.root_task;
     }
     
-
+    if(sched.current_task->flags.is_user){
+        reg->cs = 0x1b;
+        reg->ds = 0x23;
+    }
 
     //WE SWITCHIN
     reg->rbp = sched.current_task->regs.rbp;
@@ -291,7 +320,7 @@ void on_timer_tick(uint64_t ticks, registers_t* reg) //dont get me started on th
     reg->r14 = sched.current_task->regs.r14;
     reg->r15 = sched.current_task->regs.r15;
 
-
+    __asm__ volatile ("mov rax, (%0); mov cr3, rax" : : "r"(sched.current_task->regs.cr3)); 
     //oh shit oh fuck
 }
 

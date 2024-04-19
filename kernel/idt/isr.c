@@ -99,10 +99,13 @@ void handle_pagefault(registers_t* regs){
   //  if((regs->err_code & 0b1000) ) return;
     num_pfs++;
    
-    if(num_pfs > 3)
+    if(num_pfs > 3){
+        print_isr_regs(regs, 1);
         for(;;){
             __asm__("hlt");
         }
+    }
+        
    
 }
 

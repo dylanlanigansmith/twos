@@ -3,7 +3,7 @@
 #include "../stdlib.h"
 
 #include "../idt/isr.h"
-
+#include "elf.h"
 typedef int PID_t;
 
 typedef void (*task_entry_fn)();
@@ -67,6 +67,8 @@ extern scheduler_t sched;
 int tasking_init(task_entry_fn main_fn);
 
 int add_task(const char* name, task_entry_fn main_fn);
+
+int add_user_task(const char* name, user_vas_t* usr);
 
 void start_first_task();
 

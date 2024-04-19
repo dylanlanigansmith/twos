@@ -274,23 +274,36 @@ void main(void *addr, void *magic)
 
 
     vfs_node* elf = initrd_findfile(initrd_root, "usermode");
+
+    user_vas_t usr; memset(&usr, 0, sizeof(user_vas_t));
     if(elf){
-       load_elf(elf);
+       load_elf(elf, &usr);
     }
 
-   
+   debugf("usr p4 = %lx, usr entry = %lx usr phys = %lx usr lo %lx", usr.pt.p4, usr.entry, usr.phys, usr.vaddr.l);
+
+
 
     stdout_init();
     
     gfx_init(color_cyan);
     //we are so back
     
+
+  //   __asm__ volatile ("cli; mov rax, (%0); mov cr3, rax" : : "r"((uintptr_t)usr.pt.p4)); 
+  //   __asm__ volatile ("cli; mov rax, (%0); mov rsp, rax; mov rbp, rsp" : : "r"((uintptr_t)usr.stack.top));
+    // jump_to_usermode( usr.entry  );
+  //  jump_to_usermode( (usr.entry - usr.vaddr.l) + usr.phys  );
+
+
     tasking_init(&task_drawtimer); //first task should be on our main stack as its new kernel main 
     add_task("task_draw_test",task_draw_test);
     add_task("task_bg_test",task_bg_test);
-    add_task("task_test2",task_test_2);
-    add_task("task_test_exit", task_test3);
-    add_task("task_test_yield", task_test4);
+   // add_task("task_test2",task_test_2);
+   // add_task("task_test_exit", task_test3);
+   // add_task("task_test_yield", task_test4);
+
+    add_user_task("usermode", &usr);
     //we have gotten ourselves a system with two processes running
     // do a little dance or something 
 

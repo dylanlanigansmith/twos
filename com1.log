@@ -1,20 +1,20 @@
 using Serial COM1 for debug out 
 boot start
 ==init GDT, TSS==
-gdt ptr = 0x10eed0 tss - gdt = 0x28
-stack top = 0x11b000 end = 0x117000 size = 0x4000
-copied GDT tss to 0x10f1b4
+gdt ptr = 0x1100b0 tss - gdt = 0x28
+stack top = 0x11d000 end = 0x119000 size = 0x4000
+copied GDT tss to 0x1111b4
 ==Reloaded GDT, Loaded TSS==
-registered interupt handler for [33] at 0x109ddd
-registered interupt handler for [32] at 0x109c26
-registered interupt handler for [105] at 0x108c77
+registered interupt handler for [33] at 0x10a692
+registered interupt handler for [32] at 0x10a4db
+registered interupt handler for [105] at 0x109121
 interupts initialized
 ==boot initial phase complete==
 
 CPUID available = YES
 ==Parsing Multiboot2 Header==
 Unhandled Multiboot Tag: 10
-Found Multiboot Module at 0x126000. Total: 1
+Found Multiboot Module at 0x128000. Total: 1
 Unhandled Multiboot Tag: 9
 Unhandled Multiboot Tag: 5
 found VBE
@@ -35,11 +35,11 @@ for region 0x0 - 0x9fc00 there are 0 pages (r 639 kb) to set free
 for region 0x100000 - 0xbffe0000 there are 1535 pages (r 896 kb) to set free
 aligned start 0x200000 - aligned end 0xbfe00000 (1 1) 
 for region 0x100000000 - 0x240000000 there are 2560 pages (r 0 kb) to set free
-marking from kernel start 0x100000 to kernel end 0x121000 as used
-mark region used: 0x100000 - 0x121000
+marking from kernel start 0x100000 to kernel end 0x123000 as used
+mark region used: 0x100000 - 0x123000
 marking from 0x0 - 0x200000 as used, total pages = 1
 ==PMM End==
-mark region used: 0x126000 - 0xf82f0c
+mark region used: 0x128000 - 0xf84f0c
 marking from 0x0 - 0xeb9e18 as used, total pages = 7
 mark region used: 0xfc000000 - 0xfc300000
 marking from 0xfc000000 - 0xfc400000 as used, total pages = 2
@@ -71,7 +71,7 @@ p2 idx : 360
 p1 idx : 0 
  p4 =381  p3 = 447 p2 = 360 p1 = 0 
  p4 =381  p3 = 447 p2 = 360 p1 = 0 
-initial p3 = 0x0 p4 = 0x11d000 
+initial p3 = 0x0 p4 = 0x11f000 
 alloc new page table at 0xe01000, index now 2 
 alloc new page table at 0xe02000, index now 3 
 made new: **p3 = 0xe01000 p2 = 0xe02000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1110 0000 0001 0000 0000 0011  
@@ -88,6 +88,26 @@ entry 3 @ 0xe07ac0 = 0x1a00083
 invalidated: 0xffffbeefed000000 
 bmap [ 0xffffbeefed000000 ] size=0 
 max size = 262130 max_size_bytes = 0x200000 
+pmm_alloc(0x400000): found space for 2 pages at 0x40000000
+map_phys_addr():  0x40000000 -> 0x40000000 | 2 pages 
+Extended VA: : 0x40000000 
+idx for VA : 0x40000000 
+p4 idx : 0 
+p3 idx : 1 
+p2 idx : 0 
+p1 idx : 0 
+ p4 =0  p3 = 1 p2 = 0 p1 = 0 
+ p4 =0  p3 = 1 p2 = 0 p1 = 0 
+initial p3 = 0x120000 p4 = 0x11f000 
+alloc new page table at 0xe03000, index now 4 
+made new: p2
+we have: p3 = 0x120000 p2 = 0xe03000 
+entry 0 @ 0xe03000 = 0x40000087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 1000 0111 
+entry 1 @ 0xe03040 = 0x40200087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0010 0000 0000 0000 1000 0111 
+==flushed TLB==
+invalidated: 0x40000000 
 note: page aligning requested physaddr (0xbffe1c40) to 0xbfe00000
 map_phys_addr():  0xbfe00000 -> 0xffff800000000000 | 2 pages 
 Extended VA: : 0xffff800000000000 
@@ -98,14 +118,14 @@ p2 idx : 0
 p1 idx : 0 
  p4 =256  p3 = 0 p2 = 0 p1 = 0 
  p4 =256  p3 = 0 p2 = 0 p1 = 0 
-initial p3 = 0x0 p4 = 0x11d000 
-alloc new page table at 0xe03000, index now 4 
+initial p3 = 0x0 p4 = 0x11f000 
 alloc new page table at 0xe04000, index now 5 
-made new: **p3 = 0xe03000 p2 = 0xe04000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1110 0000 0011 0000 0000 0011  
-we have: p3 = 0xe03000 p2 = 0xe04000 
-entry 0 @ 0xe04000 = 0xbfe00081 
+alloc new page table at 0xe05000, index now 6 
+made new: **p3 = 0xe04000 p2 = 0xe05000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1110 0000 0100 0000 0000 0011  
+we have: p3 = 0xe04000 p2 = 0xe05000 
+entry 0 @ 0xe05000 = 0xbfe00081 
  0b0000 0000 0000 0000 0000 0000 0000 0000 1011 1111 1110 0000 0000 0000 1000 0001 
-entry 1 @ 0xe04040 = 0xc0000081 
+entry 1 @ 0xe05040 = 0xc0000081 
  0b0000 0000 0000 0000 0000 0000 0000 0000 1100 0000 0000 0000 0000 0000 1000 0001 
 ==flushed TLB==
 invalidated: 0xffff800000000000 
@@ -155,7 +175,7 @@ madt io_apic id = 0 addr =0x gsi = 0xa0200000000
 ==MEM INIT OK==
 enabled interupts.
 ==boot second phase complete==
-===initrd: loading 15060748 bytes from 0x126000===
+===initrd: loading 15060748 bytes from 0x128000===
 initrd validated; contains 15057402 bytes of files!
 making new block at 0xffffbeefed200000 size=4609 /  footer @ 0xffffbeefed2011f5 
  added to alloc map, new # allocs = 1 
@@ -186,20 +206,43 @@ added file node testcase.txt
 ==initrd load success!== 
 
 file usermode is valid elf64. loading..
-phdr load  vaddr = 0x400000, aligned to 4096, //R  
-phdr load  vaddr = 0x401000, aligned to 4096, X//R  
-phdr load  vaddr = 0x402000, aligned to 4096, //R  
-section type 0 vaddr = 0x0, aligned to 0 
-section type 7 vaddr = 0x400200, aligned to 8 
-section type 7 vaddr = 0x400230, aligned to 4 
-section type 1 vaddr = 0x401000, aligned to 1 
-section type 1 vaddr = 0x402000, aligned to 1 
-section type 1 vaddr = 0x402038, aligned to 4 
-section type 1 vaddr = 0x402068, aligned to 8 
-section type 1 vaddr = 0x0, aligned to 1 
-section type 2 vaddr = 0x0, aligned to 8 
-section type 3 vaddr = 0x0, aligned to 1 
-section type 3 vaddr = 0x0, aligned to 1 
+phdr load  vaddr = 0x400000, aligned to 0x1000,   R  
+phdr load  vaddr = 0x401000, aligned to 0x1000, X  R  
+phdr load  vaddr = 0x402000, aligned to 0x1000,   R  
+lowest vaddr 0x400000 highest vaddr 0x402100, size 0x200000
+USER palloc new page table at 0x40000000, index now 1 
+USER palloc new page table at 0x40001000, index now 2 
+USER palloc new page table at 0x40002000, index now 3 
+making user pages: p4 0x40000000 p3 0x40001000 p2 0x40002000
+pmm_alloc(0x200000): found space for 1 pages at 0x40600000
+map_phys_addr():  0x40600000 -> 0x40600000 | 1 pages 
+Extended VA: : 0x40600000 
+idx for VA : 0x40600000 
+p4 idx : 0 
+p3 idx : 1 
+p2 idx : 3 
+p1 idx : 0 
+ p4 =0  p3 = 1 p2 = 3 p1 = 0 
+ p4 =0  p3 = 1 p2 = 3 p1 = 0 
+initial p3 = 0x120000 p4 = 0x11f000 
+we have: p3 = 0x120000 p2 = 0xe03000 
+entry 0 @ 0xe030c0 = 0x40600087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0110 0000 0000 0000 1000 0111 
+==flushed TLB==
+invalidated: 0x40600000 
+map_user_page_tables:  0x40600000 -> 0x400000 | 1 pages 
+Extended VA: : 0x400000 
+idx for VA : 0x400000 
+p4 idx : 0 
+p3 idx : 0 
+p2 idx : 2 
+p1 idx : 0 
+ p4 =0  p3 = 0 p2 = 2 p1 = 0 
+ p4 =0  p3 = 0 p2 = 2 p1 = 0 
+copying header 0x400000 to 0x40600000. fs= 0x254 ms = 0x254
+copying header 0x401000 to 0x40601000. fs= 0xb3 ms = 0xb3
+copying header 0x402000 to 0x40602000. fs= 0x100 ms = 0x100
+usr p4 = 0x0, usr entry = 0x4010a2 usr phys = 0x40600000 usr lo 0x400000
 we found no space to fit size 0x1000, making new block at 0xffffbeefed201733 size=4121 /  footer @ 0xffffbeefed202740 
  added to alloc map, new # allocs = 3 
 
@@ -224,31 +267,248 @@ we found no space to fit size 0x2000, making new block at 0xffffbeefed20677e siz
 stack  0xffffbeefed2086b6 isn't aligned! repairing to = 0xffffbeefed2086b0 
 create_task task_bg_test pid 2 rip 0x101173 !
 scheduler: added task task_bg_test, pid = 2 !
-adding task task_test2, pid_last = 3 !
+adding USER task usermode, pid_last = 3 !
 we found no space to fit size 0x2000, making new block at 0xffffbeefed208797 size=8217 /  footer @ 0xffffbeefed20a7a4 
  added to alloc map, new # allocs = 7 
 stack  0xffffbeefed20a6cf isn't aligned! repairing to = 0xffffbeefed20a6c0 
-create_task task_test2 pid 3 rip 0x1011de !
-scheduler: added task task_test2, pid = 3 !
-adding task task_test_exit, pid_last = 4 !
-we found no space to fit size 0x2000, making new block at 0xffffbeefed20a7b0 size=8217 /  footer @ 0xffffbeefed20c7bd 
- added to alloc map, new # allocs = 8 
-stack  0xffffbeefed20c6e8 isn't aligned! repairing to = 0xffffbeefed20c6e0 
-create_task task_test_exit pid 4 rip 0x10121f !
-scheduler: added task task_test_exit, pid = 4 !
-adding task task_test_yield, pid_last = 5 !
-we found no space to fit size 0x2000, making new block at 0xffffbeefed20c7c9 size=8217 /  footer @ 0xffffbeefed20e7d6 
- added to alloc map, new # allocs = 9 
-stack  0xffffbeefed20e701 isn't aligned! repairing to = 0xffffbeefed20e700 
-create_task task_test_yield pid 5 rip 0x101244 !
-scheduler: added task task_test_yield, pid = 5 !
+create_task usermode pid 3 rip 0x4010a2 !
+scheduler: added USER task usermode, pid = 3 !
 randos up
 task draw timer 
 task draw test 
 task bg test 
-task test 2 
-task test 3 
-im outta here 
-task 4 exited with code: 0
-found task task_test2 pointing to del task task_test_exit
-bgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bgbgtest 2yieldbgtest 2bgbgtest 2yieldbgbgtest 2bgtest 2bgyieldbgtest 2bg
+using Serial COM1 for debug out 
+boot start
+==init GDT, TSS==
+gdt ptr = 0x1100b0 tss - gdt = 0x28
+stack top = 0x11d000 end = 0x119000 size = 0x4000
+copied GDT tss to 0x1111b4
+==Reloaded GDT, Loaded TSS==
+registered interupt handler for [33] at 0x10a692
+registered interupt handler for [32] at 0x10a4db
+registered interupt handler for [105] at 0x109121
+interupts initialized
+==boot initial phase complete==
+
+CPUID available = YES
+==Parsing Multiboot2 Header==
+Unhandled Multiboot Tag: 10
+Found Multiboot Module at 0x128000. Total: 1
+Unhandled Multiboot Tag: 9
+Unhandled Multiboot Tag: 5
+found VBE
+fb @ 0xfc000000 h= 768 p= 4096 
+===MULTIBOOT_TAG_TYPE_ACPI_OLD===
+==parsed mb2 header==
+boot info: BIOS [GRUB 2.12] cmdline='dbg=1 serial=1 hackz=1337' kernel_base=0x100000
+
+==PMM Init==
+Available Memory Region [0]:{ @0x0 - 0x9fc00 } size 0x9fc00 [0 MiB] 
+Available Memory Region [3]:{ @0x100000 - 0xbffe0000 } size 0xbfee0000 [3070 MiB] 
+Available Memory Region [7]:{ @0x100000000 - 0x240000000 } size 0x140000000 [5120 MiB] 
+Total Memory:
+    8388095 KiB  /  8191 MiB  /  7 GiB
+ Total Pages: 4095 
+
+for region 0x0 - 0x9fc00 there are 0 pages (r 639 kb) to set free
+for region 0x100000 - 0xbffe0000 there are 1535 pages (r 896 kb) to set free
+aligned start 0x200000 - aligned end 0xbfe00000 (1 1) 
+for region 0x100000000 - 0x240000000 there are 2560 pages (r 0 kb) to set free
+marking from kernel start 0x100000 to kernel end 0x123000 as used
+mark region used: 0x100000 - 0x123000
+marking from 0x0 - 0x200000 as used, total pages = 1
+==PMM End==
+mark region used: 0x128000 - 0xf84f0c
+marking from 0x0 - 0xeb9e18 as used, total pages = 7
+mark region used: 0xfc000000 - 0xfc300000
+marking from 0xfc000000 - 0xfc400000 as used, total pages = 2
+pmm_kalloc(0x400000): found space for 2 pages at 0xe00000
+page allocator ready
+alloc new page table at 0xe00000, index now 1 
+Extended VA: : 0xfc000000 
+idx for VA : 0xfc000000 
+p4 idx : 0 
+p3 idx : 3 
+p2 idx : 480 
+p1 idx : 0 
+ p4 =0  p3 = 3 p2 = 480 p1 = 0 
+ p4 =0  p3 = 3 p2 = 480 p1 = 0 
+mapping virtual : 0xfc000000 
+mapping physical : 0xfc000000 
+pages = : 2 
+mapped : 0xfc000000 
+to physical addresss: 0xfc000000 
+==flushed TLB==
+invalidated: 0xfc000000 
+pmm_kalloc(0x800000): found space for 4 pages at 0x1400000
+map_phys_addr():  0x1400000 -> 0xffffbeefed000000 | 4 pages 
+Extended VA: : 0xffffbeefed000000 
+idx for VA : 0xffffbeefed000000 
+p4 idx : 381 
+p3 idx : 447 
+p2 idx : 360 
+p1 idx : 0 
+ p4 =381  p3 = 447 p2 = 360 p1 = 0 
+ p4 =381  p3 = 447 p2 = 360 p1 = 0 
+initial p3 = 0x0 p4 = 0x11f000 
+alloc new page table at 0xe01000, index now 2 
+alloc new page table at 0xe02000, index now 3 
+made new: **p3 = 0xe01000 p2 = 0xe02000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1110 0000 0001 0000 0000 0011  
+we have: p3 = 0xe01000 p2 = 0xe02000 
+entry 0 @ 0xe07a00 = 0x1400083 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0100 0000 0000 0000 1000 0011 
+entry 1 @ 0xe07a40 = 0x1600083 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0110 0000 0000 0000 1000 0011 
+entry 2 @ 0xe07a80 = 0x1800083 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 1000 0000 0000 0000 1000 0011 
+entry 3 @ 0xe07ac0 = 0x1a00083 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 1010 0000 0000 0000 1000 0011 
+==flushed TLB==
+invalidated: 0xffffbeefed000000 
+bmap [ 0xffffbeefed000000 ] size=7 
+max size = 262130 max_size_bytes = 0x200000 
+pmm_alloc(0x400000): found space for 2 pages at 0x40000000
+map_phys_addr():  0x40000000 -> 0x40000000 | 2 pages 
+Extended VA: : 0x40000000 
+idx for VA : 0x40000000 
+p4 idx : 0 
+p3 idx : 1 
+p2 idx : 0 
+p1 idx : 0 
+ p4 =0  p3 = 1 p2 = 0 p1 = 0 
+ p4 =0  p3 = 1 p2 = 0 p1 = 0 
+initial p3 = 0x120000 p4 = 0x11f000 
+alloc new page table at 0xe03000, index now 4 
+made new: p2
+we have: p3 = 0x120000 p2 = 0xe03000 
+entry 0 @ 0xe03000 = 0x40000087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 1000 0111 
+entry 1 @ 0xe03040 = 0x40200087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0010 0000 0000 0000 1000 0111 
+==flushed TLB==
+invalidated: 0x40000000 
+note: page aligning requested physaddr (0xbffe1c40) to 0xbfe00000
+map_phys_addr():  0xbfe00000 -> 0xffff800000000000 | 2 pages 
+Extended VA: : 0xffff800000000000 
+idx for VA : 0xffff800000000000 
+p4 idx : 256 
+p3 idx : 0 
+p2 idx : 0 
+p1 idx : 0 
+ p4 =256  p3 = 0 p2 = 0 p1 = 0 
+ p4 =256  p3 = 0 p2 = 0 p1 = 0 
+initial p3 = 0x0 p4 = 0x11f000 
+alloc new page table at 0xe04000, index now 5 
+alloc new page table at 0xe05000, index now 6 
+made new: **p3 = 0xe04000 p2 = 0xe05000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1110 0000 0100 0000 0000 0011  
+we have: p3 = 0xe04000 p2 = 0xe05000 
+entry 0 @ 0xe05000 = 0xbfe00081 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 1011 1111 1110 0000 0000 0000 1000 0001 
+entry 1 @ 0xe05040 = 0xc0000081 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 1100 0000 0000 0000 0000 0000 1000 0001 
+==flushed TLB==
+invalidated: 0xffff800000000000 
+RSDT RSDT claims 4 entries 
+[0 / 4]  = 0xbffe1af4
+[0 ] virtual is 0xffff8000001e1af4, offset was - 0x14c 
+found table entry [0] = 'FACP' crc = OK 
+added FACP to sysinfo[0], marked FACP idx 0
+added FACP to sysinfo[0]
+[1 / 4]  = 0xbffe1b68
+[1 ] virtual is 0xffff8000001e1b68, offset was - 0xd8 
+found table entry [1] = 'APIC' crc = OK 
+added APIC to sysinfo[1], marked APIC idx 1
+[2 / 4]  = 0xbffe1be0
+[2 ] virtual is 0xffff8000001e1be0, offset was - 0x60 
+found table entry [2] = 'HPET' crc = OK 
+added HPET to sysinfo[2]
+[3 / 4]  = 0xbffe1c18
+[3 ] virtual is 0xffff8000001e1c18, offset was - 0x28 
+found table entry [3] = 'WAET' crc = OK 
+added WAET to sysinfo[3]
+
+===MADT===  
+madt discover: apic =  
+Legacy PICs available and must be disabled to use APICmadt entry [0] size 8 #1 
+madt entry [1] size 12 #2 
+madt io_apic id = 0 addr =0x gsi = 0xa0200000000
+madt entry [2] size 10 #3 
+madt io_apic_override: bussrc = 0 irqsrc =0 gsi = 2, flags: 0b0
+madt entry [2] size 10 #4 
+madt io_apic_override: bussrc = 0 irqsrc =5 gsi = 5, flags: 0b0000 0000 0000 0000 0000 0000 0000 1101 
+madt entry [2] size 10 #5 
+madt io_apic_override: bussrc = 0 irqsrc =9 gsi = 9, flags: 0b0000 0000 0000 0000 0000 0000 0000 1101 
+madt entry [2] size 10 #6 
+madt io_apic_override: bussrc = 0 irqsrc =10 gsi = 10, flags: 0b0000 0000 0000 0000 0000 0000 0000 1101 
+madt entry [2] size 10 #7 
+madt io_apic_override: bussrc = 0 irqsrc =11 gsi = 11, flags: 0b0000 0000 0000 0000 0000 0000 0000 1101 
+madt entry [4] size 6 #8 
+madt entry type [4] len 6 unknown 
+last madt at 0xffff8000001e1bda size 6. madt at 0xffff8000001e1b68, size 120 
+entry end at 0xffff8000001e1be0  madt end at 0xffff8000001e1be0
+MADT: ending on madt entry 4, total 8
+madt io_apic id = 0 addr =0x gsi = 0xa0200000000
+===end madt=== 
+ 
+
+==MEM INIT OK==
+enabled interupts.
+==boot second phase complete==
+===initrd: loading 15060748 bytes from 0x128000===
+initrd validated; contains 15057402 bytes of files!
+
+=== GPF ===
+Error: 0 
+rbp 0x11cde0 
+==============
+===isr[0xd] err{0x0}====
+err_code = 0x0
+rbp = 0x11cde0
+rip = 0x104df0
+ss:rsp = 0x11cdc0
+cs = 0x8
+rflags = 0x10286
+ds = 0x10
+ss = 0x10
+rax = 0xf000ff53f000ff53
+rbx = 0x11ced0
+rcx = 0x0
+rdx = 0x0
+rdi = 0xffffbeefed000000
+rsi = 0x0
+r8 = 0x10a9cf
+r9 = 0x300000
+r10 = 0x0
+r11 = 0x0
+r12 = 0x0
+r13 = 0x0
+r14 = 0x0
+r15 = 0x0
+
+=== GPF ===
+Error: 0 
+rbp 0x11cde0 
+==============
+===isr[0xd] err{0x0}====
+err_code = 0x0
+rbp = 0x11cde0
+rip = 0x104df0
+ss:rsp = 0x11cdc0
+cs = 0x8
+rflags = 0x10286
+ds = 0x10
+ss = 0x10
+rax = 0xf000ff53f000ff53
+rbx = 0x11ced0
+rcx = 0x0
+rdx = 0x0
+rdi = 0xffffbeefed000000
+rsi = 0x0
+r8 = 0x10a9cf
+r9 = 0x300000
+r10 = 0x0
+r11 = 0x0
+r12 = 0x0
+r13 = 0x0
+r14 = 0x0
+r15 = 0x0

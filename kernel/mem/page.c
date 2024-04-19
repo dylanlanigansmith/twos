@@ -5,6 +5,9 @@
 #include "page_alloc.h"
 
 #include "../pmm/pmm.h"
+
+#include "vas.h"
+
 extern uint64_t get_cr3();
 
 extern uintptr_t p2_table;
@@ -215,6 +218,8 @@ void paging_init()
     
     init_heap();
    //so for user heap we just write an allocator in our libc !
+
+   user_palloc_init();
 }
 
 
@@ -410,6 +415,94 @@ uintptr_t map_phys_addr(uintptr_t virt, uintptr_t phys, size_t size, uint64_t fl
             0xbff00081
     
     */
+}
+
+uintptr_t unmap_phys_addr(uintptr_t virt, size_t size)
+{
+  
+    //our virt address has gotta meet some requirements and a smart man would check those here
+    ASSERT(is_page_aligned(virt)); //ill check one
+   
+
+   
+
+    
+
+    int num_pages = calc_num_pages(size); //announce what we will do now 
+    debugf("unmap_phys_addr():  unmapping %lx  | %i pages \n", virt, num_pages);
+    
+    page_indices_t ind; get_page_index_vm(virt, &ind);
+
+   
+    
+    page_table_t* p4, *p3,*p2; p4 = p3 = p2 = 0;
+
+    p4 = get_p4();
+    pt_t* p4r = get_p4(); //oh shit 
+  
+    p3 = pt_addr( p4->entries[ind.p4] );
+    p2 = pt_addr( p3->entries[ind.pdpt3] );
+    
+    if(!p3) return 1;
+    if(!p2) return 1;
+    
+    debugf("we have: p3 = %lx p2 = %lx \n", (uintptr_t)p3, (uintptr_t)p2); //we should have a valid p3 and p2 now
+
+ 
+    p3->entries[ind.pdpt3] = ((uintptr_t)p2 | PT_FLAGS);
+     
+ 
+
+    for(int i = 0; i < num_pages; ++i){ 
+        uint64_t current_virtual_address = virt + (i * PAGE_SIZE);
+        int idx = (current_virtual_address >> 21) & 0x1FF; 
+        p2->entries[idx] = 0;
+    }
+
+    //double whammy - ensure page changes went through
+    flush_tlb();
+    invalidate_page(virt); 
+    
+    return 0;
+}
+
+uintptr_t map_user_page_tables(uintptr_t virt, uintptr_t phys, size_t size, page_table_t *p4, page_table_t *p3, page_table_t *p2)
+{
+    ASSERT(is_page_aligned(virt)); //ill check one
+   
+    //align phys if needed
+    if(!is_page_aligned(phys)){
+         debugf("note: page aligning requested physaddr (%lx) to %lx\n", phys, phys & BITMASK_21_ALIGN);
+    
+        phys = phys & BITMASK_21_ALIGN;
+    }
+    ASSERT(is_page_aligned(phys));
+
+
+    int num_pages = calc_num_pages(size); //announce what we will do now 
+    debugf("map_user_page_tables:  %lx -> %lx | %i pages \n", phys, virt, num_pages);
+    
+    page_indices_t ind; get_page_index_vm(virt, &ind);
+
+    
+    p3 = pt_addr( p4->entries[ind.p4] );
+     p4->entries[ind.p4] = (uintptr_t)p3 |  PT_FLAGS; //>:(
+
+    p3->entries[ind.pdpt3] = ((uintptr_t)p2 | PT_FLAGS);
+     
+    
+
+    for(int i = 0; i < num_pages; ++i){ //we can setup our mappings for the pages we need
+        uint64_t current_virtual_address = virt + (i * PAGE_SIZE);
+        uint64_t current_physical_address = phys + (i * PAGE_SIZE); //page size = 2MiB
+
+        int idx = (current_virtual_address >> 21) & 0x1FF; //index will change if num_pages > 1 so calc on the fly
+        p2->entries[idx] = current_physical_address |  (PAGE_FLAGS_DEFAULT | PAGE_FLAGS_USER); //add our flags and magic 
+        //https://wiki.osdev.org/images/thumb/6/6b/64-bit_page_tables2.png/412px-64-bit_page_tables2.png
+       // debugf("entry %i @ %lx = %lx \n %lb", i,(p2->entries + 8 * idx),  p2->entries[idx], p2->entries[idx]);
+    }
+
+    return virt;
 }
 
 /*

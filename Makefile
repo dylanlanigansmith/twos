@@ -66,7 +66,7 @@ ISO_ROOTDIR:=iso
 #===QEMU======
 QEMU_UEFI:=/usr/share/ovmf/x64/OVMF.fd
 QEMU_ARGS_VM:=-accel kvm -device VGA,vgamem_mb=32 -audiodev pa,id=speaker -machine pcspk-audiodev=speaker -m 8G
-QEMU_ARGS_DBG:=-serial file:com1.log  -d int
+QEMU_ARGS_DBG:=-serial file:com1.log  -d int,cpu_reset,page
 
 #====TARGETS======
 
