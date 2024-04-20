@@ -168,7 +168,8 @@ extern __attribute__((noreturn)) void jump_to_usermode(void* addr);
 void main(void *addr, void *magic)
 {
     disable_interupts();
-   KPANIC("ss");
+    serial_init();
+    debugf("hello from the higher side");
     if(get_multiboot_initial_info(addr, magic) == MB_HEADER_PARSE_ERROR){
         //uh what?
         serial_init(); debugf("mb2 header parse error. magic =%lx", magic); return;
@@ -238,7 +239,7 @@ void main(void *addr, void *magic)
     pmm_init();
     initrd_reserve_space(sysinfo.initrd.start, sysinfo.initrd.end - sysinfo.initrd.start);
     
-   
+    
    
     paging_init(); //this also initializes heap, maps frame buffer, page allocator, etc.
     

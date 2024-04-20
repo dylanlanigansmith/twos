@@ -27,6 +27,10 @@ typedef unsigned long long uint64_t;
 typedef long long int64_t;
 typedef uint64_t uintptr_t;
 
+
+//not a good place 
+#define KERNEL_ADDR 0xffffffff80000000ull
+
 #ifndef __cplusplus
 typedef unsigned long long  size_t; 
 #else

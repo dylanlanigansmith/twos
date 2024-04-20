@@ -14,6 +14,8 @@ ifdef USE_TOOLCHAIN
 	CXX:=$(TC_PREFIX)g++
 	LD:=$(TC_PREFIX)ld
 	AS:=nasm
+#nasm
+#as -msyntax=intel -mnaked-reg
 else
 	@echo no toolchain
 	CC:=gcc
@@ -48,13 +50,16 @@ CRTN_OBJ:=kernel/cpp/crtn.o
 
 
 
-C_FLAGS:= -masm=intel -ffreestanding -nostdlib -fno-pie -fno-stack-protector -mno-shstk -mno-red-zone -fmacro-prefix-map=/home/dylan/code/randos=.
+C_FLAGS:=-masm=intel -m64 -mcmodel=large -ffreestanding -nostdlib -fno-pie -fno-stack-protector -mno-shstk -mno-red-zone -fmacro-prefix-map=/home/dylan/code/randos=.
 CPP_FLAGS:=-nostartfiles -fno-exceptions -fno-rtti
 
 #Linking
-LD_FLAGS:=--nmagic --script=linker.ld -no-pie 
+LD_FLAGS:=--nmagic --script=linker.ld 
 
-OBJ_LINK_LIST:= $(OBJ) $(CPP_OBJ) $(ASM_OBJ) 
+OBJ_LINK_LIST:= $(ASM_OBJ) $(OBJ) $(CPP_OBJ) 
+#$
+#
+#
 #for cpp but doesnt work probably need to build a cross compiler
 #OBJ_LINK_LIST:= $(CRTI_OBJ) $(CRTBEGIN_OBJ) $(OBJ) $(CPP_OBJ) $(ASM_OBJ) $(CRTEND_OBJ) $(CRTN_OBJ) 
 
@@ -66,7 +71,7 @@ ISO_ROOTDIR:=iso
 #===QEMU======
 QEMU_UEFI:=/usr/share/ovmf/x64/OVMF.fd
 QEMU_ARGS_VM:=-accel kvm -device VGA,vgamem_mb=32 -audiodev pa,id=speaker -machine pcspk-audiodev=speaker -m 8G
-QEMU_ARGS_DBG:=-serial file:com1.log  -d int,page
+QEMU_ARGS_DBG:=-serial file:com1.log  -d int,page,cpu_reset -no-reboot
 
 #,cpu_reset
 #====TARGETS======

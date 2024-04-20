@@ -24,12 +24,12 @@ void palloc_init()
 {
     table_index =tables = tables_base = 0;
     //plead with pmm for some memory 
-    tables_base = pmm_kalloc(PALLOC_SIZE);
+    tables_base = pmm_kalloc(PALLOC_SIZE) + KERNEL_ADDR;
     if(!tables_base){
         //well shit this is really bad
         debugf("palloc init failed, no physical memory"); KPANIC("Can't Init PALLOC. We're fucked");
     }
-
+    ASSERT(map_phys_addr(tables_base, tables_base - KERNEL_ADDR, PALLOC_SIZE, 0));
     debugf("page allocator ready\n");
 }
 
@@ -42,7 +42,7 @@ page_table_t *palloc() //returns identity mapped address to an allocated page ta
 
     memset(addr, 0, sizeof(page_table_t)); //so important
 
-    page_table_t* ret = (page_table_t*)addr;
+    page_table_t* ret = (page_table_t*)addr - KERNEL_ADDR;
 
     table_index++;
 

@@ -114,11 +114,11 @@ void pmm_init()
     //things that also take space:
         //the fucking kernel
 
-    debugf("marking from kernel start %lx to kernel end %lx as used", sysinfo.boot.kernel_base, sysinfo.boot.kernel_end);
+    debugf("marking from kernel start %lx to kernel end %lx as used", sysinfo.boot.kernel_base + KERNEL_ADDR, sysinfo.boot.kernel_end);
 
     ASSERT(sysinfo.boot.kernel_end > sysinfo.boot.kernel_base); 
-    pmm_mark_frames_used(sysinfo.boot.kernel_base, sysinfo.boot.kernel_end - sysinfo.boot.kernel_base);
-
+    pmm_mark_frames_used(sysinfo.boot.kernel_base + KERNEL_ADDR, sysinfo.boot.kernel_end - (sysinfo.boot.kernel_base + KERNEL_ADDR));
+    pmm_mark_frames_used(0, sysinfo.boot.kernel_end - KERNEL_ADDR + PAGE_SIZE * 8);
     // so we gotta make sure that physmem goes thru here from now on and all should be well!
     // except for the cases we dont want it to lol (acpi)
 
@@ -155,6 +155,10 @@ void pmm_debug_space(){
 
 uintptr_t pmm_kalloc(size_t size)
 {
+
+    //now that we are higher half this is outdated!!!!
+
+    
 
     //finds some memory for us in 0-1gb kernel area
     size_t num_pages = (size + PAGE_SIZE - 1) / PAGE_SIZE; //ensure round up
@@ -229,7 +233,7 @@ uintptr_t pmm_mark_frames_used(uintptr_t addr, size_t size)
 
     debugf("marking from %lx - %lx as used, total pages = %li", aldr, aldr + size, num_pages);
 
-    
+    ASSERT(aldr + size > aldr );
 
     if( page_align(addr + o_size) > aldr + size){
         debugf("BUG HEY LOOK HERE IM AN ISSUE! PMM_MARK_FRAMES_USED line: %i\n", __LINE__);

@@ -1,9 +1,29 @@
+;default rel
+[bits 64]
 MB_MAGIC equ 0xe85250d6
 MB_ARCH equ 0
 ;https://www.gnu.org/software/grub/manual/multiboot2/multiboot.html#Examples
 
+KERNEL_VMA equ 0xffffffff80000000 ;p4[511] p3[510]  0 p2 0
+PAGE_SIZE equ 0x200000
+[extern _start]
 [extern _end]
-[extern bss]
+[extern _edata]
+[extern _bss]
+[extern ebss]
+
+[extern main]
+
+global p2_table
+global p3_table
+global p4_table
+global MB0
+global MB1
+global gdt64
+global GDT_TSS_PTR
+global GDT_PTR ;literally stores address of GDT
+global kernel_stack
+global kernel_stack_end
 
 section .multiboot_header ;gnu .long = dd gnu .word = dw
 align 8
@@ -13,14 +33,15 @@ mb_header_start:
     dd mb_header_end - mb_header_start
 
     dd 0x100000000 - (MB_MAGIC + MB_ARCH + (mb_header_end - mb_header_start)) ;checksum
+
 align 8
 framebuffer_tag_start:
     dw 5 ; mb2 header tag framebuf
     dw 1 ; header tag optional
     dd framebuffer_tag_end - framebuffer_tag_start
-    dd 640
-    dd 400
-    dd 8
+    dd 1024 ;w 640
+    dd 768 ; h 400
+    dd 32 ; depth
 framebuffer_tag_end:
 align 8
     dw 0; mb header tag end
@@ -28,89 +49,83 @@ align 8
     dd 8 ; size
 mb_header_end:
 
-[bits 32]
 
 global start
 section .text
-[extern main]
+[bits 32]
 
-
-HIGH_START equ 0xffffff8000000000 ;p4[511] p3  0 p2 0
-PAGE_SIZE equ 0x200000
 start:
-    mov [MB0], ebx
-    mov [MB1], eax
-  
-    ; reset eflags
+    cli 
     push 0
     popf
-    ;push multiboot stuff to stack
-    ;;push ebx
-    ;;push eax
-    mov [0xA0008], byte 0x1
 
-    ;https://intermezzos.github.io/book/first-edition/paging.html
-     ; Point the first entry of the level 4 page table to the first entry in the
-    ; p3 table
-    mov eax, p3_table
-    or eax, 0b11 ;
-    mov dword [p4_table + 0], eax
-
-    ; Point the first entry of the level 3 page table to the first entry in the
-    ; p2 table
-    mov eax, p2_table
-    or eax, 0b11
-    mov dword [p3_table + 0], eax
-    
- 
-
-    ; point each page table level two entry to a page
-    mov ecx, 0         ; counter variable
-.map_p2_table:
-    mov eax, 0x200000  ; 2MiB
-    mul ecx
-    or eax, 0b10000011
-    mov [p2_table + ecx * 8], eax
-
-    inc ecx
-    cmp ecx, 512 ; map 512 * 2mib of memory = 1gib total
-    jne .map_p2_table
-
-
+    mov dword [0xfc000000], 0xfffffff
    
-    mov eax, p3_higher
-    or eax, 0b11 ;
-    mov dword [p4_table + 8 * 511], eax
+    mov dword [MB0 - KERNEL_VMA], ebx
+    mov dword [MB1 - KERNEL_VMA], eax
 
-    mov eax, p2_higher
+   ; xor eax, eax
+   ; mov edi, (_bss - KERNEL_VMA)
+   ; mov ecx, (ebss - KERNEL_VMA)
+
+   ; sub ecx, edi
+   ; cld
+   ; rep stosb
+     
+    
+
+    ; SETUP ID MAP 
+    mov eax, p3_table - KERNEL_VMA
     or eax, 0b11
-    mov dword [p3_higher + 0], eax
+    mov dword [p4_table - KERNEL_VMA], eax ;qword
+    
+    mov eax, p2_table - KERNEL_VMA
+    or eax, 0b11
+    mov dword [p3_table - KERNEL_VMA], eax ;qword
 
+    mov ecx, 0
 
-    mov ecx, 0         ; counter variable
-.map_high_table:
-    mov eax, 0x200000  ; 2MiB
-    mul ecx
-    or eax, 0b10000011
-    mov [p2_higher + ecx * 8], eax;
+    mov ebx, (p2_table - KERNEL_VMA)
+    .id_map_p2:
+        mov eax, PAGE_SIZE
+        mul ecx
+        or eax, 0b10000011 ;rw avail kernel
+        mov [(p2_table - KERNEL_VMA) + ecx * 8], eax
+        inc ecx
+        cmp ecx, 512 ; map n * 2mib of memory 
+        jne .id_map_p2
 
-    inc ecx
-    cmp ecx, 32 ; map 32 * 2mib of memory = 64mib
-    jne .map_high_table
+    ; MAP HIGHER HALF
+    mov eax, (p3_higher - KERNEL_VMA)
+    or eax, 0b11
+    mov dword [(p4_table - KERNEL_VMA) + 8 * 511], eax ;qword
+    
+    mov eax, (p2_higher - KERNEL_VMA)
+    or eax, 0b11
+    mov dword [(p3_higher - KERNEL_VMA) + 8 * 510], eax ;qword
 
+    mov ecx, 0
 
-    ; move page table address to cr3
-    mov eax, p4_table
+    .hi_map_p2:
+        mov eax, PAGE_SIZE
+        mul ecx
+        or eax, 0b10000011
+        mov [(p2_higher - KERNEL_VMA) + ecx * 8], eax
+        inc ecx
+        cmp ecx, 512 ; map n * 2mib of memory 
+        jne .hi_map_p2
+
+    mov eax, (p4_table - KERNEL_VMA)
     mov cr3, eax
 
-    ; enable PAE
+    
+     ; enable paging modes 
     mov eax, cr4
-   
     or eax, 1 << 4 ;pse
     or eax, 1 << 5 ; pae
-    mov cr4, eax
+    mov cr4, eax    
 
-    ; set the long mode bit
+     ; set the long mode bit
     mov ecx, 0xC0000080
     rdmsr
     or eax, 1 << 8
@@ -121,37 +136,87 @@ start:
     or eax, 1 << 31
     or eax, 1 << 16
     mov cr0, eax
-
-    ; load gdt (warning that im gonna have 2 fix IDT stuff for 64bit)
-    lgdt [gdt64.pointer]
+    
+    ; load initial gdt
+    
     ; update selectors
+   
+    
+   
+ 
+    
+ 
+    mov ebx, (gdt64- KERNEL_VMA)
+    mov eax, (gdt64.pointer - KERNEL_VMA)
+    lea edx, (gdt64.pointer - KERNEL_VMA)
+    lgdt [gdt64.pointer - KERNEL_VMA]
+
+    
     mov ax, gdt64.data
     mov ss, ax
     mov ds, ax
     mov es, ax
-    
-    
-   ;jmp to long mode 
-   jmp gdt64.code:long_mode_start
+
+   
+
+    jmp gdt64.code:(long_mode_start - KERNEL_VMA)
 
 
-global GDT_TSS_PTR
-global GDT_PTR ;literally stores address of GDT
-global kernel_stack
-global kernel_stack_end
+start_hang:
+    hlt
+    jmp $
+
+
+[bits 64]
+section .text
+
+;[extern _init:function];
+;[extern _fini:function]
+
+
+long_mode_start:
+    
+      ;set up our stack
+    mov rbp, stack_top
+    mov rsp, rbp
+
+    
+
+   ;call _init ; does this even do anything (NO!)
+
+
+    mov rdi, [MB0]
+    mov rsi, [MB1]
+    add rdi, KERNEL_VMA ; add higher map to mb header since its mapped from 0x0 still
+
+   ; mov eax, dword 0x0
+    ;mov dword [p4_table], eax
+
+    ;invlpg [rax] ; un ID map for better or worse
+
+    call main
+    
+
+    ;global destructors
+   ;call _fini ;broken for now (havent fixed with new toolchain)
+    cli 
+    hlt
+    jmp $
+
 section .data
-    MB0 dq 0x00000000000
-    MB1 dq 0x00000000000
+   
     GDT_PTR dq gdt64
     GDT_TSS_PTR dq tss_offset
     kernel_stack dq stack_top
     kernel_stack_end dq stack_bottom
-global p2_table
-global p2_table2
-global p3_table
-global p4_table
+
+    MB0 dq 0x00000000000
+    MB1 dq 0x00000000000
+    
 
 
+    
+    
 
 section .bss
     align 4096
@@ -162,6 +227,8 @@ section .bss
 
     reserved:
         resb 8192
+    
+
     align 4096
     p4_table: ;page map table
         resb 4096
@@ -175,20 +242,24 @@ section .bss
         resb 4096
     p3_higher:
         resb 4096
+   
+   
+    
+   
 
+    
+
+
+[bits 64]
 section .rodata
 
 
-
-
-
-
-gdt64: 
 ;intel manual pg. 3098
 ;https://wiki.osdev.org/Global_Descriptor_Table#Segment_Descriptor
  ; flag defs moved to GDT.h for ref
+;align 16
+gdt64: 
     dq 0 ;null segment
-
 ; KERNEL CODE 0x8
 code_offset equ $ - gdt64
 .code: equ $ - gdt64 ;0x8
@@ -197,82 +268,49 @@ code_offset equ $ - gdt64
 data_offset equ $ - gdt64
 .data: equ $ - gdt64 ;0x10
     dq (1<<44) | (1<<47) | (1<<41)
-
 ; USER CODE 0x18 | 0x3 = 0x1b
 user_code_offset equ $ - gdt64
 .user_code: equ $ - gdt64 ;0x18
-        
     dq (1<<44) | (1<<47) | (1<<41) | (1<<43) | (1<<53) | (1<<46) | (1<<45)
-
 ; USER DATA 0x20 | 0x3 = 0x23 
 user_data_offset equ $ - gdt64
 .user_data: equ $ - gdt64 ;0x20 
     dq (1<<44) | (1<<47) | (1<<41) | (1<<46) | (1<<45)
-
 ; TASK STATE SEGMENT 0x28
 tss_offset equ $ 
 .tss_entry: equ $ - gdt64
-;tss addr = base ; tss size = limit ; 0x89 p/e/a as access and 0x40 size bit as flags <- unknown re: size bit
-   dq 0;( tss_size & 0xffff ) | ( (task_state_segment & 0xffffff) << 16) | (0x89 << 40) | ( (tss_size & 0xff0000 ) << 48) | (0x40 << 52) | ( ( task_state_segment & 0xff000000) << 56  )
-   dq 0;(task_state_segment & 0xffffffff00000000)
-
-; GTDR
+   dq 0
+   dq 0
 .pointer:
-    dw .pointer - gdt64 - 1
-    dq gdt64
-
-
-
+    dw .pointer - gdt64 - 1 
+    dq (gdt64 - KERNEL_VMA)
 
 
 
 section .text
-[bits 64]
-[extern _init:function]
-[extern _fini:function]
-
-
-long_mode_start:
-   
-    ;mov rax, 0x2f592f412f4b2f4f
-    ;mov qword [0xb8000], rax
-    ;pray multiboot stuff still kicking around on stack
-      ;set up our stack
-    mov rbp, stack_top
-    mov rsp, rbp
-
-   
-
- 
-
-    call _init ; does this even do anything (NO!)
-
-;     lgdt [gdt64.pointer]
-   ; push qword [MB0]
-   ; push qword [MB1]
-    mov edi, [MB0]
-    mov esi, [MB1]
-    call main
-    
-
-    ;global destructors
-    call _fini ;broken for now (havent fixed with new toolchain)
-    cli 
-    hlt
-    jmp $
-
+bits 64
 
 global load_tss:function
-
 load_tss:
     ;reload gdt ?
-    lgdt [gdt64.pointer]
+    mov rax, (gdt64.pointer - KERNEL_VMA)
+  
+    lgdt [gdt64.pointer - KERNEL_VMA]
+   
     ; update selectors
    ; mov ax, gdt64.data
    ; mov ss, ax
   ;  mov ds, ax
    ; mov es, ax
+   
+    
+
+   
 
      ; load TSS
-    mov ax, gdt64.tss_entry
+    
+    mov ax, 0x28
     ltr ax
+    
+   
+ 

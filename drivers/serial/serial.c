@@ -12,6 +12,8 @@ static long use_e9 = 0lu;
 
 int serial_init()
 {
+    if(serial__has_init) return 0;
+
     serial__has_init = False;
    port_byte_out(SERIAL_PORT_COM1 + 1, 0x00);    // Disable all interrupts
    port_byte_out(SERIAL_PORT_COM1 + 3, 0x80);    // Enable DLAB (set baud rate divisor)

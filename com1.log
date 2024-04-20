@@ -1,27 +1,28 @@
+hello from the higher side
 using Serial COM1 for debug out 
 boot start
 ==init GDT, TSS==
-gdt ptr = 0x1100d0 tss - gdt = 0x28
-stack top = 0x11d000 end = 0x119000 size = 0x4000
-copied GDT tss to 0x1111b4
+gdt ptr = 0xffffffff80211000, tss ptr = 0xffffffff80211028 tss - gdt = 0x28
+stack top = 0xffffffff80419000 end = 0xffffffff80415000 size = 0x4000
+copied GDT tss to 0xffffffff80414170
 ==Reloaded GDT, Loaded TSS==
-registered interupt handler for [33] at 0x10a639
-registered interupt handler for [32] at 0x10a482
-registered interupt handler for [105] at 0x1090c8
+registered interupt handler for [33] at 0xffffffff8020ddea
+registered interupt handler for [32] at 0xffffffff8020dbc0
+registered interupt handler for [105] at 0xffffffff8020c161
 interupts initialized
 ==boot initial phase complete==
 
 CPUID available = YES
 ==Parsing Multiboot2 Header==
 Unhandled Multiboot Tag: 10
-Found Multiboot Module at 0x129000. Total: 1
+Found Multiboot Module at 0x427000. Total: 1
 Unhandled Multiboot Tag: 9
 Unhandled Multiboot Tag: 5
 found VBE
 fb @ 0xfc000000 h= 768 p= 4096 
 ===MULTIBOOT_TAG_TYPE_ACPI_OLD===
 ==parsed mb2 header==
-boot info: BIOS [GRUB 2.12] cmdline='dbg=1 serial=1 hackz=1337' kernel_base=0x100000
+boot info: BIOS [GRUB 2.12] cmdline='dbg=1 serial=1 hackz=1337' kernel_base=0x200000
 
 ==PMM Init==
 Available Memory Region [0]:{ @0x0 - 0x9fc00 } size 0x9fc00 [0 MiB] 
@@ -35,17 +36,38 @@ for region 0x0 - 0x9fc00 there are 0 pages (r 639 kb) to set free
 for region 0x100000 - 0xbffe0000 there are 1535 pages (r 896 kb) to set free
 aligned start 0x200000 - aligned end 0xbfe00000 (1 1) 
 for region 0x100000000 - 0x240000000 there are 2560 pages (r 0 kb) to set free
-marking from kernel start 0x100000 to kernel end 0x124000 as used
-mark region used: 0x100000 - 0x124000
-marking from 0x0 - 0x200000 as used, total pages = 1
+marking from kernel start 0xffffffff80200000 to kernel end 0xffffffff80427000 as used
+mark region used: 0xffffffff80200000 - 0xffffffff80427000
+marking from 0xffffffff80200000 - 0xffffffff8044e000 as used, total pages = 1
+mark region used: 0x0 - 0x1427000
+marking from 0x0 - 0x144e000 as used, total pages = 10
 ==PMM End==
-mark region used: 0x129000 - 0xf85f0c
-marking from 0x0 - 0xeb9e18 as used, total pages = 7
+mark region used: 0x427000 - 0x1283f0c
+marking from 0x400000 - 0x12b9e18 as used, total pages = 7
 mark region used: 0xfc000000 - 0xfc300000
 marking from 0xfc000000 - 0xfc400000 as used, total pages = 2
-pmm_kalloc(0x400000): found space for 2 pages at 0xe00000
+pmm_kalloc(0x400000): found space for 2 pages at 0x1400000
+map_phys_addr():  0x1400000 -> 0xffffffff81400000 | 2 pages 
+Extended VA: : 0xffffffff81400000 
+idx for VA: 0xffffffff81400000 [0b1111 1111 1111 1111 1111 1111 1111 1111 1000 0001 0100 0000 0000 0000 0000 0000 ] 
+p4 idx : 511 
+p3 idx : 510 
+p2 idx : 10 
+p1 idx : 0 
+ p4 =511  p3 = 510 p2 = 10 p1 = 0 
+ p4 =511  p3 = 510 p2 = 10 p1 = 0 
+initial p3 = 0x41f000 p4 = 0x41b000 
+we have: p3 = 0x41f000 p2 = 0x41e000 
+entry 0 @ 0x41e280 = 0x1400083 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0100 0000 0000 0000 1000 0011 
+entry 1 @ 0x41e2c0 = 0x1600083 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0110 0000 0000 0000 1000 0011 
+==flushed TLB==
+invalidated: 0xffffffff81400000 
 page allocator ready
-alloc new page table at 0xe00000, index now 1 
+unmapping initial identity
+invalidated: 0x0 
+alloc new page table at 0x7ff81400000, index now 1 
 Extended VA: : 0xfc000000 
 idx for VA: 0xfc000000 [0b0000 0000 0000 0000 0000 0000 0000 0000 1111 1100 0000 0000 0000 0000 0000 0000 ] 
 p4 idx : 0 
@@ -57,163 +79,3 @@ p1 idx : 0
 mapping virtual : 0xfc000000 
 mapping physical : 0xfc000000 
 pages = : 2 
-mapped : 0xfc000000 
-to physical addresss: 0xfc000000 
-==flushed TLB==
-invalidated: 0xfc000000 
-pmm_kalloc(0x800000): found space for 4 pages at 0x1400000
-map_phys_addr():  0x1400000 -> 0xffffbeefed000000 | 4 pages 
-Extended VA: : 0xffffbeefed000000 
-idx for VA: 0xffffbeefed000000 [0b1111 1111 1111 1111 1011 1110 1110 1111 1110 1101 0000 0000 0000 0000 0000 0000 ] 
-p4 idx : 381 
-p3 idx : 447 
-p2 idx : 360 
-p1 idx : 0 
- p4 =381  p3 = 447 p2 = 360 p1 = 0 
- p4 =381  p3 = 447 p2 = 360 p1 = 0 
-initial p3 = 0x0 p4 = 0x11f000 
-alloc new page table at 0xe01000, index now 2 
-alloc new page table at 0xe02000, index now 3 
-made new: **p3 = 0xe01000 p2 = 0xe02000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1110 0000 0001 0000 0000 0011  
-we have: p3 = 0xe01000 p2 = 0xe02000 
-entry 0 @ 0xe07a00 = 0x1400083 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0100 0000 0000 0000 1000 0011 
-entry 1 @ 0xe07a40 = 0x1600083 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0110 0000 0000 0000 1000 0011 
-entry 2 @ 0xe07a80 = 0x1800083 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 1000 0000 0000 0000 1000 0011 
-entry 3 @ 0xe07ac0 = 0x1a00083 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 1010 0000 0000 0000 1000 0011 
-==flushed TLB==
-invalidated: 0xffffbeefed000000 
-bmap [ 0xffffbeefed000000 ] size=0 
-max size = 262130 max_size_bytes = 0x200000 
-pmm_alloc(0x400000): found space for 2 pages at 0x40000000
-map_phys_addr():  0x40000000 -> 0x40000000 | 2 pages 
-Extended VA: : 0x40000000 
-idx for VA: 0x40000000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 0000 0000 ] 
-p4 idx : 0 
-p3 idx : 1 
-p2 idx : 0 
-p1 idx : 0 
- p4 =0  p3 = 1 p2 = 0 p1 = 0 
- p4 =0  p3 = 1 p2 = 0 p1 = 0 
-initial p3 = 0x120000 p4 = 0x11f000 
-alloc new page table at 0xe03000, index now 4 
-made new: p2
-we have: p3 = 0x120000 p2 = 0xe03000 
-entry 0 @ 0xe03000 = 0x40000087 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 1000 0111 
-entry 1 @ 0xe03040 = 0x40200087 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0010 0000 0000 0000 1000 0111 
-==flushed TLB==
-invalidated: 0x40000000 
-Extended VA: : 0xffffff8000000000 
-idx for VA: 0xffffff8000000000 [0b1111 1111 1111 1111 1111 1111 1000 0000 0000 0000 0000 0000 0000 0000 0000 0000 ] 
-p4 idx : 511 
-p3 idx : 0 
-p2 idx : 0 
-p1 idx : 0 
- p4 =511  p3 = 0 p2 = 0 p1 = 0 
- p4 =511  p3 = 0 p2 = 0 p1 = 0 
-
-==MEM INIT OK==
-enabled interupts.
-==boot second phase complete==
-===initrd: loading 15060748 bytes from 0x129000===
-initrd validated; contains 15057402 bytes of files!
-making new block at 0xffffbeefed200000 size=4609 /  footer @ 0xffffbeefed2011f5 
- added to alloc map, new # allocs = 1 
-we found no space to fit size 0x519, making new block at 0xffffbeefed201201 size=1330 /  footer @ 0xffffbeefed201727 
- added to alloc map, new # allocs = 2 
-added dir node local 
-added dir node libnest 
-added dir node lib 
-added dir node usr 
-added dir node books 
-added dir node etc 
-added dir node birds 
-added dir node bin 
-added file node ulysses.txt 
-added file node LICENSE.txt 
-added file node initrd.txt 
-added file node test.txt 
-added file node manyfiles.txt 
-added file node etsee.file 
-added file node romanempire.txt 
-added file node usermode 
-added file node loco.txt 
-added file node usrlocal.txt 
-added file node imaginehavingalongfilenamewellyoudonthavetoanymore.txt 
-added file node greenland.bmp 
-added file node birdnest.nice 
-added file node testcase.txt 
-==initrd load success!== 
-
-file usermode is valid elf64. loading..
-phdr load  vaddr = 0x400000, aligned to 0x1000,   R  
-phdr load  vaddr = 0x401000, aligned to 0x1000, X  R  
-phdr load  vaddr = 0x402000, aligned to 0x1000,   R  
-lowest vaddr 0x400000 highest vaddr 0x402100, size 0x200000
-USER palloc new page table at 0x40000000, index now 1 
-USER palloc new page table at 0x40001000, index now 2 
-USER palloc new page table at 0x40002000, index now 3 
-making user pages: p4 0x40000000 p3 0x40001000 p2 0x40002000
-pmm_alloc(0x200000): found space for 1 pages at 0x40600000
-map_phys_addr():  0x40600000 -> 0x40600000 | 1 pages 
-Extended VA: : 0x40600000 
-idx for VA: 0x40600000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0110 0000 0000 0000 0000 0000 ] 
-p4 idx : 0 
-p3 idx : 1 
-p2 idx : 3 
-p1 idx : 0 
- p4 =0  p3 = 1 p2 = 3 p1 = 0 
- p4 =0  p3 = 1 p2 = 3 p1 = 0 
-initial p3 = 0x120000 p4 = 0x11f000 
-we have: p3 = 0x120000 p2 = 0xe03000 
-entry 0 @ 0xe030c0 = 0x40600087 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0110 0000 0000 0000 1000 0111 
-==flushed TLB==
-invalidated: 0x40600000 
-map_user_page_tables:  0x40600000 -> 0x400000 | 1 pages 
-Extended VA: : 0x400000 
-idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
-p4 idx : 0 
-p3 idx : 0 
-p2 idx : 2 
-p1 idx : 0 
- p4 =0  p3 = 0 p2 = 2 p1 = 0 
- p4 =0  p3 = 0 p2 = 2 p1 = 0 
-copying header 0x400000 to 0x40600000. fs= 0x254 ms = 0x254
-copying header 0x401000 to 0x40601000. fs= 0xb3 ms = 0xb3
-copying header 0x402000 to 0x40602000. fs= 0x100 ms = 0x100
-usr p4 = 0x0, usr entry = 0x4010a2 usr phys = 0x40600000 usr lo 0x400000
-we found no space to fit size 0x1000, making new block at 0xffffbeefed201733 size=4121 /  footer @ 0xffffbeefed202740 
- added to alloc map, new # allocs = 3 
-
-=== stdout init @ 0xffffbeefed201740 size 4096 idx 0  ready = 1 ===
-Graphics Init 1024 x 768 x 32 ready = 1 
-tasking init
-
-we found no space to fit size 0x2000, making new block at 0xffffbeefed20274c size=8217 /  footer @ 0xffffbeefed204759 
- added to alloc map, new # allocs = 4 
-stack  0xffffbeefed204684 isn't aligned! repairing to = 0xffffbeefed204680 
-create_task task_kmain pid 0 rip 0x10106f !
-added initial task task_kmain pid 0 !
-adding task task_draw_test, pid_last = 1 !
-we found no space to fit size 0x2000, making new block at 0xffffbeefed204765 size=8217 /  footer @ 0xffffbeefed206772 
- added to alloc map, new # allocs = 5 
-stack  0xffffbeefed20669d isn't aligned! repairing to = 0xffffbeefed206690 
-create_task task_draw_test pid 1 rip 0x1010f8 !
-scheduler: added task task_draw_test, pid = 1 !
-adding task task_bg_test, pid_last = 2 !
-we found no space to fit size 0x2000, making new block at 0xffffbeefed20677e size=8217 /  footer @ 0xffffbeefed20878b 
- added to alloc map, new # allocs = 6 
-stack  0xffffbeefed2086b6 isn't aligned! repairing to = 0xffffbeefed2086b0 
-create_task task_bg_test pid 2 rip 0x101173 !
-scheduler: added task task_bg_test, pid = 2 !
-randos up
-task draw timer 
-task draw test 
-task bg test 
-bgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbg

@@ -195,7 +195,7 @@ static void dump_gdt(GDT* gdt, bool dump_sys)
 void init_gdt(GDT* gdt)
 {
 
-	debugf("gdt ptr = %lx tss - gdt = %lx", GDT_PTR, GDT_TSS_PTR - GDT_PTR); //wack
+	debugf("gdt ptr = %lx, tss ptr = %lx tss - gdt = %lx", GDT_PTR, GDT_TSS_PTR, GDT_TSS_PTR - GDT_PTR); //wack
 
 	
 	ASSERT( (GDT_TSS_PTR - GDT_PTR)  == TSS_GDT_OFFSET );
@@ -213,7 +213,7 @@ void make_tss()
 	task_state_segment.rsp[0] = kernel_stack;
     
 
-    uintptr_t addr = (uintptr_t)&task_state_segment;
+    uintptr_t addr = (uintptr_t)&task_state_segment - KERNEL_ADDR;
 
     gdt_entry_sys_t tss_entry = {}; //{0x0067, 0x0000, 0x00, 0xE9, 0x00, 0x00, 0x00000000, 0x00000000}; 
     memset(&tss_entry, 0, sizeof(tss_entry));
@@ -231,13 +231,13 @@ void make_tss()
 	tss_entry.access.not_sys = 0;
 	tss_entry.access.priv = 0;
 	tss_entry.access.present = 1;
-
-
+    GDT* gdt = (GDT*)(GDT_PTR);
+   // dump_gdt(gdt, 1);
     
     memcpy((void*)GDT_TSS_PTR, &tss_entry, sizeof(tss_entry));
 
 	debugf("copied GDT tss to %lx", &kernel_stack); 
-
+   // dump_gdt(gdt, 1);
 	//so bochs now shows this as a 32 bit tss 
 	// and then an unknown descriptor after it
 	// which is probably fine ? bc our descriptor top half is empty ? 

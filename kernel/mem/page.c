@@ -189,7 +189,7 @@ void map_identity(page_table_t* p2, page_table_t* p4, uint64_t addr, int num_pag
 void init_heap()
 {
   //  map_to_physical_new(&p2_heap, &p3_heap, p4, HEAP_PHYS, HEAP_VIRT, HEAP_SIZE);
-    uintptr_t heap_phys = pmm_kalloc(HEAP_SIZE);
+    uintptr_t heap_phys = pmm_kalloc(HEAP_SIZE) + KERNEL_ADDR;
     ASSERT(heap_phys);
 
     ASSERT(map_phys_addr(HEAP_VIRT, heap_phys, HEAP_SIZE, 0));
@@ -204,10 +204,15 @@ void paging_init()
   
     palloc_init();
     uintptr_t cr3 = get_cr3();
-  
+    
+    
 
     page_table_t* p4 = (page_table_t*)(cr3);
     page_table_t* p3 =  (page_table_t*) (&p3_table);
+    debugf("unmapping initial identity\n");
+
+    p4->entries[0] = 0x00000000000;
+    invalidate_page(0x00000);
 
    page_table_t* p2_vram = palloc();
    if(!p2_vram) KPANIC("palloc failure: framebuffer map");

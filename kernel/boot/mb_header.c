@@ -172,8 +172,8 @@ void handle_tag_module(struct multiboot_tag *tag)
     struct multiboot_tag_module *mod = (struct multiboot_tag_module *)tag;
     
 
-    sysinfo.initrd.start = mod->mod_start;
-    sysinfo.initrd.end = mod->mod_end;
+    sysinfo.initrd.start = mod->mod_start ;
+    sysinfo.initrd.end = mod->mod_end ;
     //could check CRC here to ensure its our initrd
     //but then we have edge cases where its not ID mapped
         //if that can even happen?
