@@ -17,6 +17,10 @@ all: usermode
 usermode:
 	$(CC) $(C_SOURCES) $(C_FLAGS) -o $(OUT_FILE)
 
+install: all
+	cp $(OUT_FILE) ../util/initrd/root/usr/bin/$(OUT_FILE)
+    
+	
 
 clean:
 	rm -rf *.o

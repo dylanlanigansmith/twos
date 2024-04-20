@@ -22,7 +22,7 @@ make_initrd:
 run: clean all
 	@./$(OUT_FILE) $(TEST_ARGS)
 
-install:
+install: run
 	@cp init.rd ../../iso/boot/init.rd
 
 clean:

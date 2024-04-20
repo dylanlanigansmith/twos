@@ -38,7 +38,7 @@ void init_idt(){
     for(uint8_t vec = 0; vec < 48; ++vec){
         idt_set_descriptor(vec, isr_stub_table[vec], 0x8E);
     }
-    idt_set_descriptor(SYSCALL_INT, isr_stub_table[48], 0x8E); //our syscall handler
+    idt_set_descriptor(SYSCALL_INT, isr_stub_table[48], 0x8E | 0x60); //our syscall handler
     typedef void (*isrfn)();
    
     load_idt((uint64_t)&idt_ptr);

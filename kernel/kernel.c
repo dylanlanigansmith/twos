@@ -162,7 +162,7 @@ void task_test4(){
 
 extern uint64_t has_cpuid();
 
-extern __attribute__((noreturn)) void jump_to_usermode(void* addr);
+extern __attribute__((noreturn)) void jump_to_usermode(void* addr, uintptr_t stack);
 
 
 void main(void *addr, void *magic)
@@ -281,10 +281,10 @@ void main(void *addr, void *magic)
 
     user_vas_t usr; memset(&usr, 0, sizeof(user_vas_t));
     if(elf){
-    //   load_elf(elf, &usr);
+       load_elf(elf, &usr);
     }
 
-  // debugf("usr p4 = %lx, usr entry = %lx usr phys = %lx usr lo %lx", usr.pt.p4, usr.entry, usr.phys, usr.vaddr.l);
+   debugf(" usr entry = %lx usr phys = %lx usr lo %lx usr rsp %lx",usr.entry, usr.phys, usr.vaddr.l, usr.stack.top);
 
 
 
@@ -292,11 +292,10 @@ void main(void *addr, void *magic)
     
     gfx_init(color_cyan);
     //we are so back
-    
-
+     
   //   __asm__ volatile ("cli; mov rax, (%0); mov cr3, rax" : : "r"((uintptr_t)usr.pt.p4)); 
-  //   __asm__ volatile ("cli; mov rax, (%0); mov rsp, rax; mov rbp, rsp" : : "r"((uintptr_t)usr.stack.top));
-    // jump_to_usermode( usr.entry  );
+   
+    jump_to_usermode( usr.entry, (uintptr_t)usr.stack.top  );
   //  jump_to_usermode( (usr.entry - usr.vaddr.l) + usr.phys  );
 
 
@@ -315,11 +314,14 @@ void main(void *addr, void *magic)
 
     ASSERT(gfx_has_init());
     println("randos up");
+     const char* str = "syscalled\0"; uint64_t num = 1;
+    
+   
 
     //jump_to_usermode(&user_mode_test); //holy shit it worked
     
    // __asm__ volatile ("int 0x69");
-    start_first_task();
+   // start_first_task();
     
    
     uint64_t last_tick = 0;
@@ -332,6 +334,9 @@ void main(void *addr, void *magic)
     }
     uint64_t sc = tick;
     size_t offset = 512;
+
+      
+
     for(;;){
      
         if (stdout_dirty() ){ 

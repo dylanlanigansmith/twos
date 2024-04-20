@@ -5,21 +5,21 @@
 void main(){
     const char* str = "hello from user mode.";
      const char* str2 = "please mr kernel can I print";
-    for(int i = 0; i < 1000; ++i){
-        if(i == 999){
-            print(str);
-        }
-    }
+    
+    print(str);
+    print(str);
+    print(str2);
 
     print("/n");
 
     print(str2);
 
 
-    syscall(2, 0); //exit(0)
+    
 }
 
 void _start(){
+  
     main();
-    
+    for(;;) { __asm__ volatile ("mov rax, 0xcafebabe; hlt"); }
 }

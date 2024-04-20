@@ -367,7 +367,7 @@ uintptr_t map_phys_addr(uintptr_t virt, uintptr_t phys, size_t size, uint64_t fl
         ASSERT(p3 && p2); 
         //set p4 to p3 PHYSICAL
         
-        p4->entries[ind.p4] = (uintptr_t)p3 |  PT_FLAGS; //p3 is phys since we just made it 
+        p4->entries[ind.p4] = (uintptr_t)p3 |  (PT_FLAGS | 0b100) ; //p3 is phys since we just made it 
 
 
         debugf("made new: **p3 = %lx p2 = %lx entry = %lb \n", p3, p2,  p4->entries[ind.p4] );
@@ -389,7 +389,7 @@ uintptr_t map_phys_addr(uintptr_t virt, uintptr_t phys, size_t size, uint64_t fl
     if((uintptr_t)p3 < KERNEL_ADDR) p3 = (page_table_t*)((uint64_t)p3 + KERNEL_ADDR); //now virt
     
      debugf("making p3 virtual: now %lx \n", (uintptr_t)p3);
-    p3->entries[ind.pdpt3] = ((uintptr_t)p2 | PT_FLAGS); //p2 still is physical
+    p3->entries[ind.pdpt3] = ((uintptr_t)p2 | (PT_FLAGS | 0b100)); //p2 still is physical
      
     //we now should have p4 -> p3, and p3-> p2, and either made new tables or the existing ones were used where needed 
     //p2 should be valid now and ready for our mapping 

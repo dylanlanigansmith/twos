@@ -104,12 +104,14 @@ USER_DS equ 0x23
 
 ;takes ptr to jump as arg
 jump_to_usermode:
+    mov rsp, rsi
+    mov rbp, rsp
 	mov ax, USER_CS
 	mov ds, ax
 	mov es, ax
 	mov fs, ax
 	mov gs, ax
-
+    
 	mov rax, rsp
 	push USER_DS
 	push rax

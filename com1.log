@@ -1,13 +1,13 @@
 hello from the higher side
 hey
 boot start
-registered interupt handler for [33] at 0xffffffff8020dfba
-registered interupt handler for [32] at 0xffffffff8020dd90
-registered interupt handler for [105] at 0xffffffff8020c2bd
+registered interupt handler for [33] at 0xffffffff8020dd1c
+registered interupt handler for [32] at 0xffffffff8020daf2
+registered interupt handler for [105] at 0xffffffff8020c0e7
 ==init GDT, TSS==
 gdt ptr = 0xffffffff80211000, tss ptr = 0xffffffff80211028 tss - gdt = 0x28
 stack top = 0xffffffff80219000 end = 0xffffffff80215000 size = 0x4000
-copied GDT tss to 0xffffffff802141f0
+copied GDT tss to 0xffffffff802141b0
 ==Reloaded GDT, Loaded TSS==
 interupts initialized
 ==boot initial phase complete==
@@ -42,8 +42,8 @@ marking from 0x200000 - 0x400000 as used, total pages = 1
 mark region used: 0x0 - 0xe27000
 marking from 0x0 - 0xe4e000 as used, total pages = 7
 ==PMM End==
-mark region used: 0x227000 - 0x1083f0c
-marking from 0x200000 - 0x10b9e18 as used, total pages = 7
+mark region used: 0x227000 - 0x1083ebc
+marking from 0x200000 - 0x10b9d78 as used, total pages = 7
 ==init paging==
 mark region used: 0xfc000000 - 0xfc300000
 marking from 0xfc000000 - 0xfc400000 as used, total pages = 2
@@ -62,7 +62,7 @@ p1 idx : 0
 p4 = 0x21b000
 p4 = 0xffffffff8021b000
 p4->[p3ind]=0x21f000
-initial p3 = 0xffffffff8021f000 p4 = 0xffffffff8021b000, p3_phys = 0xffffffff8020ad9e  
+initial p3 = 0xffffffff8021f000 p4 = 0xffffffff8021b000, p3_phys = 0xffffffff8020abc8  
 we have: p3 = 0xffffffff8021f000 p2 = 0x21e000 
 making p3 virtual: now 0xffffffff8021f000 
 making p2 virtual: now 0xffffffff8021f000 
@@ -85,10 +85,10 @@ p1 idx : 0
  p4 =0  p3 = 3 p2 = 480 p1 = 0 
 p4 = 0x21b000
 p4 = 0xffffffff8021b000
-initial p3 = 0x0 p4 = 0xffffffff8021b000, p3_phys = 0xffffffff8020ad9e  
+initial p3 = 0x0 p4 = 0xffffffff8021b000, p3_phys = 0xffffffff8020abc8  
 alloc new page table at 0x1000000, virtual 0xffffffff81000000, index now 1 
 alloc new page table at 0x1001000, virtual 0xffffffff81001000, index now 2 
-made new: **p3 = 0x1000000 p2 = 0x1001000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0000 0000 0000 0000 0000 0011  
+made new: **p3 = 0x1000000 p2 = 0x1001000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0000 0000 0000 0000 0000 0111  
 we have: p3 = 0x1000000 p2 = 0x1001000 
 making p3 virtual: now 0xffffffff81000000 
 making p2 virtual: now 0xffffffff81000000 
@@ -111,10 +111,10 @@ p1 idx : 0
  p4 =381  p3 = 447 p2 = 360 p1 = 0 
 p4 = 0x21b000
 p4 = 0xffffffff8021b000
-initial p3 = 0x0 p4 = 0xffffffff8021b000, p3_phys = 0xffffffff8020ad9e  
+initial p3 = 0x0 p4 = 0xffffffff8021b000, p3_phys = 0xffffffff8020abc8  
 alloc new page table at 0x1002000, virtual 0xffffffff81002000, index now 3 
 alloc new page table at 0x1003000, virtual 0xffffffff81003000, index now 4 
-made new: **p3 = 0x1002000 p2 = 0x1003000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0000 0000 0010 0000 0000 0011  
+made new: **p3 = 0x1002000 p2 = 0x1003000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0000 0000 0010 0000 0000 0111  
 we have: p3 = 0x1002000 p2 = 0x1003000 
 making p3 virtual: now 0xffffffff81002000 
 making p2 virtual: now 0xffffffff81002000 
@@ -139,8 +139,8 @@ enabled interupts.
 making new block at 0xffffbeefed200000 size=94 /  footer @ 0xffffbeefed200052 
 adding to alloc map, prev. # allocs = 0 
  added to alloc map, new # allocs = 1 
-===initrd: loading 15060748 bytes from 0x227000===
-initrd validated; contains 15057402 bytes of files!
+===initrd: loading 15060668 bytes from 0x227000===
+initrd validated; contains 15057322 bytes of files!
 we found no space to fit size 0x11e8, making new block at 0xffffbeefed20005e size=4609 /  footer @ 0xffffbeefed201253 
 adding to alloc map, prev. # allocs = 1 
  added to alloc map, new # allocs = 2 
@@ -171,38 +171,97 @@ added file node birdnest.nice
 added file node testcase.txt 
 ==initrd load success!== 
 
+file usermode is valid elf64. loading..
+phdr load  vaddr = 0x400000, aligned to 0x1000,   R  
+phdr load  vaddr = 0x401000, aligned to 0x1000, X  R  
+phdr load  vaddr = 0x402000, aligned to 0x1000,   R  
+lowest vaddr 0x400000 highest vaddr 0x4020d4, size 0x200000
+pmm_alloc(0x200000): found space for 1 pages at 0x40000000
+map_phys_addr():  0x40000000 -> 0x400000 | 1 pages 
+Extended VA: : 0x400000 
+idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
+p4 idx : 0 
+p3 idx : 0 
+p2 idx : 2 
+p1 idx : 0 
+ p4 =0  p3 = 0 p2 = 2 p1 = 0 
+ p4 =0  p3 = 0 p2 = 2 p1 = 0 
+p4 = 0x21b000
+p4 = 0xffffffff8021b000
+p4->[p3ind]=0x1000000
+initial p3 = 0xffffffff81000000 p4 = 0xffffffff8021b000, p3_phys = 0xffffffff8020abc8  
+alloc new page table at 0x1004000, virtual 0xffffffff81004000, index now 5 
+made new: p2
+we have: p3 = 0xffffffff81000000 p2 = 0x1004000 
+making p3 virtual: now 0xffffffff81000000 
+making p2 virtual: now 0xffffffff81000000 
+entry 0 @ 0xffffffff81004080 = 0x40000087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 1000 0111 
+==flushed TLB==
+invalidated: 0x400000 
+copying header 0x400000 to 0x400000. fs= 0x254 ms = 0x254
+copying header 0x401000 to 0x401000. fs= 0x96 ms = 0x96
+copying header 0x402000 to 0x402000. fs= 0xd4 ms = 0xd4
+ usr entry = 0x40107b usr phys = 0x40000000 usr lo 0x400000 usr rsp 0x5fffc0
 we found no space to fit size 0x1000, making new block at 0xffffbeefed201791 size=4121 /  footer @ 0xffffbeefed20279e 
 adding to alloc map, prev. # allocs = 3 
  added to alloc map, new # allocs = 4 
 
 === stdout init @ 0xffffbeefed20179e size 4096 idx 0  ready = 1 ===
 Graphics Init 1024 x 768 x 32 ready = 1 
-tasking init
+hello from user mode.hello from user mode.please mr kernel can I print/nplease mr kernel can I print
+=== GPF ===
+Error: 0 
+rbp 0x5fffb8 
+==============
+===isr[0xd] err{0x0}====
+err_code = 0x0
+rbp = 0x5fffb8
+rip = 0x401093
+ss:rsp = 0x5fffb8
+cs = 0x1b
+rflags = 0x10202
+ds = 0x1b
+ss = 0x23
+rax = 0xcafebabe
+rbx = 0x211000
+rcx = 0x0
+rdx = 0x402016
+rdi = 0x402016
+rsi = 0x5fffc0
+r8 = 0xffffffff8020e187
+r9 = 0x1
+r10 = 0xffffffff8020acec
+r11 = 0x0
+r12 = 0x0
+r13 = 0x0
+r14 = 0x0
+r15 = 0x0
 
-we found no space to fit size 0x2000, making new block at 0xffffbeefed2027aa size=8217 /  footer @ 0xffffbeefed2047b7 
-adding to alloc map, prev. # allocs = 4 
- added to alloc map, new # allocs = 5 
-stack  0xffffbeefed2046e2 isn't aligned! repairing to = 0xffffbeefed2046e0 
-create_task task_kmain pid 0 rip 0xffffffff8020174c !
-added initial task task_kmain pid 0 !
-adding task task_draw_test, pid_last = 1 !
-we found no space to fit size 0x2000, making new block at 0xffffbeefed2047c3 size=8217 /  footer @ 0xffffbeefed2067d0 
-adding to alloc map, prev. # allocs = 5 
- added to alloc map, new # allocs = 6 
-stack  0xffffbeefed2066fb isn't aligned! repairing to = 0xffffbeefed2066f0 
-create_task task_draw_test pid 1 rip 0xffffffff80201828 !
-scheduler: added task task_draw_test, pid = 1 !
-adding task task_bg_test, pid_last = 2 !
-we found no space to fit size 0x2000, making new block at 0xffffbeefed2067dc size=8217 /  footer @ 0xffffbeefed2087e9 
-adding to alloc map, prev. # allocs = 6 
- added to alloc map, new # allocs = 7 
-stack  0xffffbeefed208714 isn't aligned! repairing to = 0xffffbeefed208710 
-create_task task_bg_test pid 2 rip 0xffffffff802018f7 !
-scheduler: added task task_bg_test, pid = 2 !
-randos up
-starting first task task_kmain
-starting task task_kmain
-task draw timer 
-task draw test 
-task bg test 
-bgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbg
+=== GPF ===
+Error: 0 
+rbp 0x5fffb8 
+==============
+===isr[0xd] err{0x0}====
+err_code = 0x0
+rbp = 0x5fffb8
+rip = 0x401093
+ss:rsp = 0x5fffb8
+cs = 0x1b
+rflags = 0x10202
+ds = 0x1b
+ss = 0x23
+rax = 0xcafebabe
+rbx = 0x211000
+rcx = 0x0
+rdx = 0x402016
+rdi = 0x402016
+rsi = 0x5fffc0
+r8 = 0xffffffff8020e187
+r9 = 0x1
+r10 = 0xffffffff8020acec
+r11 = 0x0
+r12 = 0x0
+r13 = 0x0
+r14 = 0x0
+r15 = 0x0

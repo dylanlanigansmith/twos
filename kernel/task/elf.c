@@ -95,37 +95,37 @@ uintptr_t load_elf(vfs_node* file, user_vas_t* usr)
 
     //so we need to make a whole ass page table
 
-    page_table_t* p4 = user_palloc();
-    page_table_t* p3 = user_palloc();
-    page_table_t* p2 = user_palloc();
-    debugf("making user pages: p4 %lx p3 %lx p2 %lx", p4,p3,p2);
+   // page_table_t* p4 = user_palloc();
+   // page_table_t* p3 = user_palloc();
+  //  page_table_t* p2 = user_palloc();
+   // debugf("making user pages: p4 %lx p3 %lx p2 %lx", p4,p3,p2);
    
     //load elf into phys mem somewhere
     
     uintptr_t phys = pmm_alloc(size_paligned);
+    
+    ASSERT(map_phys_addr(vaddr_low, phys, size_paligned, PAGE_FLAGS_DEFAULT | PAGE_FLAGS_USER));
 
-    ASSERT(map_phys_addr(phys, phys, size_paligned, PAGE_FLAGS_DEFAULT | PAGE_FLAGS_USER));
-
-    map_user_page_tables(vaddr_low, phys, size_paligned, p4,p3,p2);
+  //  map_user_page_tables(vaddr_low, phys, size_paligned, p4,p3,p2);
 
     for(int i = 0; i < eheader->e_phnum; ++i){
         Elf64_Phdr* phdr = (file->addr + eheader->e_phoff + (sizeof( Elf64_Phdr) * i)  );
 
         if(phdr->p_type != PT_LOAD || !phdr->p_vaddr) continue;
         
-        uintptr_t dest = (phdr->p_vaddr - vaddr_low) + phys;
+        uintptr_t dest = phdr->p_vaddr ;
         debugf("copying header %lx to %lx. fs= %lx ms = %lx", phdr->p_vaddr, dest, phdr->p_filesz, phdr->p_memsz);
         memcpy((void*)dest, (file->addr + phdr->p_offset), phdr->p_filesz); //size might be wrong
     }
     
     usr->entry = eheader->e_entry;
     usr->phys = phys;
-    usr->pt.p2 = p2;
-    usr->pt.p3 = p3;
-    usr->pt.p3 = p4;
+   // usr->pt.p2 = p2;
+   // usr->pt.p3 = p3;
+   // usr->pt.p3 = p4;
     usr->vaddr.h = vaddr_high;
     usr->vaddr.l = vaddr_low;
-    usr->stack.top = phys + size_paligned; //stupid but temporary
+    usr->stack.top = vaddr_low + size_paligned - (0x10 * 4); //stupid but temporary
     usr->stack.bot = vaddr_high + 0x100;
 
 
