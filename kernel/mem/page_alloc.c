@@ -22,7 +22,8 @@ uintptr_t table_top(){ //get top of free space (where new table can go)
 
 void palloc_init()
 {
-    table_index =tables = tables_base = 0;
+    debugf("palloc_init()\n");
+    table_index = tables = tables_base = 0;
     //plead with pmm for some memory 
     tables_base = pmm_kalloc(PALLOC_SIZE) + KERNEL_ADDR;
     if(!tables_base){
@@ -30,10 +31,10 @@ void palloc_init()
         debugf("palloc init failed, no physical memory"); KPANIC("Can't Init PALLOC. We're fucked");
     }
     ASSERT(map_phys_addr(tables_base, tables_base - KERNEL_ADDR, PALLOC_SIZE, 0));
-    debugf("page allocator ready\n");
+    debugf("page allocator ready at %lx\n", tables_base);
 }
 
-page_table_t *palloc() //returns identity mapped address to an allocated page table
+page_table_t *palloc() //returns physical address to an allocated page table
 {
     ASSERT(table_index < MAX_TABLES - 1);
 
@@ -42,10 +43,10 @@ page_table_t *palloc() //returns identity mapped address to an allocated page ta
 
     memset(addr, 0, sizeof(page_table_t)); //so important
 
-    page_table_t* ret = (page_table_t*)addr - KERNEL_ADDR;
+    page_table_t* ret = (page_table_t*) (uintptr_t)( addr - KERNEL_ADDR);
 
     table_index++;
 
-    debugf("alloc new page table at %lx, index now %i \n", (uint64_t)ret, table_index);
+    debugf("alloc new page table at %lx, virtual %lx, index now %i \n", (uint64_t)ret, addr, table_index);
     return ret;
 }

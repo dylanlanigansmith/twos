@@ -29,11 +29,11 @@ typedef struct {
     }prop;
     
     uint32_t size; //aka num elements
-    bmap_element_t** items;
+    bmap_element_t* items[1]; //this is broken
 
 } bmap_t; //bmap = bad map
 
-
+//int i = sizeof(bmap_t);
 
 
 static inline bmap_t* bmap_init(uintptr_t size, bmap_malloc_fn our_malloc, bmap_mfree_fn our_free, bmap_greater_fn our_greater){
@@ -42,7 +42,7 @@ static inline bmap_t* bmap_init(uintptr_t size, bmap_malloc_fn our_malloc, bmap_
     map->bgreater = our_greater;
     map->bfree = our_free;
     map->bmalloc = our_malloc;
-    map->prop.max_size = (size - (2 * (sizeof(bmap_t) ) ) ) / sizeof(bmap_element_t*);
+    map->prop.max_size = (size - (2 * (sizeof(bmap_t) ) ) ) / sizeof(bmap_element_t*); //this is broken
     return map;
 }
 
@@ -54,13 +54,16 @@ static inline void bmap_destroy(bmap_t* map){
 static inline bmap_element_t* bmap_insert(bmap_t* map, bmap_element_t* element) {
     if(map->size >= map->prop.max_size)
         return 0;
-    
     uint32_t itr = 0;
     while(itr < map->size && !map->bgreater(map->items[itr], element))
         itr++;
-    if(itr == map->size) // we hit end, its the largest!
+
+   
+    if(itr == map->size) {// we hit end, its the largest!
         map->items[map->size++] = element;
+    }
     else{
+         
         //we gotta insert in the middle
         bmap_element_t* displaced = map->items[itr];
         map->items[itr] = element;

@@ -188,8 +188,9 @@ void map_identity(page_table_t* p2, page_table_t* p4, uint64_t addr, int num_pag
 
 void init_heap()
 {
+    debugf("init_heap()\n");
   //  map_to_physical_new(&p2_heap, &p3_heap, p4, HEAP_PHYS, HEAP_VIRT, HEAP_SIZE);
-    uintptr_t heap_phys = pmm_kalloc(HEAP_SIZE) + KERNEL_ADDR;
+    uintptr_t heap_phys = pmm_kalloc(HEAP_SIZE);
     ASSERT(heap_phys);
 
     ASSERT(map_phys_addr(HEAP_VIRT, heap_phys, HEAP_SIZE, 0));
@@ -199,35 +200,48 @@ void init_heap()
 
 void paging_init()
 {
+    debugf("==init paging==\n");
     //reserve framebuffer first
+
+    
     pmm_mark_frames_used(sysinfo.fb.addr, 0x300000ULL); //it already should be reserved anyhow but jic
-  
-    palloc_init();
-    uintptr_t cr3 = get_cr3();
-    
-    
-
-    page_table_t* p4 = (page_table_t*)(cr3);
-    page_table_t* p3 =  (page_table_t*) (&p3_table);
     debugf("unmapping initial identity\n");
+    uintptr_t cr3 = get_cr3();
+   // page_table_t* p4 = (page_table_t*)(cr3 + KERNEL_ADDR) ;  //phys
+   // p4->entries[0] = 0x00000000000;
+   // invalidate_page(0x00000);
 
-    p4->entries[0] = 0x00000000000;
-    invalidate_page(0x00000);
 
-   page_table_t* p2_vram = palloc();
-   if(!p2_vram) KPANIC("palloc failure: framebuffer map");
+    palloc_init();
+    
+    
+    
+
+   
+    
+
+   //page_table_t* p2_vram = palloc();
+   //if(!p2_vram) KPANIC("palloc failure: framebuffer map");
                                                     //its hella problematic that we are mapping the framebuffer to qemu default address
                                                     //so at least we should ID map it instead of VIRTMAP bullcrap.. TODO
-   map_to_physical(p2_vram, p3, p4, (uint64_t)sysinfo.fb.addr, (uint64_t)VIRTMAP,  0x300000ULL); 
+   
+    debugf("mapping framebuffer %lx to %lx\n", sysinfo.fb.addr, VIRTMAP);
+   ASSERT( map_phys_addr(VIRTMAP, sysinfo.fb.addr, 0x300000ULL,0)) ;
+
+  // map_to_physical(p2_vram, p3, p4, (uint64_t)sysinfo.fb.addr, (uint64_t)VIRTMAP,  ); 
    //also trash this function please ^^^^^^^
     
     init_heap();
    //so for user heap we just write an allocator in our libc !
 
-   user_palloc_init();
+   //user_palloc_init();
 
-    page_indices_t ind;
-    get_page_index_vm(0xffffff8000000000, &ind);
+   // page_indices_t ind;
+   // get_page_index_vm(0xffffff8000000000, &ind);
+
+    debugf("==paging init ok==\n");
+  // ; __asm__ volatile ("int 3");
+   //; for(;;) __asm__ volatile (" hlt");
 }
 
 
@@ -300,27 +314,6 @@ uintptr_t virt_to_phys(uintptr_t virt) //virt addr === 56 bits
 
 
 
-// the big issue
-    // we are gonna point page tables to phys addresses, and thats cool and all
-    //  - except we gonna need to walk tables and uh 
-        // we cant really do phys -> virtual 
-        //Solution 1:
-            //identity map wherever we are allocating page tables 
-
-        //Solution 2:
-            //recursive stuff
-
-        //Solution 3:
-            //complicated lut or algorithm to scrape tables 
-
-        //Solution 4:
-            //well if we know they are in kernel heap its pretty easy to find virt address 
-            //just sucks a bit
-        
-    //go with #4, knowing we should do #2
-
-    //yk it feels pretty wrong to stick page tables on the heap
-    // just cuz like shit gonna break HARD if heap/malloc f's up and wipes a page table / chunk of one
 
 uintptr_t map_phys_addr(uintptr_t virt, uintptr_t phys, size_t size, uint64_t flags)
 {
@@ -351,23 +344,30 @@ uintptr_t map_phys_addr(uintptr_t virt, uintptr_t phys, size_t size, uint64_t fl
     page_table_t* p4, *p3,*p2; p4 = p3 = p2 = 0;
 
     p4 = get_p4();
-    pt_t* p4r = get_p4(); //oh shit 
+   
+    debugf("p4 = %lx\n", (uintptr_t)p4);
+    if(p4 < KERNEL_ADDR) p4 = (page_table_t*)((uint64_t)p4 + KERNEL_ADDR) ;
+    debugf("p4 = %lx\n", (uintptr_t)p4);
     //okay so whats the damage: 
     //need to check tables at indices seeing what we need to allocate 
 
-    
-    p3 = pt_addr( p4->entries[ind.p4] );
-     debugf("initial p3 = %lx p4 = %lx \n", (uintptr_t)p3, (uintptr_t)p4 );
+    uintptr_t p3_phys = pt_addr( p4->entries[ind.p4] );
+    if(p3_phys != 0){
+         debugf("p4->[p3ind]=%lx\n", p3_phys);
+        p3 =  (page_table_t*)(p3_phys + KERNEL_ADDR);
+    }
+   
+     debugf("initial p3 = %lx p4 = %lx, p3_phys = %lx  \n", (uintptr_t)p3, (uintptr_t)p4 );
     uintptr_t p2_addr = 0;
     //our logic for finding or making new tables as needed and mapping p4->p3->p2
     if(!p3){
-        p3 = palloc(); //palloc is ID mapped so virt/phys translation is not needed 
-        p2 = palloc();
+        p3 = palloc(); //PHYS 
+        p2 = palloc(); //PHYS
        
         ASSERT(p3 && p2); 
         //set p4 to p3 PHYSICAL
         
-        p4->entries[ind.p4] = (uintptr_t)p3 |  PT_FLAGS; //>:(
+        p4->entries[ind.p4] = (uintptr_t)p3 |  PT_FLAGS; //p3 is phys since we just made it 
 
 
         debugf("made new: **p3 = %lx p2 = %lx entry = %lb \n", p3, p2,  p4->entries[ind.p4] );
@@ -386,10 +386,16 @@ uintptr_t map_phys_addr(uintptr_t virt, uintptr_t phys, size_t size, uint64_t fl
     debugf("we have: p3 = %lx p2 = %lx \n", (uintptr_t)p3, (uintptr_t)p2); //we should have a valid p3 and p2 now
 
      //okay so whether we made a table or found one, we set it to either the existing or new address respectively
-    p3->entries[ind.pdpt3] = ((uintptr_t)p2 | PT_FLAGS);
+    if((uintptr_t)p3 < KERNEL_ADDR) p3 = (page_table_t*)((uint64_t)p3 + KERNEL_ADDR); //now virt
+    
+     debugf("making p3 virtual: now %lx \n", (uintptr_t)p3);
+    p3->entries[ind.pdpt3] = ((uintptr_t)p2 | PT_FLAGS); //p2 still is physical
      
     //we now should have p4 -> p3, and p3-> p2, and either made new tables or the existing ones were used where needed 
     //p2 should be valid now and ready for our mapping 
+
+    if((uintptr_t)p2 < KERNEL_ADDR) p2 = (page_table_t*)((uint64_t)p2 + KERNEL_ADDR); //p2 is now virtual, are you confused yet?
+    debugf("making p2 virtual: now %lx \n", (uintptr_t)p3);
 
     for(int i = 0; i < num_pages; ++i){ //we can setup our mappings for the pages we need
         uint64_t current_virtual_address = virt + (i * PAGE_SIZE);

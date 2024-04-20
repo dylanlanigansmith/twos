@@ -186,7 +186,7 @@ static void dump_gdt(GDT* gdt, bool dump_sys)
     debugf(" 	present: %x\n", gdt->tss.access.present);
     debugf("  flags: %x\n", gdt->tss.flags);
     debugf("  base_24_31: %x\n", gdt->tss.base_24_31);
-    debugf("  base_31_64: %x\n", gdt->tss.base_31_64);
+    debugf("  base_31_64: %i\n", gdt->tss.base_31_64);
     debugf("  reserved0: %x\n", gdt->tss.reserved0);
 
 	 debug("=== END GDT DUMP === \n \n");
@@ -213,7 +213,7 @@ void make_tss()
 	task_state_segment.rsp[0] = kernel_stack;
     
 
-    uintptr_t addr = (uintptr_t)&task_state_segment - KERNEL_ADDR;
+    uintptr_t addr = (uintptr_t)&task_state_segment;
 
     gdt_entry_sys_t tss_entry = {}; //{0x0067, 0x0000, 0x00, 0xE9, 0x00, 0x00, 0x00000000, 0x00000000}; 
     memset(&tss_entry, 0, sizeof(tss_entry));
@@ -237,7 +237,7 @@ void make_tss()
     memcpy((void*)GDT_TSS_PTR, &tss_entry, sizeof(tss_entry));
 
 	debugf("copied GDT tss to %lx", &kernel_stack); 
-   // dump_gdt(gdt, 1);
+    //dump_gdt(gdt, 1);
 	//so bochs now shows this as a 32 bit tss 
 	// and then an unknown descriptor after it
 	// which is probably fine ? bc our descriptor top half is empty ? 
@@ -257,6 +257,8 @@ void init_descriptor_table(const uint8_t dump)
 		
 	make_tss();
 	
+    
+
 	load_tss(); //this reloads GDT and then tss
 	debugf("==Reloaded GDT, Loaded TSS==\n");
 

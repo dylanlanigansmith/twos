@@ -85,6 +85,7 @@ void handle_pagefault(registers_t* regs){
     EXCEPTION_PRINTLN("\n== PAGE FAULT ==");
     EXCEPTION_PRINTF("Error: %lu \n", regs->err_code);
     EXCEPTION_PRINTF("At Address [CR2]: %lx \n", cr2);
+    EXCEPTION_PRINTF("RIP = %lx \n", regs->rip);
     EXCEPTION_PRINTLN(  (regs->err_code & 0b100) ? "USER" : "KERNEL");
     EXCEPTION_PRINTLN(  (regs->err_code & 0b10) ? "WRITE" : "READ");
     EXCEPTION_PRINTLN(  (regs->err_code & 0b01) ? "PAGE-PROTECTION VIOLATION" : "PAGE NOT PRESENT");

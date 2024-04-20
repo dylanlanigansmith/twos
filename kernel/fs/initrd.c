@@ -214,7 +214,7 @@ int initrd(uintptr_t addr, size_t size)
 
     debugf("===initrd: loading %lu bytes from %lx===\n", size, addr);
 
-  
+    addr += KERNEL_ADDR;
 
     header = (initrd_header*)(addr);
 

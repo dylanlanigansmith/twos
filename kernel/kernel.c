@@ -167,15 +167,16 @@ extern __attribute__((noreturn)) void jump_to_usermode(void* addr);
 
 void main(void *addr, void *magic)
 {
+    
     disable_interupts();
     serial_init();
     debugf("hello from the higher side");
-    if(get_multiboot_initial_info(addr, magic) == MB_HEADER_PARSE_ERROR){
+    if(get_multiboot_initial_info(addr, magic) == MB_HEADER_PARSE_ERROR && 0){
         //uh what?
         serial_init(); debugf("mb2 header parse error. magic =%lx", magic); return;
         //we can at least try and do something, this is why we need to implement bulletproof printk
     }
-    if(cmdline_numargs())
+    if(cmdline_numargs() && 0)
     {
         if(cmdline_is_true("serial")){
             serial_init(); //we can now debug and log! 
@@ -201,9 +202,7 @@ void main(void *addr, void *magic)
 
     //should check multiboot here while we have a working system
 
-    init_descriptor_table(GDT_INIT_QUIET); //update gdt
-                            //add user mode segments 
-                            //add tss
+   
    
    
 
@@ -218,7 +217,9 @@ void main(void *addr, void *magic)
     timer_init(PIT_RATE);
 
     syscall_init();
-   
+     init_descriptor_table(GDT_INIT_QUIET); //update gdt
+                            //add user mode segments 
+                            //add tss
 
 
     debugf("interupts initialized\n==boot initial phase complete==\n\n"); 
@@ -244,11 +245,11 @@ void main(void *addr, void *magic)
     paging_init(); //this also initializes heap, maps frame buffer, page allocator, etc.
     
 
-
+    
     //no cpp in kernel atm
     _init_cpp(); //todo fix global constructors and actually write some cpp
                     //or just save it for user space where it belongs :))))
-
+    debugf("skipping acpi\n");
     if(sysinfo.rsdp && 0){  
 
         uintptr_t rsdt = map_phys_addr(ACPI_ADDR, sysinfo.rsdp->RsdtAddress, PAGE_SIZE * 2, 0b10000001LLU ) ;
@@ -260,12 +261,14 @@ void main(void *addr, void *magic)
 
     }
     debugf("\n==MEM INIT OK==\n");
+
+    io_wait(); io_wait(); io_wait();
     __asm__("sti");
     debugf("enabled interupts.\n==boot second phase complete==\n"); 
 
     
      
-   
+   void* lol = kmalloc(69);
 
     if(initrd(sysinfo.initrd.start, sysinfo.initrd.end - sysinfo.initrd.start) == 0){
         
@@ -278,10 +281,10 @@ void main(void *addr, void *magic)
 
     user_vas_t usr; memset(&usr, 0, sizeof(user_vas_t));
     if(elf){
-       load_elf(elf, &usr);
+    //   load_elf(elf, &usr);
     }
 
-   debugf("usr p4 = %lx, usr entry = %lx usr phys = %lx usr lo %lx", usr.pt.p4, usr.entry, usr.phys, usr.vaddr.l);
+  // debugf("usr p4 = %lx, usr entry = %lx usr phys = %lx usr lo %lx", usr.pt.p4, usr.entry, usr.phys, usr.vaddr.l);
 
 
 

@@ -130,7 +130,9 @@ uint32_t find_best_free_space(size_t size, uint8_t flags){
 }
 //yeah i just wrote my own malloc what are you gonna do about it ?
 void* _malloc(size_t size){
+
     uint32_t space = find_best_free_space(size, ALLOC_FLAGS_NONE);
+    
     if(space == FREE_SPACE_NONE) // we need to add a new block
     {
         size_t total_size = get_total_block_size(size); //size of requested alloc + header & footer
@@ -149,18 +151,20 @@ void* _malloc(size_t size){
         }
        
        // HEAPDBG("heap use now: %lx heap use new: %lx \n", (heap.addr - HEAP_VIRT_REAL), (heap.addr - HEAP_VIRT_REAL)  + total_size );
-
+        
         uintptr_t new_header_addr = heap.addr; //header will be at top of heap
         uintptr_t alloc_addr = new_header_addr + sizeof(heap_header_t); //where our alloc will be after header is added
         HEAPDBG("making new block at %lx size=%lu / ", heap.addr, total_size, total_size);
         heap.addr = create_heap_block(heap.addr, size); //makes block at current end of heap, returns new end of heap after footer
-
+         
         //last thing, we gotta add to map
-       // HEAPDBG("adding to alloc map, prev. # allocs = %i \n", heap.allocs->size); 
+        HEAPDBG("adding to alloc map, prev. # allocs = %i \n", heap.allocs->size); 
+      
         if(bmap_insert(heap.allocs, new_header_addr) != new_header_addr){
             HEAPDBG("%s", "bmap_insert failed to return expected address \n"); 
             KPANIC("heap header insertion failure");
         }
+   
         HEAPDBG(" added to alloc map, new # allocs = %i \n", heap.allocs->size); 
 
        
@@ -244,6 +248,9 @@ uint8_t alloc_greater(void* a, void* b){
 
 void alloc_init()
 {
+    heap.addr = HEAP_VIRT;
+    heap.size = HEAP_SIZE;
+    heap.allocs = 0;
     bmap_greater_fn greater_fn = &alloc_greater;
     heap.allocs = bmap_init(PAGE_SIZE, &kmalloc_bootstrap, &kfree, greater_fn);
     bmap_print_info(heap.allocs);

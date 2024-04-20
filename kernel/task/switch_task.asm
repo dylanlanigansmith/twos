@@ -45,13 +45,13 @@ global restore_regs:function
 
 restore_regs:
     pop rax
-
+    
     ; Restore flags
     push qword [rdi + 136]  ;  rflags
     popfq 
 
      ; cr3
-  
+     
     mov rax, [rdi + 16]     ; load saved rip into rax
    
     mov rsp, [rdi]          ; rsp
@@ -64,7 +64,7 @@ restore_regs:
     mov rcx, [rdi + 40]     ; rcx
     mov rdx, [rdi + 48]     ; rdx
     mov rsi, [rdi + 56]     ; rsi
-    mov rdi, [rdi + 64]     ; rdi
+   
     mov r8,  [rdi + 72]     ; r8
     mov r9,  [rdi + 80]     ; r9
     mov r10, [rdi + 88]     ; r10
@@ -74,9 +74,10 @@ restore_regs:
     mov r14, [rdi + 120]    ; r14
     mov r15, [rdi + 128]    ; r15
 
+    mov rdi, [rdi + 64]     ; rdi
                     
     
-
+   
    
     ret ; good fuckin luck
     

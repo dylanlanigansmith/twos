@@ -40,8 +40,8 @@ SECTIONS {
         
     } 
     
-    . += 2M;
-    /* removed BLOCK(4K) for this and bss */
+   
+    /*  . += 2M;removed BLOCK(4K) for this and bss */
 	.data : AT(ADDR(.data) - VIRT_ADDR)
 	{
         _data = .;

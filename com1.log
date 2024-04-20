@@ -1,21 +1,21 @@
 hello from the higher side
-using Serial COM1 for debug out 
+hey
 boot start
+registered interupt handler for [33] at 0xffffffff8020dfba
+registered interupt handler for [32] at 0xffffffff8020dd90
+registered interupt handler for [105] at 0xffffffff8020c2bd
 ==init GDT, TSS==
 gdt ptr = 0xffffffff80211000, tss ptr = 0xffffffff80211028 tss - gdt = 0x28
-stack top = 0xffffffff80419000 end = 0xffffffff80415000 size = 0x4000
-copied GDT tss to 0xffffffff80414170
+stack top = 0xffffffff80219000 end = 0xffffffff80215000 size = 0x4000
+copied GDT tss to 0xffffffff802141f0
 ==Reloaded GDT, Loaded TSS==
-registered interupt handler for [33] at 0xffffffff8020ddea
-registered interupt handler for [32] at 0xffffffff8020dbc0
-registered interupt handler for [105] at 0xffffffff8020c161
 interupts initialized
 ==boot initial phase complete==
 
 CPUID available = YES
 ==Parsing Multiboot2 Header==
 Unhandled Multiboot Tag: 10
-Found Multiboot Module at 0x427000. Total: 1
+Found Multiboot Module at 0x227000. Total: 1
 Unhandled Multiboot Tag: 9
 Unhandled Multiboot Tag: 5
 found VBE
@@ -36,38 +36,45 @@ for region 0x0 - 0x9fc00 there are 0 pages (r 639 kb) to set free
 for region 0x100000 - 0xbffe0000 there are 1535 pages (r 896 kb) to set free
 aligned start 0x200000 - aligned end 0xbfe00000 (1 1) 
 for region 0x100000000 - 0x240000000 there are 2560 pages (r 0 kb) to set free
-marking from kernel start 0xffffffff80200000 to kernel end 0xffffffff80427000 as used
-mark region used: 0xffffffff80200000 - 0xffffffff80427000
-marking from 0xffffffff80200000 - 0xffffffff8044e000 as used, total pages = 1
-mark region used: 0x0 - 0x1427000
-marking from 0x0 - 0x144e000 as used, total pages = 10
+marking from kernel phys start 0x200000 to kernel phys end 0x227000 as used
+mark region used: 0x200000 - 0x227000
+marking from 0x200000 - 0x400000 as used, total pages = 1
+mark region used: 0x0 - 0xe27000
+marking from 0x0 - 0xe4e000 as used, total pages = 7
 ==PMM End==
-mark region used: 0x427000 - 0x1283f0c
-marking from 0x400000 - 0x12b9e18 as used, total pages = 7
+mark region used: 0x227000 - 0x1083f0c
+marking from 0x200000 - 0x10b9e18 as used, total pages = 7
+==init paging==
 mark region used: 0xfc000000 - 0xfc300000
 marking from 0xfc000000 - 0xfc400000 as used, total pages = 2
-pmm_kalloc(0x400000): found space for 2 pages at 0x1400000
-map_phys_addr():  0x1400000 -> 0xffffffff81400000 | 2 pages 
-Extended VA: : 0xffffffff81400000 
-idx for VA: 0xffffffff81400000 [0b1111 1111 1111 1111 1111 1111 1111 1111 1000 0001 0100 0000 0000 0000 0000 0000 ] 
+unmapping initial identity
+palloc_init()
+pmm_kalloc(0x400000): found space for 2 pages at 0x1000000
+map_phys_addr():  0x1000000 -> 0xffffffff81000000 | 2 pages 
+Extended VA: : 0xffffffff81000000 
+idx for VA: 0xffffffff81000000 [0b1111 1111 1111 1111 1111 1111 1111 1111 1000 0001 0000 0000 0000 0000 0000 0000 ] 
 p4 idx : 511 
 p3 idx : 510 
-p2 idx : 10 
+p2 idx : 8 
 p1 idx : 0 
- p4 =511  p3 = 510 p2 = 10 p1 = 0 
- p4 =511  p3 = 510 p2 = 10 p1 = 0 
-initial p3 = 0x41f000 p4 = 0x41b000 
-we have: p3 = 0x41f000 p2 = 0x41e000 
-entry 0 @ 0x41e280 = 0x1400083 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0100 0000 0000 0000 1000 0011 
-entry 1 @ 0x41e2c0 = 0x1600083 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0110 0000 0000 0000 1000 0011 
+ p4 =511  p3 = 510 p2 = 8 p1 = 0 
+ p4 =511  p3 = 510 p2 = 8 p1 = 0 
+p4 = 0x21b000
+p4 = 0xffffffff8021b000
+p4->[p3ind]=0x21f000
+initial p3 = 0xffffffff8021f000 p4 = 0xffffffff8021b000, p3_phys = 0xffffffff8020ad9e  
+we have: p3 = 0xffffffff8021f000 p2 = 0x21e000 
+making p3 virtual: now 0xffffffff8021f000 
+making p2 virtual: now 0xffffffff8021f000 
+entry 0 @ 0xffffffff8021e200 = 0x1000083 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0000 0000 0000 0000 1000 0011 
+entry 1 @ 0xffffffff8021e240 = 0x1200083 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0010 0000 0000 0000 1000 0011 
 ==flushed TLB==
-invalidated: 0xffffffff81400000 
-page allocator ready
-unmapping initial identity
-invalidated: 0x0 
-alloc new page table at 0x7ff81400000, index now 1 
+invalidated: 0xffffffff81000000 
+page allocator ready at 0xffffffff81000000
+mapping framebuffer 0xfc000000 to 0xfc000000
+map_phys_addr():  0xfc000000 -> 0xfc000000 | 2 pages 
 Extended VA: : 0xfc000000 
 idx for VA: 0xfc000000 [0b0000 0000 0000 0000 0000 0000 0000 0000 1111 1100 0000 0000 0000 0000 0000 0000 ] 
 p4 idx : 0 
@@ -76,6 +83,126 @@ p2 idx : 480
 p1 idx : 0 
  p4 =0  p3 = 3 p2 = 480 p1 = 0 
  p4 =0  p3 = 3 p2 = 480 p1 = 0 
-mapping virtual : 0xfc000000 
-mapping physical : 0xfc000000 
-pages = : 2 
+p4 = 0x21b000
+p4 = 0xffffffff8021b000
+initial p3 = 0x0 p4 = 0xffffffff8021b000, p3_phys = 0xffffffff8020ad9e  
+alloc new page table at 0x1000000, virtual 0xffffffff81000000, index now 1 
+alloc new page table at 0x1001000, virtual 0xffffffff81001000, index now 2 
+made new: **p3 = 0x1000000 p2 = 0x1001000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0000 0000 0000 0000 0000 0011  
+we have: p3 = 0x1000000 p2 = 0x1001000 
+making p3 virtual: now 0xffffffff81000000 
+making p2 virtual: now 0xffffffff81000000 
+entry 0 @ 0xffffffff81008800 = 0xfc000083 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 1111 1100 0000 0000 0000 0000 1000 0011 
+entry 1 @ 0xffffffff81008840 = 0xfc200083 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 1111 1100 0010 0000 0000 0000 1000 0011 
+==flushed TLB==
+invalidated: 0xfc000000 
+init_heap()
+pmm_kalloc(0x800000): found space for 4 pages at 0x1600000
+map_phys_addr():  0x1600000 -> 0xffffbeefed000000 | 4 pages 
+Extended VA: : 0xffffbeefed000000 
+idx for VA: 0xffffbeefed000000 [0b1111 1111 1111 1111 1011 1110 1110 1111 1110 1101 0000 0000 0000 0000 0000 0000 ] 
+p4 idx : 381 
+p3 idx : 447 
+p2 idx : 360 
+p1 idx : 0 
+ p4 =381  p3 = 447 p2 = 360 p1 = 0 
+ p4 =381  p3 = 447 p2 = 360 p1 = 0 
+p4 = 0x21b000
+p4 = 0xffffffff8021b000
+initial p3 = 0x0 p4 = 0xffffffff8021b000, p3_phys = 0xffffffff8020ad9e  
+alloc new page table at 0x1002000, virtual 0xffffffff81002000, index now 3 
+alloc new page table at 0x1003000, virtual 0xffffffff81003000, index now 4 
+made new: **p3 = 0x1002000 p2 = 0x1003000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0000 0000 0010 0000 0000 0011  
+we have: p3 = 0x1002000 p2 = 0x1003000 
+making p3 virtual: now 0xffffffff81002000 
+making p2 virtual: now 0xffffffff81002000 
+entry 0 @ 0xffffffff81008a00 = 0x1600083 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0110 0000 0000 0000 1000 0011 
+entry 1 @ 0xffffffff81008a40 = 0x1800083 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 1000 0000 0000 0000 1000 0011 
+entry 2 @ 0xffffffff81008a80 = 0x1a00083 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 1010 0000 0000 0000 1000 0011 
+entry 3 @ 0xffffffff81008ac0 = 0x1c00083 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 1100 0000 0000 0000 1000 0011 
+==flushed TLB==
+invalidated: 0xffffbeefed000000 
+bmap [ 0xffffbeefed000000 ] size=0 
+max size = 262130 max_size_bytes = 0x200000 
+==paging init ok==
+skipping acpi
+
+==MEM INIT OK==
+enabled interupts.
+==boot second phase complete==
+making new block at 0xffffbeefed200000 size=94 /  footer @ 0xffffbeefed200052 
+adding to alloc map, prev. # allocs = 0 
+ added to alloc map, new # allocs = 1 
+===initrd: loading 15060748 bytes from 0x227000===
+initrd validated; contains 15057402 bytes of files!
+we found no space to fit size 0x11e8, making new block at 0xffffbeefed20005e size=4609 /  footer @ 0xffffbeefed201253 
+adding to alloc map, prev. # allocs = 1 
+ added to alloc map, new # allocs = 2 
+we found no space to fit size 0x519, making new block at 0xffffbeefed20125f size=1330 /  footer @ 0xffffbeefed201785 
+adding to alloc map, prev. # allocs = 2 
+ added to alloc map, new # allocs = 3 
+added dir node local 
+added dir node libnest 
+added dir node lib 
+added dir node usr 
+added dir node books 
+added dir node etc 
+added dir node birds 
+added dir node bin 
+added file node ulysses.txt 
+added file node LICENSE.txt 
+added file node initrd.txt 
+added file node test.txt 
+added file node manyfiles.txt 
+added file node etsee.file 
+added file node romanempire.txt 
+added file node usermode 
+added file node loco.txt 
+added file node usrlocal.txt 
+added file node imaginehavingalongfilenamewellyoudonthavetoanymore.txt 
+added file node greenland.bmp 
+added file node birdnest.nice 
+added file node testcase.txt 
+==initrd load success!== 
+
+we found no space to fit size 0x1000, making new block at 0xffffbeefed201791 size=4121 /  footer @ 0xffffbeefed20279e 
+adding to alloc map, prev. # allocs = 3 
+ added to alloc map, new # allocs = 4 
+
+=== stdout init @ 0xffffbeefed20179e size 4096 idx 0  ready = 1 ===
+Graphics Init 1024 x 768 x 32 ready = 1 
+tasking init
+
+we found no space to fit size 0x2000, making new block at 0xffffbeefed2027aa size=8217 /  footer @ 0xffffbeefed2047b7 
+adding to alloc map, prev. # allocs = 4 
+ added to alloc map, new # allocs = 5 
+stack  0xffffbeefed2046e2 isn't aligned! repairing to = 0xffffbeefed2046e0 
+create_task task_kmain pid 0 rip 0xffffffff8020174c !
+added initial task task_kmain pid 0 !
+adding task task_draw_test, pid_last = 1 !
+we found no space to fit size 0x2000, making new block at 0xffffbeefed2047c3 size=8217 /  footer @ 0xffffbeefed2067d0 
+adding to alloc map, prev. # allocs = 5 
+ added to alloc map, new # allocs = 6 
+stack  0xffffbeefed2066fb isn't aligned! repairing to = 0xffffbeefed2066f0 
+create_task task_draw_test pid 1 rip 0xffffffff80201828 !
+scheduler: added task task_draw_test, pid = 1 !
+adding task task_bg_test, pid_last = 2 !
+we found no space to fit size 0x2000, making new block at 0xffffbeefed2067dc size=8217 /  footer @ 0xffffbeefed2087e9 
+adding to alloc map, prev. # allocs = 6 
+ added to alloc map, new # allocs = 7 
+stack  0xffffbeefed208714 isn't aligned! repairing to = 0xffffbeefed208710 
+create_task task_bg_test pid 2 rip 0xffffffff802018f7 !
+scheduler: added task task_bg_test, pid = 2 !
+randos up
+starting first task task_kmain
+starting task task_kmain
+task draw timer 
+task draw test 
+task bg test 
+bgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbgbg

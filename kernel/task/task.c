@@ -2,7 +2,7 @@
 #include "../mem/heap.h"
 #include "../../drivers/video/gfx.h"
 #include "../timer/timer.h"
-
+#include "../pic/pic.h"
 #define DEBUGT(fmt, ...) debugf(fmt, __VA_ARGS__)
 
 extern void capture_regs(regs_t* regs);
@@ -242,6 +242,7 @@ task_t* remove_current_task() //itrps are off for this
 
 void start_first_task()
 {
+    debugf("starting first task %s", sched.root_task->name);
     sched.next_switch = tick + ARBITRARY_SWITCH_INTERVAL;
     sched.timer = tick;
     start_task(sched.root_task);
@@ -331,13 +332,17 @@ void start_task(task_t *task) //kernel
     sched.current_task = task;
     
     sched.timer = tick;
-
+    debugf("starting task %s", task->name);
     //HERE WE GO
 
-     __asm__ volatile ("cli");
+     //__asm__ volatile ("cli; int 3;");
+     PIC_set_mask(0x20);
      sched.active = 1;
+     
     restore_regs(&task->regs);
-    __asm__ volatile ("sti"); //jump to usermode will fix flags for us 
+   // __asm__ volatile ("int 3;");
+    PIC_clear_mask(0x20);
+  //  __asm__ volatile ("sti"); //jump to usermode will fix flags for us 
    
 }
 

@@ -63,3 +63,27 @@ static inline uintptr_t round_up_to_page(uintptr_t addr){
     if(addr % PAGE_SIZE == 0) return addr;
     return (addr + (PAGE_SIZE - (addr % PAGE_SIZE)));
 }
+
+
+
+// the big issue
+    // we are gonna point page tables to phys addresses, and thats cool and all
+    //  - except we gonna need to walk tables and uh 
+        // we cant really do phys -> virtual 
+        //Solution 1:
+            //identity map wherever we are allocating page tables 
+
+        //Solution 2:
+            //recursive stuff
+
+        //Solution 3:
+            //complicated lut or algorithm to scrape tables 
+
+        //Solution 4:
+            //well if we know they are in kernel heap its pretty easy to find virt address 
+            //just sucks a bit
+        
+    //go with #4, knowing we should do #2
+
+    //yk it feels pretty wrong to stick page tables on the heap
+    // just cuz like shit gonna break HARD if heap/malloc f's up and wipes a page table / chunk of one

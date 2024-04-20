@@ -172,8 +172,8 @@ void handle_tag_module(struct multiboot_tag *tag)
     struct multiboot_tag_module *mod = (struct multiboot_tag_module *)tag;
     
 
-    sysinfo.initrd.start = mod->mod_start ;
-    sysinfo.initrd.end = mod->mod_end ;
+    sysinfo.initrd.start = mod->mod_start;
+    sysinfo.initrd.end = mod->mod_end;
     //could check CRC here to ensure its our initrd
     //but then we have edge cases where its not ID mapped
         //if that can even happen?
@@ -220,7 +220,7 @@ int get_multiboot_initial_info(void *header, uint64_t magic)
     sysinfo_create(&sysinfo); // memset sysinfo, init defaults
 
     struct multiboot_tag *tag = (struct multiboot_tag *)((uintptr_t)header + 8);
-    
+    debugf("hey");
     while(tag->type != MULTIBOOT_TAG_TYPE_END){
         if(tag->type == MULTIBOOT_TAG_TYPE_CMDLINE){
             int num_args = cmdline_parse( (struct multiboot_tag_string*)tag );

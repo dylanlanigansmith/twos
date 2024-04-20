@@ -114,11 +114,11 @@ void pmm_init()
     //things that also take space:
         //the fucking kernel
 
-    debugf("marking from kernel start %lx to kernel end %lx as used", sysinfo.boot.kernel_base + KERNEL_ADDR, sysinfo.boot.kernel_end);
+    debugf("marking from kernel phys start %lx to kernel phys end %lx as used", sysinfo.boot.kernel_base, sysinfo.boot.kernel_end);
 
     ASSERT(sysinfo.boot.kernel_end > sysinfo.boot.kernel_base); 
-    pmm_mark_frames_used(sysinfo.boot.kernel_base + KERNEL_ADDR, sysinfo.boot.kernel_end - (sysinfo.boot.kernel_base + KERNEL_ADDR));
-    pmm_mark_frames_used(0, sysinfo.boot.kernel_end - KERNEL_ADDR + PAGE_SIZE * 8);
+    pmm_mark_frames_used(sysinfo.boot.kernel_base, sysinfo.boot.kernel_end - (sysinfo.boot.kernel_base));
+    pmm_mark_frames_used(0, sysinfo.boot.kernel_end + PAGE_SIZE * 6);
     // so we gotta make sure that physmem goes thru here from now on and all should be well!
     // except for the cases we dont want it to lol (acpi)
 
@@ -168,7 +168,7 @@ uintptr_t pmm_kalloc(size_t size)
     //im gonna write some really bad code now
     //sorry
 imsorry:
-    if(addr > ONE_GIB) return 0;
+    if(addr > 2 * ONE_GIB) return 0;
     while(!is_frame_free(addr)) addr += PAGE_SIZE;
     found = addr;
     for(int i = 0; i < num_pages; ++i){

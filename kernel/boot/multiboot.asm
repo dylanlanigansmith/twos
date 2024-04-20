@@ -92,7 +92,7 @@ start:
         or eax, 0b10000011 ;rw avail kernel
         mov [(p2_table - KERNEL_VMA) + ecx * 8], eax
         inc ecx
-        cmp ecx, 512 ; map n * 2mib of memory 
+        cmp ecx, 16; map n * 2mib of memory 
         jne .id_map_p2
 
     ; MAP HIGHER HALF
@@ -159,7 +159,7 @@ start:
 
    
 
-    jmp gdt64.code:(long_mode_start - KERNEL_VMA)
+    jmp gdt64.code:(long_mode_redirect - KERNEL_VMA)
 
 
 start_hang:
@@ -185,14 +185,30 @@ long_mode_start:
    ;call _init ; does this even do anything (NO!)
 
 
+    
+
+
+    mov rax, gdt64
+    mov qword [gdt64.pointer + 2], rax
+    lgdt [gdt64.pointer]
+   
+
+    mov qword rax, qword 0x0
+    mov qword [p4_table - KERNEL_VMA], rax
+
+    invlpg [rax] ; un ID map for better or worse
+
+    ;mov qword rax, cr3
+    ;mov qword cr3, rax
+
     mov rdi, [MB0]
     mov rsi, [MB1]
     add rdi, KERNEL_VMA ; add higher map to mb header since its mapped from 0x0 still
 
-   ; mov eax, dword 0x0
-    ;mov dword [p4_table], eax
-
-    ;invlpg [rax] ; un ID map for better or worse
+    mov rax, main
+    
+    ; hlt
+    ;jmp $
 
     call main
     
@@ -202,6 +218,12 @@ long_mode_start:
     cli 
     hlt
     jmp $
+
+long_mode_redirect:
+    ;try and force long non rel jmp
+    mov qword rax, long_mode_start
+    jmp rax
+
 
 section .data
    
@@ -292,25 +314,13 @@ bits 64
 
 global load_tss:function
 load_tss:
-    ;reload gdt ?
-    mov rax, (gdt64.pointer - KERNEL_VMA)
-  
-    lgdt [gdt64.pointer - KERNEL_VMA]
-   
-    ; update selectors
-   ; mov ax, gdt64.data
-   ; mov ss, ax
-  ;  mov ds, ax
-   ; mov es, ax
-   
+    ;lgdt [gdt64.pointer]
     
-
-   
-
-     ; load TSS
-    
-    mov ax, 0x28
+    ; load TSS
+    mov ax, gdt64.tss_entry
     ltr ax
+
+    ret
     
    
  

@@ -64,6 +64,9 @@ extern sysinfo_t sysinfo;
 
 static inline void sysinfo_create(sysinfo_t* sys){
     memset(sys, 0, sizeof(sysinfo_t));
-
-    sysinfo.boot.kernel_end = &_end;
+   
+    sysinfo.boot.kernel_end = &_end; 
+    if( sysinfo.boot.kernel_end > KERNEL_ADDR){
+        sysinfo.boot.kernel_end -= KERNEL_ADDR;
+    }
 }
