@@ -80,7 +80,29 @@ typedef struct
     Elf64_Xword st_size;    /* Size of object (e.g., common) */
 } Elf64_Sym;
 
+#define STB_LOCAL  0   /* Not visible outside the object file */
+#define STB_GLOBAL 1   /* Global symbol, visible to all object files */
+#define STB_WEAK   2   /* Global scope, but with lower precedence than global symbols */
+#define STB_LOOS   10  /* Environment-specific use */
+#define STB_HIOS   12
+#define STB_LOPROC 13  /* Processor-specific use */
+#define STB_HIPROC 15
+#define STT_NOTYPE   0   /* No type specified (e.g., an absolute symbol) */
+#define STT_OBJECT   1   /* Data object */
+#define STT_FUNC     2   /* Function entry point */
+#define STT_SECTION  3   /* Symbol is associated with a section */
+#define STT_FILE     4   /* Source file associated with the object file */
+#define STT_LOOS    10   /* Environment-specific use */
+#define STT_HIOS    12
+#define STT_LOPROC  13   /* Processor-specific use */
+#define STT_HIPROC  15
 
+
+/*
+
+        Relocations
+
+*/
 
 typedef struct
 {
@@ -96,7 +118,9 @@ typedef struct
     Elf64_Xword r_info;    /* Symbol index and type of relocation */
     Elf64_Sxword r_addend; /* Constant part of expression */
 } Elf64_Rela;
-
+#define ELF64_R_SYM(i)((i) >> 32)
+#define ELF64_R_TYPE(i)((i) & 0xffffffffL)
+#define ELF64_R_INFO(s, t)(((s) << 32) + ((t) & 0xffffffffL))
 
 typedef struct
 {
@@ -174,19 +198,48 @@ enum ELF_Ident
 #define ELFCLASS32 1 //32-bit objects
 #define ELFCLASS64 2 //64-bit objects
 
-#define ET_NONE 0 //No file type
-#define ET_REL 1 //Relocatable object file
-#define ET_EXEC 2 //Executable file
-#define ET_DYN 3 //Shared object file
-#define ET_CORE 4 //Core file
-#define ET_LOOS 0xFE00 //Environment-specific use
-#define ET_HIOS 0xFEFF
-#define ET_LOPROC 0xFF00 //Processor-specific use
-#define ET_HIPROC 0xFFFF
 
 
 
+typedef struct
+{
+    Elf64_Sxword d_tag;
+    union {
+        Elf64_Xword d_val;
+        Elf64_Addr d_ptr;
+    } d_un;
+} Elf64_Dyn;
 
+#define DT_NULL         0  /* Marks the end of the dynamic array */
+#define DT_NEEDED       1  /* The string table offset of the name of a needed library */
+#define DT_PLTRELSZ     2  /* Total size, in bytes, of the relocation entries associated with the procedure linkage table */
+#define DT_PLTGOT       3  /* Contains an address associated with the linkage table. The specific meaning of this field is processor-dependent */
+#define DT_HASH         4  /* Address of the symbol hash table */
+#define DT_STRTAB       5  /* Address of the dynamic string table */
+#define DT_SYMTAB       6  /* Address of the dynamic symbol table */
+#define DT_RELA         7  /* Address of a relocation table with Elf64_Rela entries */
+#define DT_RELASZ       8  /* Total size, in bytes, of the DT_RELA relocation table */
+#define DT_RELAENT      9  /* Size, in bytes, of each DT_RELA relocation entry */
+#define DT_STRSZ       10  /* Total size, in bytes, of the string table */
+#define DT_SYMENT      11  /* Size, in bytes, of each symbol table entry */
+#define DT_INIT        12  /* Address of the initialization function */
+#define DT_FINI        13  /* Address of the termination function */
+#define DT_SONAME      14  /* The string table offset of the name of this shared object */
+#define DT_RPATH       15  /* The string table offset of a shared library search path string */
+#define DT_SYMBOLIC    16  /* The presence of this dynamic table entry modifies the symbol resolution algorithm for references within the library */
+#define DT_REL         17  /* Address of a relocation table with Elf64_Rel entries */
+#define DT_RELSZ       18  /* Total size, in bytes, of the DT_REL relocation table */
+#define DT_RELENT      19  /* Size, in bytes, of each DT_REL relocation entry */
+#define DT_PLTREL      20  /* Type of relocation entry used for the procedure linkage table */
+#define DT_DEBUG       21  /* Reserved for debugger use */
+#define DT_TEXTREL     22  /* The presence of this dynamic table entry signals that the relocation table contains relocations for a non-writable segment */
+#define DT_JMPREL      23  /* Address of the relocations associated with the procedure linkage table */
+#define DT_BIND_NOW    24  /* The presence of this dynamic table entry signals that the dynamic loader should process all relocations for this object before transferring control to the program */
+#define DT_INIT_ARRAY  25  /* Pointer to an array of pointers to initialization functions */
+#define DT_FINI_ARRAY  26  /* Pointer to an array of pointers to termination functions */
+#define DT_INIT_ARRAYSZ 27 /* Size, in bytes, of the array of initialization functions */
+#define DT_FINI_ARRAYSZ 28 /* Size, in bytes, of the array of termination functions */
+#define DT_LOOS 0x60000000 /* Defines a range of dynamic table tags that are reserved for environment-specific use */
 
 
 static inline unsigned long elf64_hash(const unsigned char *name)          
@@ -212,6 +265,7 @@ typedef struct
     struct 
     {
         uintptr_t h,l;
+        size_t len; //elf len = h - l
     }vaddr;
     struct{
         uintptr_t top,bot;
@@ -220,3 +274,4 @@ typedef struct
 
 
 uint64_t load_elf(vfs_node* file, user_vas_t* usr);
+uint64_t load_elf_so(vfs_node* file, user_vas_t* usr);

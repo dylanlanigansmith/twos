@@ -9,7 +9,14 @@ typedef int PID_t;
 typedef void (*task_entry_fn)();
 
 #define MAX_TASK 128
-#define ARBITRARY_SWITCH_INTERVAL 100
+#define ARBITRARY_SWITCH_INTERVAL 10
+
+/*
+so if pit rate = 1000hz
+1 tick = 1 ms (except qemu pit bad)
+100ms per task
+*/
+#define TASK_ORPHAN 0xFFFF
 typedef struct{
         uint64_t rsp, rbp; //stack
         uint64_t rip; //inst
@@ -18,22 +25,30 @@ typedef struct{
         uint64_t rflags, cr3;
     } __attribute__((packed)) regs_t; 
 
-typedef struct{
+
+typedef struct task_t task_t;
+
+typedef struct task_t{
     char name[32];
     PID_t pid;
-    //so like uh can we talk about how we aint saving half of these with itrps
-                //surely that wont be an issue
+    PID_t parent_PID;
     regs_t regs;
-    uint64_t cr3;
-    uint64_t reserved;
+    uint64_t _idk;
+    union{
+        task_t* parent_task;
+        uint64_t wake_tick;
+    };
+    
 
+    uint64_t cs, ds;
     struct {
         uint8_t no_swap : 1;
         uint8_t is_user : 1;
-        uint8_t _zero : 6;
+        uint8_t blocks_parent : 1;
+        uint8_t sleeping : 1;
     } flags;
-
-    struct task_t* next;
+    void* mem;
+    task_t* next;
 }__attribute__((packed)) task_t;
 
 
@@ -45,6 +60,7 @@ typedef struct{
     task_t* newest_task; //use this instead of tasks array! ^
 
     task_t* root_task;
+    bool skip_saving_regs;
 
     struct
     {
@@ -84,3 +100,13 @@ void yield();
 
 PID_t getpid();
 
+void sleep_ns(uint64_t ns);
+
+int exec_user_task(const char* taskname, registers_t* regs);
+
+static inline uint64_t rdtsc() //idk where else to put this
+{
+    uint32_t low, high;
+    asm volatile("rdtsc":"=a"(low),"=d"(high));
+    return ((uint64_t)high << 32) | low;
+}

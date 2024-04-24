@@ -21,7 +21,11 @@
 
 
 %macro pushAll 0
-      push   rax
+      push rax
+      mov rax, cr3
+      push rax
+     
+      ;push   rax
       push   rcx
       push   rdx
       push   rbx
@@ -36,9 +40,11 @@
       push r13
       push r14
       push r15
+     
 %endmacro
 
 %macro popAll 0
+     
       pop r15
       pop r14
       pop r13
@@ -53,7 +59,11 @@
       pop      rbx
       pop      rdx
       pop      rcx
+
       pop      rax
+       
+      mov cr3, rax ;dont love that we are gonna do this every itrp now >:(
+      pop rax
 %endmacro
 
 extern isr_handler
@@ -89,7 +99,7 @@ isr_stub_%+%1:
 %macro irq 2
   global irq_%1
   irq_%1:
-    cli
+ ;   cli
     push  qword 0 ;dunno
     push  qword %2
     jmp irq_shared_stub
@@ -223,8 +233,8 @@ irq_shared_stub:
     mov gs, bx
 
     popAll ; return regs to state on call
-    add rsp, byte 16 ; cleans up the pushed error code and isr number (uhhh)
-    sti ; renable intrps
+    add rsp, byte 16 ; 
+   ; sti ; renable intrps
     iretq ; pops 5 things at once, cs, eip, eflags, ss, esp
 
 

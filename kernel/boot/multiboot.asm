@@ -293,11 +293,11 @@ data_offset equ $ - gdt64
 ; USER CODE 0x18 | 0x3 = 0x1b
 user_code_offset equ $ - gdt64
 .user_code: equ $ - gdt64 ;0x18
-    dq (1<<44) | (1<<47) | (1<<41) | (1<<43) | (1<<53) | (1<<46) | (1<<45)
+    dq (1<<44) | (1<<47) | (1<<41) | (1<<43) | (1<<53) | (1<<46) | (1<<45) ;45/6 user prv
 ; USER DATA 0x20 | 0x3 = 0x23 
 user_data_offset equ $ - gdt64
 .user_data: equ $ - gdt64 ;0x20 
-    dq (1<<44) | (1<<47) | (1<<41) | (1<<46) | (1<<45)
+    dq (1<<44) | (1<<47) | (1<<41) | (1<<46) | (1<<45) ;45/6 usr prv
 ; TASK STATE SEGMENT 0x28
 tss_offset equ $ 
 .tss_entry: equ $ - gdt64

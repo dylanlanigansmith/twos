@@ -8,7 +8,7 @@
 #include "../drivers/input/keyboard.h"
 #include "../drivers/video/gfx.h"
 #include "../drivers/video/vbe.h"
-
+#include "../common/scancode.h"
 #include "../drivers/sound/sound.h"
 #include "boot/multiboot2.h"
 #include "boot/mb_header.h"
@@ -54,11 +54,22 @@ void task_drawtimer(){
                  gfx_clear_line(598, 24);
                 last_tick = tick;
                 gfx_print_pos(lltoa(tick, 10), v2(5, 600));
+
+                uint8_t sc = keys_last_event();
+                if(sc){
+                    gfx_print_pos(itoa(sc, 10), v2(200, 600));
+                    gfx_print_pos((sc & PS2_MAKEORBREAK) ? "UP" : "DOWN", v2(230, 600));
+                    gfx_print_pos(get_scancode_name(sc & 0x7f), v2(265, 600));
+                    
+                }
+                uint64_t rax = 0;
+               //  __asm__ volatile ( "mov rax, 3; int 0x69; mov %0, rax; " : "=r"(rax) ::  "rax") ;
+
             }
     }
 }
 uint64_t last_tick2 = 0;
-void task_draw_test(){
+void task_drawstdout(){
     
     serial_print("task draw test \n");
      gfx_clear_line(498, 24);
@@ -68,10 +79,12 @@ void task_draw_test(){
 
             if(stdout_dirty()){
                  gfx_clear_text();
-                 __asm__ volatile ("cli");
+                // __asm__ volatile ("cli"); //should just mask PICs
+                  PIC_disable();
                   gfx_print(get_stdout());
                   stdout_flush();
-                  __asm__ volatile ("sti");
+                  PIC_enable();
+                //  __asm__ volatile ("sti");
             }
              last_tick2 = tick; //might break
      
@@ -79,71 +92,27 @@ void task_draw_test(){
     }
 }
 
-void task_bg_test(){
+void task_exit_test(){
     register uint64_t last = tick;
-    serial_print("task bg test \n");
+    serial_print("task exit test \n");
     
-    for(;;){
-        __asm__("hlt");
-        if((last + 1000) < tick  ){
-
-            if( gfx_state.clear_color.argb == color_red.argb)
-                 gfx_state.clear_color = color_green;
-            else
-                 gfx_state.clear_color = color_red;
-             
-            serial_print("bg");
-
-            last = tick;
-         //   gfx_clear(gfx_state.clear_color);
-           
-             //   serial_printi("t=", tick);
-              //  gfx_clear_line(498, 24);
-               // last_tick2 = tick;
-                //gfx_print_pos(lltoa(tick, 10), v2(5, 500));
-        }
-    }
-}
-
-void task_test_2(){
-    register uint64_t last = tick;
-    serial_print("task test 2 \n");
-    
-    for(;;){
-        __asm__("hlt");
-        if((last + 2000) < tick  ){
-
-            
-             
-            serial_print("test 2");
-
-            last = tick;
-         //   gfx_clear(gfx_state.clear_color);
-           
-             //   serial_printi("t=", tick);
-              //  gfx_clear_line(498, 24);
-               // last_tick2 = tick;
-                //gfx_print_pos(lltoa(tick, 10), v2(5, 500));
-        }
-    }
-}
-
-
-void task_test3(){
-    
-    serial_print("task test 3 \n");
-    serial_print("im outta here \n");
     exit(0);
 }
 
-void task_test4(){
+
+
+
+
+void task_test_yield(){
      register uint64_t last = tick;
+     serial_print("yield test");
+     yield();
      for(;;){
-        if((last + 4000) < tick  ){
+        if((last + 1000) < tick  ){
 
             
              
-            serial_print("yield");
+            serial_print("yielding");
 
             last = tick;
          //   gfx_clear(gfx_state.clear_color);
@@ -153,8 +122,9 @@ void task_test4(){
                // last_tick2 = tick;
                 //gfx_print_pos(lltoa(tick, 10), v2(5, 500));
         }
-        else{
-            yield();
+        if(tick > 5000) {
+            serial_print("yield test over");
+            exit(0);
         }
     }
 }
@@ -162,21 +132,20 @@ void task_test4(){
 
 extern uint64_t has_cpuid();
 
-extern __attribute__((noreturn)) void jump_to_usermode(void* addr, uintptr_t stack);
+extern __attribute__((noreturn)) void jump_to_usermode(void* addr, uintptr_t stack, uintptr_t cr3);
 
 
 void main(void *addr, void *magic)
 {
     
     disable_interupts();
-    serial_init();
-    debugf("hello from the higher side");
+   
     if(get_multiboot_initial_info(addr, magic) == MB_HEADER_PARSE_ERROR && 0){
         //uh what?
         serial_init(); debugf("mb2 header parse error. magic =%lx", magic); return;
         //we can at least try and do something, this is why we need to implement bulletproof printk
     }
-    if(cmdline_numargs() && 0)
+    if(cmdline_numargs())
     {
         if(cmdline_is_true("serial")){
             serial_init(); //we can now debug and log! 
@@ -185,8 +154,10 @@ void main(void *addr, void *magic)
                 if(port_byte_in(0xe9) == 0xe9){
                     serial_set_e9();
                     debug("Using Bochs E9 Hack for debug out\n"); //bochs
+                    sysinfo.host_type = HOST_BOCHS;
                 } else{
                     debug("using Serial COM1 for debug out \n"); //qemu (superior)
+                    sysinfo.host_type = HOST_QEMU; //BAD BAD BAD BAD ABD
                 } //todo: https://wiki.osdev.org/Parallel_port and use that for kernel debug
             }
         }
@@ -268,62 +239,69 @@ void main(void *addr, void *magic)
 
     
      
-   void* lol = kmalloc(69);
+    void* lol = kmalloc(69); //catch early if we break kernel heap somehow
+    kfree(lol);
 
-    if(initrd(sysinfo.initrd.start, sysinfo.initrd.end - sysinfo.initrd.start) == 0){
-        
+
+    if(initrd(sysinfo.initrd.start, sysinfo.initrd.end - sysinfo.initrd.start) != 0){
+        //shit that sucks man
+
     }
     
     
 
 
-    vfs_node* elf = initrd_findfile(initrd_root, "usermode");
+    vfs_node* elf = initrd_findfile(initrd_root, "init");
 
     user_vas_t usr; memset(&usr, 0, sizeof(user_vas_t));
     if(elf){
        load_elf(elf, &usr);
+       debugf(" usr entry = %lx usr phys = %lx usr lo %lx usr rsp %lx, usr cr3 = %lx",usr.entry, usr.phys, usr.vaddr.l, usr.stack.top, usr.pt.p4p);
     }
-
-   debugf(" usr entry = %lx usr phys = %lx usr lo %lx usr rsp %lx",usr.entry, usr.phys, usr.vaddr.l, usr.stack.top);
-
-
-
     stdout_init();
     
     gfx_init(color_cyan);
     //we are so back
      
-  //   __asm__ volatile ("cli; mov rax, (%0); mov cr3, rax" : : "r"((uintptr_t)usr.pt.p4)); 
-   
-    jump_to_usermode( usr.entry, (uintptr_t)usr.stack.top  );
-  //  jump_to_usermode( (usr.entry - usr.vaddr.l) + usr.phys  );
 
+   
+    
+    //uh wait it worked?
+    /*
+        todo:
+        - i would like user VAS/page tables [x]
+        - get user tasking to work [x]
+        - make a user program with gfx etc
+        - make basic libc
+        -PORT DOOM 
+    
+    */    
+
+   
 
     tasking_init(&task_drawtimer); //first task should be on our main stack as its new kernel main 
-    add_task("task_draw_test",task_draw_test);
-    add_task("task_bg_test",task_bg_test);
-   // add_task("task_test2",task_test_2);
-   // add_task("task_test_exit", task_test3);
-   // add_task("task_test_yield", task_test4);
+    add_task("task_drawstdout",task_drawstdout);
+    add_task("task_exit_test",task_exit_test);
+    add_task("task_yield_test",task_test_yield);
 
-  //  add_user_task("usermode", &usr);
-    //we have gotten ourselves a system with two processes running
+    add_user_task("usermode", &usr);
+    //we have gotten ourselves a system with processes running and usermode
     // do a little dance or something 
 
     
-
     ASSERT(gfx_has_init());
-    println("randos up");
-     const char* str = "syscalled\0"; uint64_t num = 1;
+    print("randos up \n");
+   
+
     
    
 
-    //jump_to_usermode(&user_mode_test); //holy shit it worked
     
-   // __asm__ volatile ("int 0x69");
-   // start_first_task();
+    start_first_task();
     
-   
+   //if we arent doing tasking for some reason
+
+   //heres a left over demo from initrd bringup
     uint64_t last_tick = 0;
 
     initrd_demo();
@@ -334,8 +312,6 @@ void main(void *addr, void *magic)
     }
     uint64_t sc = tick;
     size_t offset = 512;
-
-      
 
     for(;;){
      
@@ -360,12 +336,6 @@ void main(void *addr, void *magic)
         }
         
     }
-
-    for(;;){
-        __asm__("hlt");
-    }
-    
-
 
     // kernel ends, we can return to entry pt which hangs or just do it here for transparency while we develop
     __asm__("cli");

@@ -19,14 +19,14 @@ uint16_t port_word_in(uint16_t port)
 {
      uint16_t result = 6;
 
-    __asm__("in al, dx " : "=a" (result) : "d" (port) )    ;
+    __asm__("in ax, dx " : "=a" (result) : "d" (port) )    ;
 
     return result;
 }
 
 void port_word_out(uint16_t port, uint16_t data)
 {
-     __asm__("out dx, al" : : "a" (data), "d" (port));
+     __asm__("out dx, ax" : : "a" (data), "d" (port));
 }
 
 void port_e9_hack_out(uint8_t c)

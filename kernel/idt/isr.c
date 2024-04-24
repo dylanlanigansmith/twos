@@ -13,18 +13,20 @@ isr_t interupt_handlers[256];
 
 
 
-
+extern uintptr_t get_cr2();
 
 void print_isr_regs(registers_t* regs, bool extended)
 {
-
+    uintptr_t cr2 = get_cr2();
     printf("===isr[%lx] err{%lx}====\n", regs->int_no, regs->err_code);
     printf("err_code = %lx\n", regs->err_code);
+    if(cr2 > 0)  printf("cr2 = %lx\n", cr2);
     printf("rbp = %lx\n", regs->rbp);
     printf("rip = %lx\n", regs->rip);
-    printf("ss:rsp = %lx\n", regs->rsp);
+    printf("rsp = %lx\n", regs->rsp);
     printf("cs = %lx\n", regs->cs);
     printf("rflags = %lx\n", regs->rflags);
+    printf("cr3 = %lx\n", regs->cr3);
     printf("ds = %lx\n", (uint64_t)(regs->ds & 0xffff));
     printf("ss = %lx\n", regs->ss);
     printf("rax = %lx\n", regs->rax);
@@ -62,7 +64,7 @@ void handle_error_generic(registers_t* regs, bool recover){
         if(err){
             EXCEPTION_PRINTI("Non-Zero Error Code", 0);
         }
-        print_isr_regs(regs, (num == 1) ? 1 : 0);
+        print_isr_regs(regs, (num == 1 || num == 3) ? 1 : 0);
     }
     else{
          EXCEPTION_PRINTI("ISR_Unknown", num);
@@ -80,8 +82,8 @@ int num_pfs = 0;
 void handle_pagefault(registers_t* regs){
 
     //intel manual 3141 4.12
-    uint64_t cr2 = 0;
-    __asm__ volatile ("movq %0, cr2" : "=r" (cr2) );
+    uint64_t cr2 = get_cr2();
+   // __asm__ volatile ("movq %0, cr2" : "=r" (cr2) );
     EXCEPTION_PRINTLN("\n== PAGE FAULT ==");
     EXCEPTION_PRINTF("Error: %lu \n", regs->err_code);
     EXCEPTION_PRINTF("At Address [CR2]: %lx \n", cr2);

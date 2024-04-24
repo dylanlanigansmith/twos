@@ -19,15 +19,9 @@
         - I am not an addict I swear (clutches copy of 'The C Programming Language')
 
 ## In Progress
-    - physical memory manager to support paging/heap systems
+    - porting doom
 
-    - syscall interface for kernel->user/user->kernel stuff
-
-    - elf parser for running executables from our file system
-
-    - all these little things as we jump to userspace processes! 
-
-    - once we reach user mode a lot of kernel code can be tidied up and moved to userspace, or refactored into a API for usage from user space
+    - now that we have reached user mode a lot of kernel code can be tidied up and moved to userspace, or refactored into a API for usage from user space
 
     - switching to APIC from legacy PICs, UEFI support 
     

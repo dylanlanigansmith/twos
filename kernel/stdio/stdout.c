@@ -60,7 +60,7 @@ void stdout_init()
     oprintf(_COM,"\n=== stdout init @ %lx size %i idx %i  ready = %i ===\n", (uintptr_t)stdout.buffer, stdout.size, stdout.index, stdout_ready());
 }
 
-uint8_t stdout_update()
+uint8_t stdout_update() //i think u can trash this
 {
    
     if(!keys_available()) return 0;

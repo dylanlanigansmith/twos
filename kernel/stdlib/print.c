@@ -43,7 +43,7 @@ int gfx_ok = 0;
 void putc(char c)
 {
     if(gfx_ok){
-        stdout_bytein(c);
+        stdout_putchar(c);
     }
 
     serial_write(c);

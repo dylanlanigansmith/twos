@@ -73,6 +73,7 @@ int main(int argc, char** argv){
         
       //  std::cout << entry << std::endl;
         if(entry.is_directory()){
+           // printf("found dir %s %i\n", entry.path().filename().c_str(), num_dirs + 1);
             num_dirs++; continue;
         }
         else{

@@ -155,10 +155,14 @@ int strcmp(const char *str1, const char *str2)
 
 	//sorry
 	
-	size_t i = 0;
-	while(str1[i] == str2[i]){
-		if(str1[i++] == 0) return 0;
-	}
+	while (*str1 && *str2 && *str1 == *str2) {
+        str1++;
+        str2++;
+    }
 
-    return (str1[i] > str2[i]) ? 1 : -1;
+   
+    if (*str1 == *str2) 
+        return 0;  // Both strings are equal
+
+	return  (*str1 < *str2) ? -1 : 1;
 }

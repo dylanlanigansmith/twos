@@ -51,7 +51,9 @@ restore_regs:
     popfq 
 
      ; cr3
-     
+    mov rax, [rdi + 144]    ; cr3
+    mov cr3, rax
+
     mov rax, [rdi + 16]     ; load saved rip into rax
    
     mov rsp, [rdi]          ; rsp
@@ -104,16 +106,19 @@ USER_DS equ 0x23
 
 ;takes ptr to jump as arg
 jump_to_usermode:
+    
     mov rsp, rsi
     mov rbp, rsp
-	mov ax, USER_CS
+	mov ax, USER_DS
 	mov ds, ax
 	mov es, ax
 	mov fs, ax
 	mov gs, ax
     
 	mov rax, rsp
-	push USER_DS
+
+    mov cr3, rdx
+	push USER_DS ;ss
 	push rax
 	pushfq
 	push USER_CS

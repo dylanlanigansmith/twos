@@ -3,6 +3,10 @@
 #include "../../drivers/video/gfx.h"
 #include "../timer/timer.h"
 #include "../pic/pic.h"
+#include "elf.h"
+#include "../fs/initrd.h"
+
+
 #define DEBUGT(fmt, ...) debugf(fmt, __VA_ARGS__)
 
 extern void capture_regs(regs_t* regs);
@@ -49,11 +53,12 @@ task_t main_task, t1;
 #define KERNEL_TASK_STACK_SIZE 4096 * 2
 task_t* create_task( const char* name, task_entry_fn task_entry, uint64_t rflags) //ignore flags and vma for now 
 {
-    uint64_t new_stack = kmalloc(KERNEL_TASK_STACK_SIZE) + KERNEL_TASK_STACK_SIZE - sizeof(task_t); 
+    uintptr_t mem = kmalloc(KERNEL_TASK_STACK_SIZE);
+    uint64_t new_stack = mem + KERNEL_TASK_STACK_SIZE - sizeof(task_t); 
     task_t* task = (task_t*)new_stack; //task goes up from stack addr, stack goes downwards, nice! 
     if(!new_stack) KPANIC("task allocation failed!");
    
-    
+    task->mem = mem ; //bc we keep losing these...
     //we should ensure this is aligned!!!!!!
     if(new_stack & 0xf){
         DEBUGT("stack  %lx isn't aligned! repairing to = %lx \n", new_stack, new_stack - (new_stack % 16llu));
@@ -88,14 +93,22 @@ task_t* create_task( const char* name, task_entry_fn task_entry, uint64_t rflags
 
     ASSERT(task->regs.cr3);
 
+    task->ds = 0x10; 
+    task->cs = 0x8;
     // handle list outside of create_task
-    task->reserved = nullptr;
+    
+    task->parent_task = 0;
+
     task->next = nullptr;
 
 
     
     DEBUGT("create_task %s pid %i rip %lx !\n", name, task->pid, task->regs.rip);
 
+
+    task->parent_PID = TASK_ORPHAN;
+    task->flags.sleeping = task->flags.is_user = task->flags.blocks_parent = 0;
+ 
     sched.tasks++;
     return task;
 }
@@ -108,7 +121,7 @@ int tasking_init(task_entry_fn main_fn){
     DEBUGT("%s", "tasking init\n");
     sched.current_task = sched.newest_task = sched.next_switch = sched.pid_last  = sched.timer = 0;
     
-
+    sched.skip_saving_regs = False;
     regs_t r; capture_regs(&r); //for eflags and cr3 initial
     
     sched.defaults.cr3 = r.cr3;
@@ -141,7 +154,7 @@ int add_task(const char* name, task_entry_fn main_fn) //note that this isnt safe
 
     sched.newest_task->next = new_task;
 
-    new_task->next =  sched.root_task;; //point new task to start of tasks since this is our top task 
+    new_task->next =  sched.root_task; //point new task to start of tasks since this is our top task 
                                                             //when another task is added this will be swapped with it, and so on 
 
    
@@ -161,7 +174,11 @@ int add_user_task(const char *name, user_vas_t *usr)
     
     new_task->regs.rsp = usr->stack.top;
     new_task->regs.rbp = usr->stack.top;
-    new_task->regs.cr3 = new_task->cr3 = (uintptr_t)(usr->pt.p4);
+    
+    new_task->regs.cr3 = (uintptr_t)(usr->pt.p4p); //p4 physical
+    new_task->cs = 0x1b; new_task->ds = 0x23;
+
+   
 
     new_task->flags.is_user = 1;
 
@@ -197,9 +214,9 @@ task_t* remove_current_task() //itrps are off for this
     task_t* task = sched.root_task;
 
     uint32_t i = 0;
-    while(task->next != task_old){
+    while(task->next != (void*)task_old){
         if(task->next == 0){
-            DEBUGT("scheduler: UHOH we found a null task in %s trying to remove %s\n",task_old->name, task->name); return;
+            DEBUGT("scheduler: UHOH we found a null task in %s trying to remove %s\n",task_old->name, task->name); return 0;
         }
         if(i++ > (sched.tasks + 8) ){
             //dont worry about the 8 i only want this for if things get really screwed 
@@ -207,7 +224,7 @@ task_t* remove_current_task() //itrps are off for this
             //except for now we crash the kernel anyways
             KPANIC("task_remove bailout!");
         }
-        task = task->next;
+        task = (task_t*)task->next;
     }
 
     //okay so we should have the task that points to the task we are removing now
@@ -219,6 +236,7 @@ task_t* remove_current_task() //itrps are off for this
     //check for edges 
     if(sched.newest_task == task_old){
         sched.newest_task = task;
+        DEBUGT("set newest task to other as we were it, now %s\n", sched.newest_task->name);
     }
 
     //uh i think that's actually it? 
@@ -234,9 +252,30 @@ task_t* remove_current_task() //itrps are off for this
         //or just int 0x20 with next_switch = 0
         // its likely whatever we do  wont work in user mode anyways! so its alll good
 
-    sched.current_task = 0;
+    sched.current_task = task_old->next; //go to where we were gonna anyyways 
+    sched.skip_saving_regs = True;
     sched.next_switch = 1; //avoid anything weird related to rollover due to past trauma 
     
+
+
+    if(task_old->parent_PID != TASK_ORPHAN){
+        //we have a parent!
+        if(task_old->flags.blocks_parent){
+            if(task_old->parent_task != nullptr){
+                task_t* parent = (task_t*)(task_old->parent_task);
+                if(parent->flags.sleeping){
+                    parent->flags.sleeping = 0u;
+                     debugf("remove_current_task(): woke up parent (%i) of ending task (%i)...\n", task_old->parent_PID, task_old->pid);
+                }
+            }
+            else{
+                debugf("remove_current_task(): our removed task has a parent and we cant find it...\n");
+                //get task from pid fn goes here
+            }
+        }
+    }
+
+
     return task_old;
 }
 
@@ -260,8 +299,11 @@ void on_timer_tick(uint64_t ticks, registers_t* reg) //dont get me started on th
 
     sched.next_switch = ticks + ARBITRARY_SWITCH_INTERVAL;
     sched.timer = ticks;
-    if(sched.current_task != nullptr)
+
+    if(sched.current_task != nullptr && sched.skip_saving_regs == False)
     {
+    
+        
         sched.current_task->regs.rbp = reg->rbp;
         sched.current_task->regs.rsp = reg->rsp;
         sched.current_task->regs.rip = reg->rip;
@@ -282,7 +324,8 @@ void on_timer_tick(uint64_t ticks, registers_t* reg) //dont get me started on th
         sched.current_task->regs.r14 = reg->r14;
         sched.current_task->regs.r15 = reg->r15;
 
-        
+        sched.current_task->cs = reg->cs;
+        sched.current_task->ds = reg->ds;
 
         sched.current_task = sched.current_task->next;
     }
@@ -290,15 +333,32 @@ void on_timer_tick(uint64_t ticks, registers_t* reg) //dont get me started on th
         //so we would have to set a flag or something not to dump regs for current task 
         // for now lets just restart from known truth (root task would never have been removed)
         //above solution will work fine, we will need more bitfield flags etc anyway
-        sched.current_task = sched.root_task;
+        if ( sched.current_task  == nullptr)
+            sched.current_task = sched.root_task;
+        if( sched.skip_saving_regs){
+            sched.skip_saving_regs = False;
+        }
     }
-    
-    if(sched.current_task->flags.is_user){
-        reg->cs = 0x1b;
-        reg->ds = 0x23;
-    }
+    if(sched.current_task->flags.sleeping == 1u){
+            //check if wakey time
 
+            if(sched.current_task->parent_PID != TASK_ORPHAN){
+                if(!sched.current_task->flags.blocks_parent){
+                    //check if wakeup time
+                }
+            }
+            //we sleepy skip us
+            debugf("skipping sleeping task %i -> %i", sched.current_task->pid, (task_t*)(sched.current_task->next)->pid);
+            sched.current_task =  sched.current_task->next;
+            if(sched.current_task == nullptr)
+                sched.current_task = sched.root_task;
+    }
+   
+   
+    reg->ss = sched.current_task->ds;
     //WE SWITCHIN
+    reg->cs = sched.current_task->cs;
+    reg->ds = sched.current_task->ds;
     reg->rbp = sched.current_task->regs.rbp;
     reg->rsp = sched.current_task->regs.rsp;
     reg->rip = sched.current_task->regs.rip;
@@ -320,8 +380,8 @@ void on_timer_tick(uint64_t ticks, registers_t* reg) //dont get me started on th
     reg->r13 = sched.current_task->regs.r13;
     reg->r14 = sched.current_task->regs.r14;
     reg->r15 = sched.current_task->regs.r15;
-
-    __asm__ volatile ("mov rax, (%0); mov cr3, rax" : : "r"(sched.current_task->regs.cr3)); 
+    reg->cr3 = sched.current_task->regs.cr3;
+  //  debugf("jumping to task %i", sched.current_task->pid);
     //oh shit oh fuck
 }
 
@@ -350,21 +410,130 @@ PID_t getpid(){
     return sched.current_task->pid;
 }
 
+void sleep_ns(uint64_t ns)
+{
+    //TODO
+}
+
+
+extern swap_cr3(uintptr_t);
+
+int exec_user_task(const char *taskname, registers_t* reg)
+{
+    //since this was called in a syscall we shouldnt get interupted right?
+    //right???
+    char* name = kmalloc(strlen(taskname)); //we cant touch processes address space once we swap cr3s!!!! TODO MOVE F+UCKIN STACKS
+
+    strcpy(name, taskname);
+    ASSERT(initrd_root);
+    vfs_node* bin = initrd_findfile(initrd_root, name); //bad
+    if(!bin){
+        debugf("exec_user_task(): Failed to find binary %s", name); return 1;
+    }
+   
+      uintptr_t prev_cr3 = get_cr3();
+    uintptr_t old_cr3 = swap_cr3(sched.root_task->regs.cr3); //steal known kernel task cr3
+      uintptr_t new_cr3 = get_cr3();
+    debugf("exec_user_task(): old cr3 %lx new cr3 %lx insane %lx wtf %lx", prev_cr3, new_cr3,old_cr3, (uintptr_t)name);
+    user_vas_t usr; memset(&usr, 0, sizeof(user_vas_t));
+
+    if(load_elf(bin, &usr)){
+         debugf("exec_user_task(): load elf64 %s failure", name); return 1;
+    }
+
+    debugf("exec_user_task():\n     usr entry = %lx usr phys = %lx usr lo %lx usr rsp %lx, usr cr3 = %lx",usr.entry, usr.phys, usr.vaddr.l, usr.stack.top, usr.pt.p4p);
+    
+   
+
+    //so the calling PID shouldnt run until this guy is over 
+    DEBUGT("adding USER task %s, child of %i !\n", name, sched.current_task->pid);
+    
+    
+
+    task_entry_fn entry = usr.entry;
+    task_t* new_task = create_task(name, entry, sched.defaults.rflags); //note that yr still doing greasy stack thing
+    
+    new_task->regs.rsp = usr.stack.top;
+    new_task->regs.rbp = usr.stack.top;
+    
+    new_task->regs.cr3 = (uintptr_t)(usr.pt.p4p); //p4 physical
+    new_task->cs = 0x1b; new_task->ds = 0x23;
+
+    new_task->flags.is_user = 1;
+    sched.newest_task->next = new_task;
+
+
+    new_task->next =  sched.root_task;; //point new task to start of tasks since this is our top task 
+                                                            //when another task is added this will be swapped with it, and so on 
+
+    sched.newest_task = new_task;
+
+    new_task->flags.blocks_parent = 1u;
+    new_task->parent_PID = sched.current_task->pid;
+    new_task->parent_task = sched.current_task;
+
+    sched.current_task->flags.sleeping = 1u;
+
+
+    DEBUGT("scheduler: added child user task %s, pid = %i !\n", name, new_task->pid);
+
+   // kfree(name); //hhahahahhahahahahahahahahahahahahahaha *cries*
+
+    //swap back cr3, pray
+    debugf("scheduler: swapping back cr3 to %lx", sched.current_task->regs.cr3);
+    swap_cr3(sched.current_task->regs.cr3); 
+
+    sched.skip_saving_regs = True;
+   //manually dump regs
+    sched.current_task->regs.rbp = reg->rbp;
+    sched.current_task->regs.rsp = reg->rsp;
+    sched.current_task->regs.rip = reg->rip;
+    sched.current_task->regs.rflags = reg->rflags;
+
+    sched.current_task->regs.rax = reg->rax;
+    sched.current_task->regs.rcx = reg->rcx;
+    sched.current_task->regs.rdx = reg->rdx;
+    sched.current_task->regs.rbx = reg->rbx;
+    sched.current_task->regs.rdi = reg->rdi;
+    sched.current_task->regs.rsi = reg->rsi;
+
+    sched.current_task->regs.r9 = reg->r9;
+    sched.current_task->regs.r10 = reg->r10;
+    sched.current_task->regs.r11 = reg->r11;
+    sched.current_task->regs.r12 = reg->r12;
+    sched.current_task->regs.r13 = reg->r13;
+    sched.current_task->regs.r14 = reg->r14;
+    sched.current_task->regs.r15 = reg->r15;
+
+    sched.current_task->cs = reg->cs;
+    sched.current_task->ds = reg->ds;
+    yield();
+    return 0;
+}
+
+
+
 
 //__attribute__((noreturn)) 
 void exit(int err){
     __asm__ volatile ("cli;");
+    if(!sched.current_task || !sched.active){
+        return start_first_task();
+    }
+
     //called by task at end 
     DEBUGT("task %u exited with code: %i\n", sched.current_task->pid, err);
 
-    heap_footer_t* task_foot = remove_current_task() + sizeof(task_t);
-    
-    if(task_foot->crc == HEAP_CRC){
-        kfree(task_foot->header + sizeof(heap_header_t));
-    }
-   
+   task_t* old = remove_current_task() ;
 
-    //eek
+    debugf("old parent pid = %i", old->parent_PID);
+   // kfree(old->mem); //used to have a smart way of doing this, now we have 8 extra bytes and a dumb way
+    //yeah our heap is corrupt!
+   
+   // debugf("task removed, next task now %i", sched.);
+
+
+
   
     
     __asm__ volatile ("sti; int 0x20") ; //do we need to interupt?
@@ -375,6 +544,7 @@ void exit(int err){
 
 void yield(){
     //task can voluntarily request to switch
+    ASSERT(sched.current_task->next);
     __asm__ volatile ("cli;");
     sched.next_switch = 0;
     __asm__ volatile ("sti; int 0x20"); //not sure 

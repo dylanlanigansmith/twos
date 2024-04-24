@@ -71,20 +71,22 @@ ISO_ROOTDIR:=iso
 #===QEMU======
 QEMU_UEFI:=/usr/share/ovmf/x64/OVMF.fd
 QEMU_ARGS_VM:=-accel kvm -device VGA,vgamem_mb=32 -audiodev pa,id=speaker -machine pcspk-audiodev=speaker -m 8G
-QEMU_ARGS_DBG:=-serial file:com1.log  -d int,page,cpu_reset -no-reboot
-
+QEMU_ARGS_DBG:=-serial file:com1.log  
+#-d int,page,cpu_reset -s -S
+QEMU_ARGS_DBG2:=-serial file:com1.log  -no-reboot
 #,cpu_reset
 #====TARGETS======
 
 all: iso
 
-run: clean all
+run: clean all 
 	@echo "======="
-
-#let it be known that if i run with -machine type=q35 my memory allocations for heap map actually work at expected address but then i have to fix everything for that, likely why shit dont run in nothin else rn tho 
-#really frustrating but ill just stick with qemu and be HAPPY
 	$(VM)  -cdrom $(ISO_OUT) $(QEMU_ARGS_VM) $(QEMU_ARGS_DBG) 
-#add -s -S for dbg 
+
+rund: clean all
+	@echo "Running With No Reboot, sorry that it's come to this"
+	$(VM)  -cdrom $(ISO_OUT) $(QEMU_ARGS_VM) $(QEMU_ARGS_DBG2) 
+
 
 urun: clean all
 	@echo "==Running in UEFI==="
@@ -121,7 +123,10 @@ kernel.bin: $(OBJ_LINK_LIST)
 
 
 
+# user / util targets
 
+usr:
+	@$(MAKE) -C usr clean libd.a install
 
 
 

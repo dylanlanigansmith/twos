@@ -7,11 +7,11 @@
 #define ACPI_ENTRIES_MAX 8
 
 enum HOST_TYPES {
-    UNSURE = 0u, //if we dont know we dont care
-    PHYSICAL = 0u,
-    QEMU, 
-    BOCHS,
-    OTHER_VM,
+    HOST_UNSURE = 0u, //if we dont know we dont care
+    HOST_PHYSICAL = 0u,
+    HOST_QEMU, 
+    HOST_BOCHS,
+    HOST_VM_OTHER,
 };
 
 extern uint64_t _end;
@@ -64,7 +64,7 @@ extern sysinfo_t sysinfo;
 
 static inline void sysinfo_create(sysinfo_t* sys){
     memset(sys, 0, sizeof(sysinfo_t));
-   
+    sysinfo.host_type = HOST_UNSURE;
     sysinfo.boot.kernel_end = &_end; 
     if( sysinfo.boot.kernel_end > KERNEL_ADDR){
         sysinfo.boot.kernel_end -= KERNEL_ADDR;
