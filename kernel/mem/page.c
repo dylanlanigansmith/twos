@@ -129,7 +129,7 @@ void paging_init()
                                                     //so at least we should ID map it instead of VIRTMAP bullcrap.. TODO
    
     debugf("mapping framebuffer %lx to %lx\n", sysinfo.fb.addr, VIRTMAP);
-   ASSERT( map_phys_addr(VIRTMAP, sysinfo.fb.addr, 0x300000ULL,0)) ;
+   ASSERT( map_phys_addr(VIRTMAP, sysinfo.fb.addr, 0x300000ULL,(PAGE_FLAGS_DEFAULT | PAGE_FLAGS_USER))) ;
 
 
     init_heap();

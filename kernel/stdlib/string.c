@@ -109,6 +109,31 @@ char* strcat(char* dest, const char* src)
 }
 
 
+char* strncat(char* dest, const char* src, size_t n)
+{
+   
+    if (!dest || !src) return 0;
+	/*
+		char* dest_end = dest;
+		while (*dest_end) {
+			++dest_end;
+		}
+
+		size_t i = 0;
+		while (src[i] && i < n) {
+			dest_end[i] = src[i];
+			++i;
+		}
+		dest_end[i] = '\0'; // Null-terminate the concatenated string */
+
+    size_t dest_len = strlen(dest);
+    strncpy(dest + dest_len, src, n);
+    dest[dest_len + n] = '\0'; // Ensure null termination
+
+    return dest;
+}
+
+
 size_t strlen(const char* str){ //could be more robust but we dont have malloc so we aint gettin any fancy strings anyway
 	size_t len =0;
 	while(str[len] != 0) len++;

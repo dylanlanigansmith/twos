@@ -25,7 +25,7 @@ void* sys_print(registers_t* regs){
 }
 void* sys_putc(registers_t* regs){
     putc((char)(regs->rdi & 0xff) );
-    debugf("put char %c %i \n",  (char)(regs->rdi & 0xff), (char)(regs->rdi & 0xff));
+  //  debugf("put char %c %i \n",  (char)(regs->rdi & 0xff), (char)(regs->rdi & 0xff));
     return 0;
 }
 void* sys_clearscreen(registers_t* regs){
@@ -36,9 +36,15 @@ void* sys_clearscreen(registers_t* regs){
     
     return 0;
 }
-void* sys_request_fb(registers_t* regs){
-    
-    return 0;
+void* sys_setgfxmode(registers_t* regs){
+    gfx_clear(color_white);
+
+    if(gfx_state.mode == 0)
+        gfx_state.mode = 1;
+    else gfx_state.mode = 1;
+    //TODO
+
+    return sysinfo.fb.addr;
 }
 
 
@@ -56,9 +62,9 @@ void* sys_yield(registers_t* regs){
 
     return 0; //never returns
 }
-void* sys_sleepns(registers_t* regs){
+void* sys_sleepms(registers_t* regs){
     if(regs->rdi == 0) return 1;
-    sleep_ns(regs->rdi);
+    task_sleep_ms(regs->rdi);
 
     return 0; //never returns
 }
@@ -160,11 +166,11 @@ static void* syscalls[] =
     &syscall_test, //0
     &sys_exit, 
     &sys_yield,
-    &sys_sleepns,
+    &sys_sleepms,
     &sys_print, //4
     &sys_putc,
     &sys_clearscreen,
-    &sys_request_fb,
+    &sys_setgfxmode,
     &sys_getlastkey, //8
     &sys_iskeydown,
     &sys_getcurtick,

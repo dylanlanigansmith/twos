@@ -50,7 +50,7 @@ CRTN_OBJ:=kernel/cpp/crtn.o
 
 
 
-C_FLAGS:=-masm=intel -m64 -mcmodel=large -ffreestanding -nostdlib -fno-pie -fno-stack-protector -mno-shstk -mno-red-zone -fmacro-prefix-map=/home/dylan/code/randos=.
+C_FLAGS:=-masm=intel -m64 -mcmodel=large -ffreestanding -nostdlib -fno-pie -fno-stack-protector -mno-shstk -mno-red-zone -fmacro-prefix-map=$(CURDIR)=.
 CPP_FLAGS:=-nostartfiles -fno-exceptions -fno-rtti
 
 #Linking
@@ -125,8 +125,14 @@ kernel.bin: $(OBJ_LINK_LIST)
 
 # user / util targets
 
-usr:
-	@$(MAKE) -C usr clean libd.a install
+libd: 
+	@$(MAKE) -C libd clean all install
+
+doom: libd
+	@$(MAKE) -C usr/port/doom-myos/doomgeneric clean all install
+
+usr: doom
+	@$(MAKE) -C usr clean install
 
 
 

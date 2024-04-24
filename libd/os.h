@@ -11,14 +11,13 @@ static inline void* syscall(uint64_t num, void* arg){
 }
 
 
-static inline uint64_t sys_gettick(){
-     uint64_t ret = 0;
-     __asm__ volatile ( "mov rax, 10; int 0x69; mov %0, rax; " : "=r"(ret) ::  "rax") ;
+uint64_t sys_gettick();
 
-     return ret;
+static inline void sys_sleepms(uint64_t ms){
+     __asm__ volatile ( "mov rax, 3; int 0x69;" :::  "rax") ;
 }
 
-
+void* set_gfx_mode(); 
 void exit(uint64_t er );
 
 void yield();
@@ -35,3 +34,6 @@ static inline uint64_t execc(const char* str){ //exec as child (blocks calling p
      return ret; //and we come back like nothing ever happened
 }
 
+#define EXIT_SUCCESS 0
+#define EXIT_FAILURE 1
+#define EXIT_ASSERTION 2

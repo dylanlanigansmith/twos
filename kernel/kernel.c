@@ -74,6 +74,10 @@ void task_drawstdout(){
     serial_print("task draw test \n");
      gfx_clear_line(498, 24);
     for(;;){
+        if(gfx_state.mode == 1){ //usermode has fb
+            yield();
+        }
+
         __asm__("hlt");
         if((last_tick2 + 100) < tick  ){
 
@@ -281,8 +285,8 @@ void main(void *addr, void *magic)
 
     tasking_init(&task_drawtimer); //first task should be on our main stack as its new kernel main 
     add_task("task_drawstdout",task_drawstdout);
-    add_task("task_exit_test",task_exit_test);
-    add_task("task_yield_test",task_test_yield);
+   // add_task("task_exit_test",task_exit_test);
+   // add_task("task_yield_test",task_test_yield);
 
     add_user_task("usermode", &usr);
     //we have gotten ourselves a system with processes running and usermode

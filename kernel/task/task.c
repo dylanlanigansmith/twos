@@ -340,19 +340,25 @@ void on_timer_tick(uint64_t ticks, registers_t* reg) //dont get me started on th
             sched.skip_saving_regs = False;
         }
     }
+
+    //now at our new task...
     if(sched.current_task->flags.sleeping == 1u){
             //check if wakey time
-
-            if(sched.current_task->parent_PID != TASK_ORPHAN){
-                if(!sched.current_task->flags.blocks_parent){
-                    //check if wakeup time
-                }
+            if(sched.current_task->wake_tick < tick){
+                sched.current_task->flags.sleeping = 0;
+                sched.current_task->wake_tick = 0;
+               // debugf("wokeup sleeping task %i at %li", sched.current_task->pid, tick);
+            } else {
+                    //we sleepy skip us
+               // debugf("skipping sleeping task %i -> %i", sched.current_task->pid, (task_t*)(sched.current_task->next)->pid);
+                sched.current_task =  sched.current_task->next;
+                if(sched.current_task == nullptr) //just in case we jumped bad probs not an issue anymore
+                    sched.current_task = sched.root_task;
             }
-            //we sleepy skip us
-            //debugf("skipping sleeping task %i -> %i", sched.current_task->pid, (task_t*)(sched.current_task->next)->pid);
-            sched.current_task =  sched.current_task->next;
-            if(sched.current_task == nullptr)
-                sched.current_task = sched.root_task;
+
+           
+           
+            
     }
    
    
@@ -542,6 +548,7 @@ void exit(int err){
 void yield(){
     //task can voluntarily request to switch
     ASSERT(sched.current_task->next);
+    //debugf("task %i yielded", sched.current_task->pid);
     __asm__ volatile ("cli;");
     sched.next_switch = 0;
     __asm__ volatile ("sti; int 0x20"); //not sure 
@@ -685,6 +692,12 @@ void *task_mmap_file(const char *name)
     return (void*)virt;
 }
 
+void task_sleep_ms(uint64_t ms)
+{
+    sched.current_task->flags.sleeping = 1;
+    sched.current_task->wake_tick = tick + ms;
+    //DEBUGT("task %i sleeping for %li ms, until %li\n", sched.current_task->pid, ms, sched.current_task->wake_tick );
+}
 
 //stack is running into page tables
 //pmm sus

@@ -19,6 +19,12 @@ char* strncpy(char* dest, const char* src, size_t num);
 
 char* strcat(char* dest, const char* src);
 
+
+char* strncat(char* dest, const char* src, size_t n);
+
+
+
+
 size_t strlen(const char* str);
 
 size_t strnlen(const char* str, size_t num);

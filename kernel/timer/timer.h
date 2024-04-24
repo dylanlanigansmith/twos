@@ -12,6 +12,8 @@
 
 
 #define PIT_RATE 1000 //it hertz
+//also in libd/time.h
+
 
 void timer_init(uint32_t freq);
 

@@ -27,8 +27,8 @@ void printf(const char* fmt, ...) ;
 
 void puts(const char*  str);
 
-
-int snprintf(char *restrict s, size_t n, const char *restrict fmt, ...);
+void vprintf(const char* fmt, va_list ap) ;
+int snprintf(char *s, size_t n, const char* fmt, ...);
 
 int fprintf(FILE *restrict f, const char *restrict fmt, ...);
 int vfprintf(FILE *restrict f, const char *restrict fmt, va_list ap);
@@ -56,3 +56,13 @@ static inline int fseek(FILE *stream, long int offset, int whence) { return 0; }
 static inline int remove ( const char * filename ) { return 0; }
 
 static inline int rename ( const char * oldname, const char * newname ) { return 0; }
+
+
+static inline int get_highest_bit(uint32_t num) { //index of msb
+    if (num == 0) return 0; 
+    int position = sizeof(num) * 8 - 1; 
+    while (!(num & (1u << position))) {
+        position--; 
+    }
+    return position;
+}

@@ -29,7 +29,7 @@ C_SOURCES = $(wildcard **.c)
 
 C_HEADERS = $(wildcard **.h)
 
-C_FLAGS:=-masm=intel -m64 -ffreestanding -fno-stack-protector -nostdlib -no-pie 
+C_FLAGS:=-masm=intel -m64 -ffreestanding -fno-stack-protector -nostdlib -no-pie -fmacro-prefix-map=$(PARENT_DIR)/usr=.
 
 OBJS := $(C_SOURCES:.c=.o)
 

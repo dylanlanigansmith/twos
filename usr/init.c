@@ -35,13 +35,60 @@ void cmd_quit(int c, char* v)
      printf("quitting\n");
      sys_shutdown();
 }
-void cmd_dbg(int c, char* v)
+
+void cmd_testsprintf(int c, char* v)
 {
-    __asm__ volatile ("int 3;");
+   
+    char a[9];
+    for(int p = 0; p < 11; ++p){
+        int aa = snprintf(a, 9, "STKEYS%d", p);
+
+        printf("%i '%s' /  %i", p, a, aa);
+    }
+    
+    for(int p = 99; p < 110; ++p){
+        int aa = snprintf(a, 9, "STKEYS%d", p);
+
+        printf("%i '%s' / %i", p, a, aa);
+    }
+    for(int p = 0; p < 3; ++p){
+        for(int k = 5; k > 0; --k){
+            
+             int aa = snprintf(a, 9, "STFST%d%d", p,k);
+            printf("%i '%s' / ", p, a);
+        }
+       
+    }
+   
+
+
+    char b[256] = {0};
+    int i = snprintf(b, 64, "dob: %i/%i/%i name: %s sex: %s address %lx \n", 11,9,2001, "crash", "yes", (uintptr_t)b);
+     char s[128] = {0};
+    printf("returned %i vs strlen %li \n", i, strlen(b));
+    printf("result: %s\n", b);
+    i = snprintf(s, 32, "dob: %i/%i/%i name: %s sex: %s address %lx \n", 11,9,2001, "crash", "yes", (uintptr_t)b);
+
+    printf("returned %i vs strlen %li \n", i, strlen(s));
+    printf("result: %s\n", s);
+
+
+    //__asm__ volatile ("int 3;");*/
 }
 void cmd_doom(int c, char* v)
 {
     execc("doomos");
+}
+
+void cmd_dbg(int c, char* v)
+{
+    printf("tick = %li \n", sys_gettick());
+    sleep_ms(3000);
+    for(int i = 0; i < 6; ++i){
+         printf("sleepy = %li \n", sys_gettick());
+    }
+
+    
 }
 
 void cmd_mem(int c, char* v)

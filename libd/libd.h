@@ -11,4 +11,9 @@
 
 #include "errno.h"
 #include "math.h"
+
+#include "assert.h"
+#include "macro.h"
+#include "timing.h"
+
 #define NULL 0

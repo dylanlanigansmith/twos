@@ -34,10 +34,10 @@ typedef struct task_t{
     PID_t parent_PID;
     regs_t regs;
     uint64_t _idk;
-    union{
-        task_t* parent_task;
-        uint64_t wake_tick;
-    };
+ 
+    task_t* parent_task;
+    uint64_t wake_tick;
+    
     struct {
         uintptr_t heap_virt;
         uintptr_t heap_phys;
@@ -119,3 +119,5 @@ static inline uint64_t rdtsc() //idk where else to put this
     asm volatile("rdtsc":"=a"(low),"=d"(high));
     return ((uint64_t)high << 32) | low;
 }
+
+void task_sleep_ms(uint64_t ms);

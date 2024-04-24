@@ -40,10 +40,12 @@ typedef struct {
     bool has_init;
     color draw_color;
     color clear_color;
+
+    uint8_t mode; 
 } gfx_state_t; 
 
 //this is where my lack of clarity re: c vs cpp best practices is shown
-#define GFX_STATE_SET_DEFAULTS(gfx) gfx.has_init=False; *(uint32_t*)(&(gfx.draw_color)) = 0xff000000; *(uint32_t*)(&(gfx.clear_color)) = 0xffffffff;
+#define GFX_STATE_SET_DEFAULTS(gfx) gfx.has_init=False; *(uint32_t*)(&(gfx.draw_color)) = 0xff000000; *(uint32_t*)(&(gfx.clear_color)) = 0xffffffff; gfx.mode = 0;
 
 extern gfx_state_t gfx_state;
 

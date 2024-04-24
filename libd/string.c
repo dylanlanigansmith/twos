@@ -89,6 +89,21 @@ int atoi(const char *str) //returns max uint32 on failure
 
 	return result;
 }
+char * strncat(char *s1, const char *s2, size_t n) //remember this adds N chars, not UP TO N chars
+{
+    unsigned len1 = strlen(s1);
+    unsigned len2 = strlen(s2);
+    
+    if (len2 < n) {
+	strcpy(&s1[len1], s2);
+    } else {
+	strncpy(&s1[len1], s2, n);
+	s1[len1 + n] = '\0';
+    }
+    return s1;
+}
+
+
 
 char* strcpy(char* dest, const char* src)
 {
@@ -104,8 +119,8 @@ char *strncpy(char *dest, const char *src, size_t max)
 	if(len_src < max){
 		memcpy((void*)dest, (void*)src, len_src);
 
-
-		//memset(dest + len_src, 0, max - len_src);
+		
+		memset(dest + len_src, 0, max - len_src); //lets try it
 		//okay some impls of libc seem to memset rest of dst to 0, but im just gonna do the first char after 
 		//bc i foresee myself accidentally memseting unintended areas when destlen isnt sufficient
 
@@ -113,10 +128,26 @@ char *strncpy(char *dest, const char *src, size_t max)
 
 		return dest; 
 	} else{
-		return memcpy((void*)dest, (void*)src, len_src);
+		return memcpy((void*)dest, (void*)src, len_src); //i think we are relying on undefined behaviour here and its in our favour
 	}
    
 }
+char* strncpy2(register char* t, register const char* f, size_t n) //uh
+{
+	register char*	e = t + n - 1;
+
+	do
+	{
+		if (t >= e)
+		{
+			*t = 0;
+			return t;
+		}
+	} while (*t++ = *f++);
+	return t - 1;
+}
+
+
 
 char* strcat(char* dest, const char* src)
 {
@@ -192,19 +223,51 @@ char * strstr (const char * str1, const char * str2 ){
 	return 0;
  }
 
- char toupper(char c)
+int toupper(char c)
  {
-	if('a' <= c || c <= 'z')
+	if('a' <= c && c <= 'z')
      	return c - 0x20;
 	return c;
  }
-char tolower(char c){
+int tolower(char c){
     if('A' <= c && c <= 'Z'){
-        return c + 0x20 ; // sub 32
+        return c + 0x20 ; 
     }
     return c;
 }
+int strcasecmp(const char *s1, const char *s2)
+{
+    const unsigned char *us1 = (const unsigned char *)s1;
+    const unsigned char *us2 = (const unsigned char *)s2;
 
+    while (tolower(*us1) == tolower(*us2)) {
+        if (*us1 == '\0' || *us2 == '\0')
+            break;
+        us1++;
+        us2++;
+    }
+    return tolower(*us1) - tolower(*us2);
+}
+
+int strncasecmp(const char *s1, const char *s2, size_t n)
+{
+    if (n != 0) {
+        const unsigned char *us1 = (const unsigned char *)s1;
+        const unsigned char *us2 = (const unsigned char *)s2;
+
+        do {
+            if (tolower(*us1) != tolower(*us2))
+                return tolower(*us1) - tolower(*us2);
+            if (*us1 == '\0' || *us2 == '\0')
+                break;
+            us1++;
+            us2++;
+        } while (--n != 0);
+    }
+    return 0;
+}
+
+/*
 int strcasecmp(const char *s1, const char *s2)
 {
 
@@ -234,4 +297,4 @@ int strncasecmp(const char* s1, const char* s2, size_t n)
 			} while (--n != 0);
 		}
 		return (0);
-}
+}*/
