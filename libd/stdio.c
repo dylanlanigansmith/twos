@@ -2,7 +2,9 @@
 #include "string.h"
 #include "os.h"
 
-
+void print(const char* str){
+     __asm__ volatile ("mov rdi, %0; mov rax, 4; int 0x69; " :: "r"(str) : "rdi", "rax") ;
+}
 
 static int get_highest_bit(uint32_t num) { //32 
     if (num == 0) return 0; 

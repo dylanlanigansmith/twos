@@ -15,7 +15,7 @@ static inline char ascii_to_upper(char c){
 
 static inline char ascii_to_lower(char c){
     if('A' <= c && c <= 'Z'){
-        return c + ASCII_TO_UPPER ; // sub 32
+        return c + ASCII_TO_UPPER ; // add 32
     }
     return c;
 }

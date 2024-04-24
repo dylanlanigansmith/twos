@@ -5,9 +5,7 @@
 #include <stdarg.h>
 #define PRINTF_BUF 1024
 
-static inline void print(const char* str){
-     __asm__ volatile ("mov rdi, %0; mov rax, 4; int 0x69; " :: "r"(str) : "rdi", "rax") ;
-}
+ void print(const char* str);
 
 void putc(char c);
 static inline void putchar(char c){

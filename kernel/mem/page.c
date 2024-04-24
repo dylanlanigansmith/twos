@@ -450,7 +450,7 @@ uintptr_t map_phys_addr_safe(uintptr_t virt, uintptr_t phys, size_t size, uint64
     */
 }
 
-uintptr_t map_user_page_tables(uintptr_t virt, uintptr_t phys, size_t size, user_pt_t* pt)
+uintptr_t map_user_page_tables(uintptr_t virt, uintptr_t phys, size_t size, user_pt_t* pt, int fl)
 {
     ASSERT(is_page_aligned(virt)); //ill check one
    
@@ -468,9 +468,12 @@ uintptr_t map_user_page_tables(uintptr_t virt, uintptr_t phys, size_t size, user
     
     page_indices_t ind; get_page_index_vm(virt, &ind);
 
-    memset((void*)pt->p4, 0, sizeof(page_table_t));
-    memset((void*)pt->p3, 0, sizeof(page_table_t));
-    memset((void*)pt->p2, 0, sizeof(page_table_t));
+    if(fl == 0){
+        memset((void*)pt->p4, 0, sizeof(page_table_t));
+        memset((void*)pt->p3, 0, sizeof(page_table_t));
+        memset((void*)pt->p2, 0, sizeof(page_table_t));
+    }
+    
 
     pt->p4->entries[ind.p4] = (uintptr_t)pt->p3p |  (PT_FLAGS | 0b100) ; //map p4 to phys addr of p3
 
@@ -486,7 +489,11 @@ uintptr_t map_user_page_tables(uintptr_t virt, uintptr_t phys, size_t size, user
         pt->p2->entries[idx] = current_physical_address |  (PAGE_FLAGS_DEFAULT | PAGE_FLAGS_USER); //add our flags and magic 
      
     }
-    //now that we have mapped our user stuff, copy kernel mapping
+    //now that we have mapped our user stuff, copy kernel mapping if flag not passed
+
+    if(fl > 0){
+        return virt;
+    }
     page_table_t* kp4 = get_p4(); //physical
     
    

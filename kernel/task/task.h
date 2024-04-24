@@ -38,8 +38,12 @@ typedef struct task_t{
         task_t* parent_task;
         uint64_t wake_tick;
     };
-    
-
+    struct {
+        uintptr_t heap_virt;
+        uintptr_t heap_phys;
+        size_t heap_size;
+    }maps;    
+    void* vma; 
     uint64_t cs, ds;
     struct {
         uint8_t no_swap : 1;
@@ -103,6 +107,11 @@ PID_t getpid();
 void sleep_ns(uint64_t ns);
 
 int exec_user_task(const char* taskname, registers_t* regs);
+
+
+void* task_alloc_heap(size_t size);
+
+void* task_mmap_file(const char* name);
 
 static inline uint64_t rdtsc() //idk where else to put this
 {

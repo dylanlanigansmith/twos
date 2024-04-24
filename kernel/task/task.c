@@ -5,7 +5,7 @@
 #include "../pic/pic.h"
 #include "elf.h"
 #include "../fs/initrd.h"
-
+#include "../pmm/pmm.h"
 
 #define DEBUGT(fmt, ...) debugf(fmt, __VA_ARGS__)
 
@@ -57,7 +57,7 @@ task_t* create_task( const char* name, task_entry_fn task_entry, uint64_t rflags
     uint64_t new_stack = mem + KERNEL_TASK_STACK_SIZE - sizeof(task_t); 
     task_t* task = (task_t*)new_stack; //task goes up from stack addr, stack goes downwards, nice! 
     if(!new_stack) KPANIC("task allocation failed!");
-   
+    memset((void*)task, 0, sizeof(task_t));
     task->mem = mem ; //bc we keep losing these...
     //we should ensure this is aligned!!!!!!
     if(new_stack & 0xf){
@@ -102,7 +102,9 @@ task_t* create_task( const char* name, task_entry_fn task_entry, uint64_t rflags
     task->next = nullptr;
 
 
-    
+    task->maps.heap_phys = 0;
+    task->maps.heap_size = 0;
+    task->maps.heap_virt = 0;
     DEBUGT("create_task %s pid %i rip %lx !\n", name, task->pid, task->regs.rip);
 
 
@@ -165,6 +167,14 @@ int add_task(const char* name, task_entry_fn main_fn) //note that this isnt safe
     return 0;
 }
 
+void* copy_usr_vas_info(task_t* task, user_vas_t *usr){
+    task->vma = kmalloc(sizeof(user_vas_t));
+    ASSERT(task->vma);
+
+    return memcpy(task->vma, (void*)usr, sizeof(user_vas_t));
+}
+
+
 int add_user_task(const char *name, user_vas_t *usr)
 {
     DEBUGT("adding USER task %s, pid_last = %i !\n", name, sched.pid_last);
@@ -187,7 +197,7 @@ int add_user_task(const char *name, user_vas_t *usr)
     new_task->next =  sched.root_task;; //point new task to start of tasks since this is our top task 
                                                             //when another task is added this will be swapped with it, and so on 
 
-   
+    copy_usr_vas_info(new_task, usr);
     sched.newest_task = new_task;
     DEBUGT("scheduler: added USER task %s, pid = %i !\n", name, new_task->pid);
 
@@ -197,23 +207,20 @@ int add_user_task(const char *name, user_vas_t *usr)
 
 task_t* remove_current_task() //itrps are off for this
 {
-
+     //Remove our current task, aka exit()!
 
     if(sched.current_task == sched.root_task)
         KPANIC("tried to remove root task!"); //sometimes i write error checks that while plausible,
                                                     // it leaves me pondering how i may go down such a rabbithole to  get into the situation where they happen
                                                     //like if you are reading this, you really messed up future dylan
     
-    //Remove our current task, aka exit()!
-    //gotta update linked list !
-    
-    
+   
     //starting at root task, go thru list until we find next entry pointing to current task
     task_t* task_old = sched.current_task;
     
     task_t* task = sched.root_task;
 
-    uint32_t i = 0;
+    uint32_t i = 0;  
     while(task->next != (void*)task_old){
         if(task->next == 0){
             DEBUGT("scheduler: UHOH we found a null task in %s trying to remove %s\n",task_old->name, task->name); return 0;
@@ -240,17 +247,9 @@ task_t* remove_current_task() //itrps are off for this
     }
 
     //uh i think that's actually it? 
-    //could run thru tasks again to ensure its circular (last pts back to task_root) but i think its fine if it works
-
-
     sched.tasks--;
 
     //now task_old is free from our structure 
-
-
-        //could use start task basically
-        //or just int 0x20 with next_switch = 0
-        // its likely whatever we do  wont work in user mode anyways! so its alll good
 
     sched.current_task = task_old->next; //go to where we were gonna anyyways 
     sched.skip_saving_regs = True;
@@ -303,7 +302,9 @@ void on_timer_tick(uint64_t ticks, registers_t* reg) //dont get me started on th
     if(sched.current_task != nullptr && sched.skip_saving_regs == False)
     {
     
-        
+        //imagine not having two almost identical structs???
+        //couldnt be me 
+        //id fix this but then id have to go change all the offsets in the asm code and...
         sched.current_task->regs.rbp = reg->rbp;
         sched.current_task->regs.rsp = reg->rsp;
         sched.current_task->regs.rip = reg->rip;
@@ -348,7 +349,7 @@ void on_timer_tick(uint64_t ticks, registers_t* reg) //dont get me started on th
                 }
             }
             //we sleepy skip us
-            debugf("skipping sleeping task %i -> %i", sched.current_task->pid, (task_t*)(sched.current_task->next)->pid);
+            //debugf("skipping sleeping task %i -> %i", sched.current_task->pid, (task_t*)(sched.current_task->next)->pid);
             sched.current_task =  sched.current_task->next;
             if(sched.current_task == nullptr)
                 sched.current_task = sched.root_task;
@@ -381,8 +382,8 @@ void on_timer_tick(uint64_t ticks, registers_t* reg) //dont get me started on th
     reg->r14 = sched.current_task->regs.r14;
     reg->r15 = sched.current_task->regs.r15;
     reg->cr3 = sched.current_task->regs.cr3;
-  //  debugf("jumping to task %i", sched.current_task->pid);
     //oh shit oh fuck
+    //we boutta be in a different task
 }
 
 void start_task(task_t *task) //kernel
@@ -394,15 +395,12 @@ void start_task(task_t *task) //kernel
     sched.timer = tick;
     debugf("starting task %s", task->name);
     //HERE WE GO
-
-     //__asm__ volatile ("cli; int 3;");
      PIC_set_mask(0x20);
      sched.active = 1;
      
     restore_regs(&task->regs);
-   // __asm__ volatile ("int 3;");
-    PIC_clear_mask(0x20);
-  //  __asm__ volatile ("sti"); //jump to usermode will fix flags for us 
+  
+    PIC_clear_mask(0x20); 
    
 }
 
@@ -471,7 +469,7 @@ int exec_user_task(const char *taskname, registers_t* reg)
     new_task->flags.blocks_parent = 1u;
     new_task->parent_PID = sched.current_task->pid;
     new_task->parent_task = sched.current_task;
-
+    copy_usr_vas_info(new_task, &usr);
     sched.current_task->flags.sleeping = 1u;
 
 
@@ -513,7 +511,6 @@ int exec_user_task(const char *taskname, registers_t* reg)
 
 
 
-
 //__attribute__((noreturn)) 
 void exit(int err){
     __asm__ volatile ("cli;");
@@ -551,4 +548,143 @@ void yield(){
 
 }
 
+#define USR_HEAP 0xfffffffd00000000
 
+void* task_expand_heap(task_t* task, size_t req_size)
+{
+    debugf("expanding heap for task %i [%li]", task->pid, req_size);
+    
+    size_t size = round_up_to_page(req_size); 
+    int pages = calc_num_pages(size);
+
+    //lets get some memory
+
+    uintptr_t phys = pmm_alloc(size);
+
+
+    user_vas_t* usr = (user_vas_t*)(task->vma);
+    //ok where we gonna put it    
+     uintptr_t old_cr3 = swap_cr3(sched.root_task->regs.cr3);
+    
+    ASSERT(map_phys_addr(usr->vaddr.l, usr->phys,usr->size , PAGE_FLAGS_DEFAULT | PAGE_FLAGS_USER)); //map usr pages
+    
+    uintptr_t virt = task->maps.heap_virt + task->maps.heap_size; 
+
+    ASSERT(map_user_page_tables(virt, phys, size, &usr->pt, 1));
+
+    unmap_phys_addr(usr->vaddr.l, usr->size ); //unmap usr pages from kernel
+    
+    
+    task->maps.heap_size += size;
+   
+    
+   // PIC_disable();
+    // __asm__ volatile ("sti; int 3");
+    debugf("expanded heap for task %i:\n        pa %lx va%lx size %li kb \n cr3 to restore: %lx \n", task->pid, task->maps.heap_phys, task->maps.heap_virt, BYTES_TO_KIB( task->maps.heap_size ), old_cr3);
+    
+    swap_cr3(sched.current_task->regs.cr3);
+    
+    
+
+  
+    return (void*)virt;
+
+}
+
+void *task_alloc_heap(size_t req_size)
+{
+    task_t* task = sched.current_task;
+    if(!task->flags.is_user) return 0; //damn kernel use your own heap!
+
+    ASSERT(task->vma);
+
+    if(task->maps.heap_size > 0){
+        return task_expand_heap(task, req_size);
+    }
+    debugf("allocated a heap for task %i\n", task->pid);
+    size_t size = round_up_to_page(req_size); 
+    int pages = calc_num_pages(size);
+
+    //lets get some memory
+
+    uintptr_t phys = pmm_alloc(size);
+
+
+    user_vas_t* usr = (user_vas_t*)(task->vma);
+    //ok where we gonna put it    
+     uintptr_t old_cr3 = swap_cr3(sched.root_task->regs.cr3);
+    
+    ASSERT(map_phys_addr(usr->vaddr.l, usr->phys,usr->size , PAGE_FLAGS_DEFAULT | PAGE_FLAGS_USER));
+    
+    uintptr_t virt = round_up_to_page( usr->size + PAGE_SIZE * 2); //called the idiot gap
+
+    ASSERT(map_user_page_tables(virt, phys, size, &usr->pt, 1));
+
+    unmap_phys_addr(usr->vaddr.l, usr->size ); //from kernel
+    
+    task->maps.heap_phys = phys;
+    task->maps.heap_size = size;
+    task->maps.heap_virt = virt;
+    
+   // PIC_disable();
+    // __asm__ volatile ("sti; int 3");
+    debugf("allocated a heap for task %i:\n        pa %lx va%lx size %li kb \n cr3 to restore: %lx \n", task->pid, task->maps.heap_phys, task->maps.heap_virt, BYTES_TO_KIB( task->maps.heap_size ), old_cr3);
+    
+    swap_cr3(sched.current_task->regs.cr3);
+    
+    
+
+  
+    return (void*)virt;
+
+}
+
+void *task_mmap_file(const char *name)
+{
+    vfs_node* file = initrd_findfile(initrd_root, name); //bad
+    if(!file){
+        debugf("\n\n\nmmap_file(): Failed to find file %s", name); return 1;
+    }
+
+     task_t* task = sched.current_task;
+    if(!task->flags.is_user) return 0; //damn kernel use your own heap!
+
+    ASSERT(task->vma);
+
+    size_t size = round_up_to_page(file->length); 
+    int pages = calc_num_pages(size);
+
+    //lets get some memory
+    debugf("\n task_mmap_file(): %s to be mmaped in %i pages from %lx", file->name, pages, file->addr);
+    uintptr_t phys = pmm_alloc(size);
+
+
+    user_vas_t* usr = (user_vas_t*)(task->vma);
+    //ok where we gonna put it    
+     uintptr_t old_cr3 = swap_cr3(sched.root_task->regs.cr3);
+         
+    //fuck it stick it at one gib until we ever need to mmap more than one file
+    uintptr_t virt = ONE_GIB  / 2;
+    ASSERT(map_phys_addr(usr->vaddr.l, usr->phys,usr->size , PAGE_FLAGS_DEFAULT | PAGE_FLAGS_USER));
+    
+    ASSERT(map_phys_addr(virt, phys, size, PAGE_FLAGS_DEFAULT | PAGE_FLAGS_USER));
+    memcpy(virt, file->addr, file->length);
+
+    ASSERT(map_user_page_tables(virt, phys, size, &usr->pt, 1));
+
+    unmap_phys_addr(usr->vaddr.l, usr->size ); //from kernel
+    unmap_phys_addr(virt, size);
+
+    
+   // PIC_disable();
+    // __asm__ volatile ("sti; int 3");
+    debugf("task %i has file len='%li' mmaped at va %lx pa %lx size %li kb", task->pid,file->length, virt, phys, BYTES_TO_KIB( size ));
+    
+    swap_cr3(sched.current_task->regs.cr3);
+
+    return (void*)virt;
+}
+
+
+//stack is running into page tables
+//pmm sus

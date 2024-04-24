@@ -44,13 +44,45 @@ void cmd_doom(int c, char* v)
     execc("doomos");
 }
 
+void cmd_mem(int c, char* v)
+{
+
+     void* mmwad = mmap_file("DOOM.iwad");
+    print("did we do it???");
+
+     printf("mmap wad %lx", (uintptr_t)mmwad);
+
+     /*
+    void* alloc = malloc(PAGE_SIZE * 3 + 42);
+    printf("malloc! %lx", (uintptr_t)alloc);
+    if(!alloc){
+        print("malloc failed!"); return;
+    } alloc = 0;
+
+    alloc = malloc(69);
+    if(!alloc){
+        print("malloc failed!"); return;
+    } 
+     printf("malloced a little %lx", (uintptr_t)alloc);
+     alloc = 0;
+    alloc = malloc(PAGE_SIZE * 8);
+    if(!alloc){
+        print("malloc failed!"); return;
+    } 
+    printf("malloced a lot %lx", (uintptr_t)alloc);
+
+*/
+}
+
+
 shell_cmd_t cmds[] =
 {
     {"ls", 0, cmd_ls},
     {"ticks", 0, cmd_ticks},
     {"q", 0, cmd_quit},
     {"dbg", 0, cmd_dbg},
-    {"doom", 0, cmd_doom}
+    {"doom", 0, cmd_doom},
+    {"malloc", 0, cmd_mem}
 };
 
 

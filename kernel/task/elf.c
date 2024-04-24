@@ -197,7 +197,7 @@ uintptr_t load_elf(vfs_node* file, user_vas_t* usr)
     memset((void*)(v_end - (sizeof(page_table_t) * 3) ), 0, sizeof(page_table_t) * 3);
 
 
-    map_user_page_tables(vaddr_low, phys, vas_size, &usr->pt);
+    map_user_page_tables(vaddr_low, phys, vas_size, &usr->pt, 0);
   
     usr->size = vas_size;
     usr->entry = eheader->e_entry;
@@ -205,7 +205,7 @@ uintptr_t load_elf(vfs_node* file, user_vas_t* usr)
     usr->vaddr.h = vaddr_high;
     usr->vaddr.l = vaddr_low;
     usr->vaddr.len = vaddr_high - vaddr_low;
-    usr->stack.top = (uintptr_t)usr->pt.p2; 
+    usr->stack.top = (uintptr_t)usr->pt.p4; 
 
     if(usr->stack.top % 0x10 > 0){
         usr->stack.top =- (usr->stack.top % 0x10); //align to 16 bytes 
@@ -383,11 +383,11 @@ uintptr_t load_elf_so(vfs_node* file, user_vas_t* usr)
 
 
 
-    map_user_page_tables(vaddr_low, phys, vas_size, &usr->pt); //map main program
+    map_user_page_tables(vaddr_low, phys, vas_size, &usr->pt,0); //map main program
   
 
 
-    map_user_page_tables(laddr.low, phys_end - libsize, libsize, &usr->pt); //map library
+    map_user_page_tables(laddr.low, phys_end - libsize, libsize, &usr->pt,0); //map library
 
 
 

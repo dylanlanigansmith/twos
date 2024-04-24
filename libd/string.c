@@ -171,10 +171,6 @@ int strncmp(const char *str1, const char* str2, size_t num)
 
 int strcmp(const char *str1, const char *str2)
 {
-	//it is too late to be writing stdlib funcs rn
-
-	//sorry
-	
 	size_t i = 0;
 	while(str1[i] == str2[i]){
 		if(str1[i++] == 0) return 0;
@@ -184,7 +180,12 @@ int strcmp(const char *str1, const char *str2)
 }
 
 char *strdup(const char *s){
-	return s; 
+	size_t l = strlen(s);
+
+	char* str = malloc(l);
+	str[l - 1] = 0;
+	
+	return strcpy(str, s);
 }
 
 char * strstr (const char * str1, const char * str2 ){
@@ -193,5 +194,44 @@ char * strstr (const char * str1, const char * str2 ){
 
  char toupper(char c)
  {
-     return c + 0x20;
+	if('a' <= c || c <= 'z')
+     	return c - 0x20;
+	return c;
  }
+char tolower(char c){
+    if('A' <= c && c <= 'Z'){
+        return c + 0x20 ; // sub 32
+    }
+    return c;
+}
+
+int strcasecmp(const char *s1, const char *s2)
+{
+
+	const unsigned char
+			*us1 = (const unsigned char *)s1,
+			*us2 = (const unsigned char *)s2;
+
+	while (tolower(*us1) == tolower(*us2++))
+		if (*us1++ == '\0')
+			return (0);
+	return (tolower(*us1) - tolower(*--us2));
+
+}
+
+int strncasecmp(const char* s1, const char* s2, size_t n)
+{
+	if (n != 0) {
+			const unsigned char
+					*us1 = (const unsigned char *)s1,
+					*us2 = (const unsigned char *)s2;
+
+			do {
+				if (tolower(*us1) != tolower(*us2++))
+					return (tolower(*us1) - tolower(*--us2));
+				if (*us1++ == '\0')
+					break;
+			} while (--n != 0);
+		}
+		return (0);
+}

@@ -21,9 +21,7 @@ static inline uint64_t sys_gettick(){
 
 void exit(uint64_t er );
 
-static inline void yield(){
-     __asm__ volatile (" mov rax, 2; int 0x69; " ::: "rdi", "rax") ;     
-}
+void yield();
 
 static inline void sys_shutdown(){
      __asm__ volatile (" mov rax, 12; int 0x69; " ::: "rdi", "rax") ;     

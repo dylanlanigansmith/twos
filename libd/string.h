@@ -30,9 +30,11 @@ char *strdup(const char *s); //actually want these
  char * strstr (const char * str1, const char * str2 ); //actually want these
 
  char toupper(char c);
+char tolower(char c);
 
-static inline int strcasecmp(const char *s1, const char *s2) { return 0;}
-static inline int strncasecmp(const char* s1, const char* s2, size_t n) { return 0;}
+int strcasecmp(const char *s1, const char *s2);
+
+int strncasecmp(const char* s1, const char* s2, size_t n);
 
 static inline const char * strchr ( const char * str, int character ) { return str; }
 

@@ -15,3 +15,6 @@ void* calloc( size_t num, size_t size );
 void *realloc( void *ptr, size_t new_size );
 
 static inline void *memmove(void *dest, const void *src, size_t n) { return memcpy(dest, src, n); } //so cursed 
+
+
+void* mmap_file(const char* name);

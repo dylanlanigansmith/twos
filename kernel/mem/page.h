@@ -60,7 +60,7 @@ typedef struct {
 
 } user_pt_t;
 
-uintptr_t map_user_page_tables(uintptr_t virt, uintptr_t phys, size_t size, user_pt_t* pt);
+uintptr_t map_user_page_tables(uintptr_t virt, uintptr_t phys, size_t size, user_pt_t* pt, int fl);
 
 
 static inline page_table_t* pt_addr(uintptr_t entry){ 

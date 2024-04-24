@@ -129,9 +129,32 @@ void* sys_requestheap(registers_t* regs){ //does it deserve this tho
    return initrd_root;
 }
 
+void* sys_brk(registers_t* regs){ 
+    //AYO GIMME SOME MEMORY BRO
+    size_t size = regs->rdi;
+
+   void* r =  task_alloc_heap(size);
+   
+   
+    return r;
+
+}
+
+void* sys_mmap(registers_t* regs){ 
+    //AYO GIMME SOME MEMORY BRO
+    const char* name = (char*)regs->rdi;
+
+   void* r =  task_mmap_file(name);
+   debug("mmaped that shit");
+   
+    return r;
+
+}
+
+
 typedef void* (*syscall_fn)(registers_t* regs);
 
-#define SYSCALL_TOTAL 15 //this is stupid
+#define SYSCALL_TOTAL 17 //this is stupid
 static void* syscalls[] =
 {
     &syscall_test, //0
@@ -149,6 +172,8 @@ static void* syscalls[] =
     &sys_shutdown, // 12
     &sys_exec,
     &sys_getfsroot,
+    &sys_brk, //15
+    &sys_mmap
 };
 
 static_assert(SYSCALL_TOTAL == (sizeof(syscalls) / sizeof(void*)), "SYSCALL TOTAL NOT UPDATED");

@@ -4,27 +4,13 @@
 #include "../common/scancode.h"
 #include "../common/ascii.h"
 
-static inline uint8_t keyboard_get_lastevent(){
-     uint64_t ret = 0;
-     __asm__ volatile ( "mov rax, 8; int 0x69; mov %0, rax; " : "=r"(ret) ::  "rax") ;
+uint8_t keyboard_get_lastevent();
 
-     return (uint8_t)(ret & 0xff);
-}
-
-static inline uint64_t keyboard_lastinput(){
-     uint64_t ret = 0;
-     __asm__ volatile ( "mov rax, 11; int 0x69; mov %0, rax; " : "=r"(ret) ::  "rax") ;
-
-     return ret;
-}
+ uint64_t keyboard_lastinput();
 
 
-static inline uint8_t keyboard_is_down(uint8_t sc){
-     uint64_t ret = 0;
-     __asm__ volatile ( "mov rdi, %1; mov rax, 9; int 0x69; mov %0, rax; " : "=r"(ret) : "r"(sc):  "rax", "rdi") ;
 
-     return (uint8_t)(ret & 0xff);
-}
+uint8_t keyboard_is_down(uint8_t sc);
 
 static inline char keyboard_sc2ascii(uint8_t sc){
     return sc2ascii[sc];
