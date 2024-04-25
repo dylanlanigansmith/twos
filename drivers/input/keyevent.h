@@ -1,7 +1,7 @@
 #pragma once
 #include "../../kernel/kernel.h"
 
-#define KEYEVENT_BUF_SIZE 64
+#define KEYEVENT_BUF_SIZE 32
 typedef struct {
     uint8_t events[KEYEVENT_BUF_SIZE];  // Array to hold key events
     int front;                          
@@ -36,6 +36,21 @@ static inline uint8_t keystream_oldest(KeyEventStream* stream){ //bottom
 
     uint8_t sc = stream->events[stream->front];
 } static inline uint8_t keystream_bottom(KeyEventStream* stream){ return keystream_oldest(stream); }
+
+
+static inline  uint8_t keystream_getandremove(KeyEventStream *stream) {
+    unsigned char event;
+
+    if (keystream_isempty(stream)) {
+        return 0x0;
+    }
+    // Get the oldest event from the front of the buffer
+    event = stream->events[stream->front];
+    // Update front index
+    stream->front = (stream->front + 1) % KEYEVENT_BUF_SIZE;
+
+    return event;
+}
 
 
 static inline uint8_t keystream_add(KeyEventStream* stream, uint8_t sc){

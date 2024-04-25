@@ -81,6 +81,7 @@ void pmm_init()
         uintptr_t start = maps[i].addr;
         uintptr_t end = start + size;
         size_t num_pages = size / PAGE_SIZE;
+        if(num_pages < 5) continue;
         size_t remainder = size % PAGE_SIZE; //bummer, whatcha get for using 2mb pages
         debugf("for region %lx - %lx there are %li pages (r %li kb) to set free\n", start, end, num_pages, BYTES_TO_KIB(remainder));
         //check alignment etc 

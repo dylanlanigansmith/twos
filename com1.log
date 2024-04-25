@@ -1,12 +1,12 @@
 using Serial COM1 for debug out 
 boot start
-registered interupt handler for [33] at 0xffffffff8021127a
-registered interupt handler for [32] at 0xffffffff80210f5a
-registered interupt handler for [105] at 0xffffffff8020cd75
+registered interupt handler for [33] at 0xffffffff80211652
+registered interupt handler for [32] at 0xffffffff802112ce
+registered interupt handler for [105] at 0xffffffff8020d09e
 ==init GDT, TSS==
-gdt ptr = 0xffffffff80214000, tss ptr = 0xffffffff80214028 tss - gdt = 0x28
-stack top = 0xffffffff8021d000 end = 0xffffffff80219000 size = 0x4000
-copied GDT tss to 0xffffffff80217bb0
+gdt ptr = 0xffffffff80215000, tss ptr = 0xffffffff80215028 tss - gdt = 0x28
+stack top = 0xffffffff8021e000 end = 0xffffffff8021a000 size = 0x4000
+copied GDT tss to 0xffffffff80218bd0
 ==Reloaded GDT, Loaded TSS==
 interupts initialized
 ==boot initial phase complete==
@@ -14,7 +14,7 @@ interupts initialized
 CPUID available = YES
 ==Parsing Multiboot2 Header==
 Unhandled Multiboot Tag: 10
-Found Multiboot Module at 0x22b000. Total: 1
+Found Multiboot Module at 0x22c000. Total: 1
 Unhandled Multiboot Tag: 9
 Unhandled Multiboot Tag: 5
 found VBE
@@ -31,18 +31,17 @@ Total Memory:
     8388095 KiB  /  8191 MiB  /  7 GiB
  Total Pages: 4095 
 
-for region 0x0 - 0x9fc00 there are 0 pages (r 639 kb) to set free
 for region 0x100000 - 0xbffe0000 there are 1535 pages (r 896 kb) to set free
 aligned start 0x200000 - aligned end 0xbfe00000 (1 1) 
 for region 0x100000000 - 0x240000000 there are 2560 pages (r 0 kb) to set free
-marking from kernel phys start 0x200000 to kernel phys end 0x22b000 as used
-mark region used: 0x200000 - 0x22b000
+marking from kernel phys start 0x200000 to kernel phys end 0x22c000 as used
+mark region used: 0x200000 - 0x22c000
 marking from 0x200000 - 0x400000 as used, total pages = 1
-mark region used: 0x0 - 0xe2b000
-marking from 0x0 - 0xe56000 as used, total pages = 7
+mark region used: 0x0 - 0xe2c000
+marking from 0x0 - 0xe58000 as used, total pages = 7
 ==PMM End==
-mark region used: 0x22b000 - 0x130b518
-marking from 0x200000 - 0x13c0a30 as used, total pages = 8
+mark region used: 0x22c000 - 0x130c8b0
+marking from 0x200000 - 0x13c1160 as used, total pages = 8
 ==init paging==
 mark region used: 0xfc000000 - 0xfc300000
 marking from 0xfc000000 - 0xfc400000 as used, total pages = 2
@@ -52,16 +51,16 @@ pmm_kalloc(0x400000): found space for 2 pages at 0x1200000
 map_phys_addr():  0x1200000 -> 0xffffffff81200000 | 2 pages 
 idx for VA: 0xffffffff81200000 [0b1111 1111 1111 1111 1111 1111 1111 1111 1000 0001 0010 0000 0000 0000 0000 0000 ] 
  p4[511] p3[510] p2[9] p1[0] 
-p4 = 0x21f000
-p4 = 0xffffffff8021f000
-p4->[p3ind]=0x223000
-initial p3 = 0xffffffff80223000 p4 = 0xffffffff8021f000, p3_phys = 0xffffffff8020b3bf  
-we have: p3 = 0xffffffff80223000 p2 = 0x222000 
-making p3 virtual: now 0xffffffff80223000 
-making p2 virtual: now 0xffffffff80223000 
-entry 0 @ 0xffffffff80222240 = 0x1200083 
+p4 = 0x220000
+p4 = 0xffffffff80220000
+p4->[p3ind]=0x224000
+initial p3 = 0xffffffff80224000 p4 = 0xffffffff80220000, p3_phys = 0xffffffff8020b647  
+we have: p3 = 0xffffffff80224000 p2 = 0x223000 
+making p3 virtual: now 0xffffffff80224000 
+making p2 virtual: now 0xffffffff80224000 
+entry 0 @ 0xffffffff80223240 = 0x1200083 
  0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0010 0000 0000 0000 1000 0011 
-entry 1 @ 0xffffffff80222280 = 0x1400083 
+entry 1 @ 0xffffffff80223280 = 0x1400083 
  0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0100 0000 0000 0000 1000 0011 
 ==flushed TLB==
 invalidated: 0xffffffff81200000 
@@ -70,9 +69,9 @@ mapping framebuffer 0xfc000000 to 0xfc000000
 map_phys_addr():  0xfc000000 -> 0xfc000000 | 2 pages 
 idx for VA: 0xfc000000 [0b0000 0000 0000 0000 0000 0000 0000 0000 1111 1100 0000 0000 0000 0000 0000 0000 ] 
  p4[0] p3[3] p2[480] p1[0] 
-p4 = 0x21f000
-p4 = 0xffffffff8021f000
-initial p3 = 0x0 p4 = 0xffffffff8021f000, p3_phys = 0xffffffff8020b3bf  
+p4 = 0x220000
+p4 = 0xffffffff80220000
+initial p3 = 0x0 p4 = 0xffffffff80220000, p3_phys = 0xffffffff8020b647  
 alloc new page table at 0x1200000, virtual 0xffffffff81200000, index now 1 
 alloc new page table at 0x1201000, virtual 0xffffffff81201000, index now 2 
 made new: **p3 = 0x1200000 p2 = 0x1201000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0010 0000 0000 0000 0000 0111  
@@ -90,9 +89,9 @@ pmm_kalloc(0x800000): found space for 4 pages at 0x1800000
 map_phys_addr():  0x1800000 -> 0xffffbeefed000000 | 4 pages 
 idx for VA: 0xffffbeefed000000 [0b1111 1111 1111 1111 1011 1110 1110 1111 1110 1101 0000 0000 0000 0000 0000 0000 ] 
  p4[381] p3[447] p2[360] p1[0] 
-p4 = 0x21f000
-p4 = 0xffffffff8021f000
-initial p3 = 0x0 p4 = 0xffffffff8021f000, p3_phys = 0xffffffff8020b3bf  
+p4 = 0x220000
+p4 = 0xffffffff80220000
+initial p3 = 0x0 p4 = 0xffffffff80220000, p3_phys = 0xffffffff8020b647  
 alloc new page table at 0x1202000, virtual 0xffffffff81202000, index now 3 
 alloc new page table at 0x1203000, virtual 0xffffffff81203000, index now 4 
 made new: **p3 = 0x1202000 p2 = 0x1203000 entry = 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0010 0000 0010 0000 0000 0111  
@@ -117,19 +116,42 @@ skipping acpi
 ==MEM INIT OK==
 enabled interupts.
 ==boot second phase complete==
-making new block at 0xffffbeefed200000 size=94 /  footer @ 0xffffbeefed200052 
+=======
+ISR_Debug: 1 
+===isr[0x1] err{0x0}====
+err_code = 0x0
+rbp = 0xffffffff8021dff0
+rip = 0xffffffff80201f3b
+rsp = 0xffffffff8021df40
+cs = 0x8
+rflags = 0x246
+cr3 = 0x220000
+ds = 0x10
+ss = 0x10
+rax = 0xa
+rbx = 0x215000
+rcx = 0x0
+rdx = 0x31
+rdi = 0xffffffff80215478
+rsi = 0xa
+r8 = 0xffffffff80211bd9
+r9 = 0xffffffff8020b647
+r10 = 0xffffffff8020b647
+r11 = 0x0
+r12 = 0x0
+r13 = 0x0
+r14 = 0x0
+r15 = 0x0
+=======
+loading initial ramdisk... 
+===initrd: loading 17696944 bytes from 0x22c000===
+initrd validated; contains 17693144 bytes of files!
+making new block at 0xffffbeefed200000 size=5182 /  footer @ 0xffffbeefed201432 
 adding to alloc map, prev. # allocs = 0 
  added to alloc map, new # allocs = 1 
-freeing block at 0xffffbeefed200000 / block_size=81 
-block freed, size of allocs = 1 
-===initrd: loading 17696024 bytes from 0x22b000===
-initrd validated; contains 17692224 bytes of files!
-we found no space to fit size 0x1425, making new block at 0xffffbeefed20005e size=5182 /  footer @ 0xffffbeefed201490 
+we found no space to fit size 0x5aa, making new block at 0xffffbeefed20143e size=1475 /  footer @ 0xffffbeefed2019f5 
 adding to alloc map, prev. # allocs = 1 
  added to alloc map, new # allocs = 2 
-we found no space to fit size 0x5aa, making new block at 0xffffbeefed20149c size=1475 /  footer @ 0xffffbeefed201a53 
-adding to alloc map, prev. # allocs = 2 
- added to alloc map, new # allocs = 3 
 added dir node mod 
 added dir node local 
 added dir node libnest 
@@ -165,10 +187,10 @@ pmm_alloc(0x400000): found space for 2 pages at 0x40000000
 map_phys_addr():  0x40000000 -> 0x400000 | 2 pages 
 idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
  p4[0] p3[0] p2[2] p1[0] 
-p4 = 0x21f000
-p4 = 0xffffffff8021f000
+p4 = 0x220000
+p4 = 0xffffffff80220000
 p4->[p3ind]=0x1200000
-initial p3 = 0xffffffff81200000 p4 = 0xffffffff8021f000, p3_phys = 0xffffffff8020b3bf  
+initial p3 = 0xffffffff81200000 p4 = 0xffffffff80220000, p3_phys = 0xffffffff8020b647  
 alloc new page table at 0x1204000, virtual 0xffffffff81204000, index now 5 
 made new: p2
 we have: p3 = 0xffffffff81200000 p2 = 0x1204000 
@@ -185,9 +207,9 @@ allocated user pages: [phys address] =  p4 0x403fd000 p3 0x403fe000 p2 0x403ff00
 map_user_page_tables:  0x40000000 -> 0x400000 | 2 pages 
 idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
  p4[0] p3[0] p2[2] p1[0] 
-kp4 phys = 0x21f000
-kp4 virt = 0xffffffff8021f000
-copying kp4 at idx 511 (contents 0x223023) to user p4
+kp4 phys = 0x220000
+kp4 virt = 0xffffffff80220000
+copying kp4 at idx 511 (contents 0x224023) to user p4
 idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
  p4[0] p3[0] p2[2] p1[0] 
 idx for VA: 0xffffbeefed000000 [0b1111 1111 1111 1111 1011 1110 1110 1111 1110 1101 0000 0000 0000 0000 0000 0000 ] 
@@ -195,49 +217,49 @@ idx for VA: 0xffffbeefed000000 [0b1111 1111 1111 1111 1011 1110 1110 1111 1110 1
 idx for VA: 0xfc000000 [0b0000 0000 0000 0000 0000 0000 0000 0000 1111 1100 0000 0000 0000 0000 0000 0000 ] 
  p4[0] p3[3] p2[480] p1[0] 
 usr stack @ 0x7fd000, size = 4066 kb
-copying header 0x400000 to 0x400000. fs= 0x3be0 ms = 0x3be0
+copying header 0x400000 to 0x400000. fs= 0x3ce0 ms = 0x3ce0
 copying header 0x404000 to 0x404000. fs= 0x628 ms = 0x7c0
 unmap_phys_addr():  unmapping 0x400000  | 2 pages 
 idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
  p4[0] p3[0] p2[2] p1[0] 
-p4 = 0xffffffff8021f000
+p4 = 0xffffffff80220000
 p4->[p3ind]=0x1200000
 we have: p3 = 0xffffffff81200000 p2 = 0x1204000 
 making p2 virtual: now 0xffffffff81200000 
 ==flushed TLB==
 invalidated: 0x400000 
 loaded ELF: init [18368 kb]
- usr entry = 0x400a5e usr phys = 0x40000000 usr lo 0x400000 usr rsp 0x7fd000, usr cr3 = 0x403fd000
-we found no space to fit size 0x1000, making new block at 0xffffbeefed201a5f size=4121 /  footer @ 0xffffbeefed202a6c 
-adding to alloc map, prev. # allocs = 3 
- added to alloc map, new # allocs = 4 
+ usr entry = 0x400ab8 usr phys = 0x40000000 usr lo 0x400000 usr rsp 0x7fd000, usr cr3 = 0x403fd000
+we found no space to fit size 0x1000, making new block at 0xffffbeefed201a01 size=4121 /  footer @ 0xffffbeefed202a0e 
+adding to alloc map, prev. # allocs = 2 
+ added to alloc map, new # allocs = 3 
 
-=== stdout init @ 0xffffbeefed201a6c size 4096 idx 0  ready = 1 ===
+=== stdout init @ 0xffffbeefed201a0e size 4096 idx 0  ready = 1 ===
 Graphics Init 1024 x 768 x 32 ready = 1 
 tasking init
 
-we found no space to fit size 0x2000, making new block at 0xffffbeefed202a78 size=8217 /  footer @ 0xffffbeefed204a85 
-adding to alloc map, prev. # allocs = 4 
- added to alloc map, new # allocs = 5 
-stack  0xffffbeefed20496c isn't aligned! repairing to = 0xffffbeefed204960 
+we found no space to fit size 0x2000, making new block at 0xffffbeefed202a1a size=8217 /  footer @ 0xffffbeefed204a27 
+adding to alloc map, prev. # allocs = 3 
+ added to alloc map, new # allocs = 4 
+stack  0xffffbeefed204909 isn't aligned! repairing to = 0xffffbeefed204900 
 create_task task_kmain pid 0 rip 0xffffffff80201787 !
 added initial task task_kmain pid 0 !
 adding task task_drawstdout, pid_last = 1 !
-we found no space to fit size 0x2000, making new block at 0xffffbeefed204a91 size=8217 /  footer @ 0xffffbeefed206a9e 
-adding to alloc map, prev. # allocs = 5 
- added to alloc map, new # allocs = 6 
-stack  0xffffbeefed206985 isn't aligned! repairing to = 0xffffbeefed206980 
-create_task task_drawstdout pid 1 rip 0xffffffff80201954 !
+we found no space to fit size 0x2000, making new block at 0xffffbeefed204a33 size=8217 /  footer @ 0xffffbeefed206a40 
+adding to alloc map, prev. # allocs = 4 
+ added to alloc map, new # allocs = 5 
+stack  0xffffbeefed206922 isn't aligned! repairing to = 0xffffbeefed206920 
+create_task task_drawstdout pid 1 rip 0xffffffff8020198a !
 scheduler: added task task_drawstdout, pid = 1 !
 adding USER task usermode, pid_last = 2 !
-we found no space to fit size 0x2000, making new block at 0xffffbeefed206aaa size=8217 /  footer @ 0xffffbeefed208ab7 
+we found no space to fit size 0x2000, making new block at 0xffffbeefed206a4c size=8217 /  footer @ 0xffffbeefed208a59 
+adding to alloc map, prev. # allocs = 5 
+ added to alloc map, new # allocs = 6 
+stack  0xffffbeefed20893b isn't aligned! repairing to = 0xffffbeefed208930 
+create_task usermode pid 2 rip 0x400ab8 !
+we found no space to fit size 0x70, making new block at 0xffffbeefed208a65 size=137 /  footer @ 0xffffbeefed208ae2 
 adding to alloc map, prev. # allocs = 6 
  added to alloc map, new # allocs = 7 
-stack  0xffffbeefed20899e isn't aligned! repairing to = 0xffffbeefed208990 
-create_task usermode pid 2 rip 0x400a5e !
-we found no space to fit size 0x70, making new block at 0xffffbeefed208ac3 size=137 /  footer @ 0xffffbeefed208b40 
-adding to alloc map, prev. # allocs = 7 
- added to alloc map, new # allocs = 8 
 scheduler: added USER task usermode, pid = 2 !
 randos up 
 starting first task task_kmain
@@ -246,23 +268,24 @@ task draw timer
 task draw test 
 I am a user task hard at work
 please mr kernel give me cpu time
-
-99$>>> ls 
-found space at 0. need size 0x2 found size 0x51 
-using existing block at 0xffffbeefed200000 / block_size=81 
-exec_user_task(): old cr3 0x403fd000 new cr3 0x21f000 insane 0x403fd000 wtf 0xffffbeefed200008
-file ls is valid elf64. loading..
+running doom in 30 seconds
+102$>>> doom time 
+we found no space to fit size 0x6, making new block at 0xffffbeefed208aee size=31 /  footer @ 0xffffbeefed208b01 
+adding to alloc map, prev. # allocs = 7 
+ added to alloc map, new # allocs = 8 
+exec_user_task(): old cr3 0x403fd000 new cr3 0x220000 insane 0x403fd000 wtf 0xffffbeefed208afb
+file doomos is valid elf64. loading..
 phdr load  vaddr = 0x400000, aligned to 0x1000, X  R  
-phdr load  vaddr = 0x401560, aligned to 0x1000,  W R  
-lowest vaddr 0x400000 highest vaddr 0x401818, size 0x200000
+phdr load  vaddr = 0x4721e0, aligned to 0x1000,  W R  
+lowest vaddr 0x400000 highest vaddr 0x4d6600, size 0x200000
 pmm_alloc(0x400000): found space for 2 pages at 0x40600000
 map_phys_addr():  0x40600000 -> 0x400000 | 2 pages 
 idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
  p4[0] p3[0] p2[2] p1[0] 
-p4 = 0x21f000
-p4 = 0xffffffff8021f000
+p4 = 0x220000
+p4 = 0xffffffff80220000
 p4->[p3ind]=0x1200000
-initial p3 = 0xffffffff81200000 p4 = 0xffffffff8021f000, p3_phys = 0xffffffff8020b3bf  
+initial p3 = 0xffffffff81200000 p4 = 0xffffffff80220000, p3_phys = 0xffffffff8020b647  
 we have: p3 = 0xffffffff81200000 p2 = 0x1204000 
 making p3 virtual: now 0xffffffff81200000 
 making p2 virtual: now 0xffffffff81200000 
@@ -277,229 +300,127 @@ allocated user pages: [phys address] =  p4 0x409fd000 p3 0x409fe000 p2 0x409ff00
 map_user_page_tables:  0x40600000 -> 0x400000 | 2 pages 
 idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
  p4[0] p3[0] p2[2] p1[0] 
-kp4 phys = 0x21f000
-kp4 virt = 0xffffffff8021f000
-copying kp4 at idx 511 (contents 0x223023) to user p4
+kp4 phys = 0x220000
+kp4 virt = 0xffffffff80220000
+copying kp4 at idx 511 (contents 0x224023) to user p4
 idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
  p4[0] p3[0] p2[2] p1[0] 
 idx for VA: 0xffffbeefed000000 [0b1111 1111 1111 1111 1011 1110 1110 1111 1110 1101 0000 0000 0000 0000 0000 0000 ] 
  p4[381] p3[447] p2[360] p1[0] 
 idx for VA: 0xfc000000 [0b0000 0000 0000 0000 0000 0000 0000 0000 1111 1100 0000 0000 0000 0000 0000 0000 ] 
  p4[0] p3[3] p2[480] p1[0] 
-usr stack @ 0x7fd000, size = 4077 kb
-copying header 0x400000 to 0x400000. fs= 0x560 ms = 0x560
-copying header 0x401560 to 0x401560. fs= 0x2b8 ms = 0x2b8
+usr stack @ 0x7fd000, size = 3226 kb
+copying header 0x400000 to 0x400000. fs= 0x711d0 ms = 0x711d0
+copying header 0x4721e0 to 0x4721e0. fs= 0x21c88 ms = 0x64420
 unmap_phys_addr():  unmapping 0x400000  | 2 pages 
 idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
  p4[0] p3[0] p2[2] p1[0] 
-p4 = 0xffffffff8021f000
+p4 = 0xffffffff80220000
 p4->[p3ind]=0x1200000
 we have: p3 = 0xffffffff81200000 p2 = 0x1204000 
 making p2 virtual: now 0xffffffff81200000 
 ==flushed TLB==
 invalidated: 0x400000 
-loaded ELF: ls [6168 kb]
+loaded ELF: doomos [878080 kb]
 exec_user_task():
-     usr entry = 0x400106 usr phys = 0x40600000 usr lo 0x400000 usr rsp 0x7fd000, usr cr3 = 0x409fd000
-adding USER task ls, child of 2 !
-we found no space to fit size 0x2000, making new block at 0xffffbeefed208b4c size=8217 /  footer @ 0xffffbeefed20ab59 
+     usr entry = 0x43eff0 usr phys = 0x40600000 usr lo 0x400000 usr rsp 0x7fd000, usr cr3 = 0x409fd000
+adding USER task doomos, child of 2 !
+we found no space to fit size 0x2000, making new block at 0xffffbeefed208b0d size=8217 /  footer @ 0xffffbeefed20ab1a 
 adding to alloc map, prev. # allocs = 8 
  added to alloc map, new # allocs = 9 
-create_task ls pid 3 rip 0x400106 !
-we found no space to fit size 0x70, making new block at 0xffffbeefed20ab65 size=137 /  footer @ 0xffffbeefed20abe2 
+stack  0xffffbeefed20a9fc isn't aligned! repairing to = 0xffffbeefed20a9f0 
+create_task doomos pid 3 rip 0x43eff0 !
+we found no space to fit size 0x70, making new block at 0xffffbeefed20ab26 size=137 /  footer @ 0xffffbeefed20aba3 
 adding to alloc map, prev. # allocs = 9 
  added to alloc map, new # allocs = 10 
-scheduler: added child user task ls, pid = 3 !
+scheduler: added child user task doomos, pid = 3 !
 scheduler: swapping back cr3 to 0x403fd000
-
-12134$>>> initrd demo: expanding fs: 
-
-initrd/
-
-    mod/
-        libnest/
-            birds/
-                birdnest.nice
-            testcase.txt
-        imaginehavingalongfilenamewellyoudonthavetoanymore.txt
-        greenland.bmp
-    usr/
-        local/
-            loco.txt
-            usrlocal.txt
-        lib/
-            libd.so
-        bin/
-            init
-            ls
-            DOOM.WAD
-            usermode
-            doomos
-    etc/
-        books/
-            etcetera.txt
-    ulysses.txt
-    LICENSE.txt
-    initrd.txt
-
-conclude initrd demo i hope you are impressed
-task 3 exited with code: 0
-found task usermode pointing to del task ls
-set newest task to other as we were it, now usermode
-old parent pid = 2
-doom 
-we found no space to fit size 0x6, making new block at 0xffffbeefed20abee size=31 /  footer @ 0xffffbeefed20ac01 
-adding to alloc map, prev. # allocs = 10 
- added to alloc map, new # allocs = 11 
-exec_user_task(): old cr3 0x403fd000 new cr3 0x21f000 insane 0x403fd000 wtf 0xffffbeefed20abfb
-file doomos is valid elf64. loading..
-phdr load  vaddr = 0x400000, aligned to 0x1000, X  R  
-phdr load  vaddr = 0x471000, aligned to 0x1000,  W R  
-lowest vaddr 0x400000 highest vaddr 0x4d5400, size 0x200000
+starting doomos!
+allocated a heap for task 3
 pmm_alloc(0x400000): found space for 2 pages at 0x40c00000
-map_phys_addr():  0x40c00000 -> 0x400000 | 2 pages 
+map_phys_addr():  0x40600000 -> 0x400000 | 2 pages 
 idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
  p4[0] p3[0] p2[2] p1[0] 
-p4 = 0x21f000
-p4 = 0xffffffff8021f000
+p4 = 0x220000
+p4 = 0xffffffff80220000
 p4->[p3ind]=0x1200000
-initial p3 = 0xffffffff81200000 p4 = 0xffffffff8021f000, p3_phys = 0xffffffff8020b3bf  
+initial p3 = 0xffffffff81200000 p4 = 0xffffffff80220000, p3_phys = 0xffffffff8020b647  
 we have: p3 = 0xffffffff81200000 p2 = 0x1204000 
 making p3 virtual: now 0xffffffff81200000 
 making p2 virtual: now 0xffffffff81200000 
-entry 0 @ 0xffffffff81204080 = 0x40c00087 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 1100 0000 0000 0000 1000 0111 
-entry 1 @ 0xffffffff812040c0 = 0x40e00087 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 1110 0000 0000 0000 1000 0111 
+entry 0 @ 0xffffffff81204080 = 0x40600087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0110 0000 0000 0000 1000 0111 
+entry 1 @ 0xffffffff812040c0 = 0x40800087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 1000 0000 0000 0000 1000 0111 
 ==flushed TLB==
 invalidated: 0x400000 
-allocated user pages: [phys address] =  p4 0x40ffd000 p3 0x40ffe000 p2 0x40fff000
- [virt] vstart = 0x400000 vend = 0x800000, size palign 0x200000 size total 0x400000
-map_user_page_tables:  0x40c00000 -> 0x400000 | 2 pages 
-idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
- p4[0] p3[0] p2[2] p1[0] 
-kp4 phys = 0x21f000
-kp4 virt = 0xffffffff8021f000
-copying kp4 at idx 511 (contents 0x223023) to user p4
-idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
- p4[0] p3[0] p2[2] p1[0] 
-idx for VA: 0xffffbeefed000000 [0b1111 1111 1111 1111 1011 1110 1110 1111 1110 1101 0000 0000 0000 0000 0000 0000 ] 
- p4[381] p3[447] p2[360] p1[0] 
-idx for VA: 0xfc000000 [0b0000 0000 0000 0000 0000 0000 0000 0000 1111 1100 0000 0000 0000 0000 0000 0000 ] 
- p4[0] p3[3] p2[480] p1[0] 
-usr stack @ 0x7fd000, size = 3230 kb
-copying header 0x400000 to 0x400000. fs= 0x70db8 ms = 0x70db8
-copying header 0x471000 to 0x471000. fs= 0x21c88 ms = 0x64400
-unmap_phys_addr():  unmapping 0x400000  | 2 pages 
-idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
- p4[0] p3[0] p2[2] p1[0] 
-p4 = 0xffffffff8021f000
-p4->[p3ind]=0x1200000
-we have: p3 = 0xffffffff81200000 p2 = 0x1204000 
-making p2 virtual: now 0xffffffff81200000 
-==flushed TLB==
-invalidated: 0x400000 
-loaded ELF: doomos [873472 kb]
-exec_user_task():
-     usr entry = 0x43ee6c usr phys = 0x40c00000 usr lo 0x400000 usr rsp 0x7fd000, usr cr3 = 0x40ffd000
-adding USER task doomos, child of 2 !
-we found no space to fit size 0x2000, making new block at 0xffffbeefed20ac0d size=8217 /  footer @ 0xffffbeefed20cc1a 
-adding to alloc map, prev. # allocs = 11 
- added to alloc map, new # allocs = 12 
-stack  0xffffbeefed20cb01 isn't aligned! repairing to = 0xffffbeefed20cb00 
-create_task doomos pid 4 rip 0x43ee6c !
-we found no space to fit size 0x70, making new block at 0xffffbeefed20cc26 size=137 /  footer @ 0xffffbeefed20cca3 
-adding to alloc map, prev. # allocs = 12 
- added to alloc map, new # allocs = 13 
-scheduler: added child user task doomos, pid = 4 !
-scheduler: swapping back cr3 to 0x403fd000
-
-65767$>>> starting doomos!
-allocated a heap for task 4
-pmm_alloc(0x200000): found space for 1 pages at 0x41200000
-map_phys_addr():  0x40c00000 -> 0x400000 | 2 pages 
-idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
- p4[0] p3[0] p2[2] p1[0] 
-p4 = 0x21f000
-p4 = 0xffffffff8021f000
-p4->[p3ind]=0x1200000
-initial p3 = 0xffffffff81200000 p4 = 0xffffffff8021f000, p3_phys = 0xffffffff8020b3bf  
-we have: p3 = 0xffffffff81200000 p2 = 0x1204000 
-making p3 virtual: now 0xffffffff81200000 
-making p2 virtual: now 0xffffffff81200000 
-entry 0 @ 0xffffffff81204080 = 0x40c00087 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 1100 0000 0000 0000 1000 0111 
-entry 1 @ 0xffffffff812040c0 = 0x40e00087 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 1110 0000 0000 0000 1000 0111 
-==flushed TLB==
-invalidated: 0x400000 
-map_user_page_tables:  0x41200000 -> 0x800000 | 1 pages 
+map_user_page_tables:  0x40c00000 -> 0x800000 | 2 pages 
 idx for VA: 0x800000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1000 0000 0000 0000 0000 0000 ] 
  p4[0] p3[0] p2[4] p1[0] 
 unmap_phys_addr():  unmapping 0x400000  | 2 pages 
 idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
  p4[0] p3[0] p2[2] p1[0] 
-p4 = 0xffffffff8021f000
+p4 = 0xffffffff80220000
 p4->[p3ind]=0x1200000
 we have: p3 = 0xffffffff81200000 p2 = 0x1204000 
 making p2 virtual: now 0xffffffff81200000 
 ==flushed TLB==
 invalidated: 0x400000 
-allocated a heap for task 4:
-        pa 0x41200000 va0x800000 size 2048 kb 
- cr3 to restore: 0x40ffd000 
+allocated a heap for task 3:
+        pa 0x40c00000 va0x800000 size 4096 kb 
+ cr3 to restore: 0x409fd000 
 created frame buffer 0xfc000000
 mmap WAD
 
- task_mmap_file(): DOOM.WAD to be mmaped in 6 pages from 0xffffffff803acdfb
-pmm_alloc(0xc00000): found space for 6 pages at 0x41600000
-map_phys_addr():  0x40c00000 -> 0x400000 | 2 pages 
+ task_mmap_file(): DOOM.WAD to be mmaped in 6 pages from 0xffffffff803ade7b
+pmm_alloc(0xc00000): found space for 6 pages at 0x41200000
+map_phys_addr():  0x40600000 -> 0x400000 | 2 pages 
 idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
  p4[0] p3[0] p2[2] p1[0] 
-p4 = 0x21f000
-p4 = 0xffffffff8021f000
+p4 = 0x220000
+p4 = 0xffffffff80220000
 p4->[p3ind]=0x1200000
-initial p3 = 0xffffffff81200000 p4 = 0xffffffff8021f000, p3_phys = 0xffffffff8020b3bf  
+initial p3 = 0xffffffff81200000 p4 = 0xffffffff80220000, p3_phys = 0xffffffff8020b647  
 we have: p3 = 0xffffffff81200000 p2 = 0x1204000 
 making p3 virtual: now 0xffffffff81200000 
 making p2 virtual: now 0xffffffff81200000 
-entry 0 @ 0xffffffff81204080 = 0x40c00087 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 1100 0000 0000 0000 1000 0111 
-entry 1 @ 0xffffffff812040c0 = 0x40e00087 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 1110 0000 0000 0000 1000 0111 
+entry 0 @ 0xffffffff81204080 = 0x40600087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0110 0000 0000 0000 1000 0111 
+entry 1 @ 0xffffffff812040c0 = 0x40800087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 1000 0000 0000 0000 1000 0111 
 ==flushed TLB==
 invalidated: 0x400000 
-map_phys_addr():  0x41600000 -> 0x20000000 | 6 pages 
+map_phys_addr():  0x41200000 -> 0x20000000 | 6 pages 
 idx for VA: 0x20000000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0010 0000 0000 0000 0000 0000 0000 0000 ] 
  p4[0] p3[0] p2[256] p1[0] 
-p4 = 0x21f000
-p4 = 0xffffffff8021f000
+p4 = 0x220000
+p4 = 0xffffffff80220000
 p4->[p3ind]=0x1200000
-initial p3 = 0xffffffff81200000 p4 = 0xffffffff8021f000, p3_phys = 0xffffffff8020b3bf  
+initial p3 = 0xffffffff81200000 p4 = 0xffffffff80220000, p3_phys = 0xffffffff8020b647  
 we have: p3 = 0xffffffff81200000 p2 = 0x1204000 
 making p3 virtual: now 0xffffffff81200000 
 making p2 virtual: now 0xffffffff81200000 
-entry 0 @ 0xffffffff81208000 = 0x41600087 
+entry 0 @ 0xffffffff81208000 = 0x41200087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0001 0010 0000 0000 0000 1000 0111 
+entry 1 @ 0xffffffff81208040 = 0x41400087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0001 0100 0000 0000 0000 1000 0111 
+entry 2 @ 0xffffffff81208080 = 0x41600087 
  0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0001 0110 0000 0000 0000 1000 0111 
-entry 1 @ 0xffffffff81208040 = 0x41800087 
+entry 3 @ 0xffffffff812080c0 = 0x41800087 
  0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0001 1000 0000 0000 0000 1000 0111 
-entry 2 @ 0xffffffff81208080 = 0x41a00087 
+entry 4 @ 0xffffffff81208100 = 0x41a00087 
  0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0001 1010 0000 0000 0000 1000 0111 
-entry 3 @ 0xffffffff812080c0 = 0x41c00087 
+entry 5 @ 0xffffffff81208140 = 0x41c00087 
  0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0001 1100 0000 0000 0000 1000 0111 
-entry 4 @ 0xffffffff81208100 = 0x41e00087 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0001 1110 0000 0000 0000 1000 0111 
-entry 5 @ 0xffffffff81208140 = 0x42000087 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0010 0000 0000 0000 0000 1000 0111 
 ==flushed TLB==
 invalidated: 0x20000000 
-map_user_page_tables:  0x41600000 -> 0x20000000 | 6 pages 
+map_user_page_tables:  0x41200000 -> 0x20000000 | 6 pages 
 idx for VA: 0x20000000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0010 0000 0000 0000 0000 0000 0000 0000 ] 
  p4[0] p3[0] p2[256] p1[0] 
 unmap_phys_addr():  unmapping 0x400000  | 2 pages 
 idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
  p4[0] p3[0] p2[2] p1[0] 
-p4 = 0xffffffff8021f000
+p4 = 0xffffffff80220000
 p4->[p3ind]=0x1200000
 we have: p3 = 0xffffffff81200000 p2 = 0x1204000 
 making p2 virtual: now 0xffffffff81200000 
@@ -508,51 +429,51 @@ invalidated: 0x400000
 unmap_phys_addr():  unmapping 0x20000000  | 6 pages 
 idx for VA: 0x20000000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0010 0000 0000 0000 0000 0000 0000 0000 ] 
  p4[0] p3[0] p2[256] p1[0] 
-p4 = 0xffffffff8021f000
+p4 = 0xffffffff80220000
 p4->[p3ind]=0x1200000
 we have: p3 = 0xffffffff81200000 p2 = 0x1204000 
 making p2 virtual: now 0xffffffff81200000 
 ==flushed TLB==
 invalidated: 0x20000000 
-task 4 has file len='12408292' mmaped at va 0x20000000 pa 0x41600000 size 12288 kb
+task 3 has file len='12408292' mmaped at va 0x20000000 pa 0x41200000 size 12288 kb
 mmaped that shitwad loaded at 0x20000000
-init doom @ 65814
+init doom @ 20134
 calling doom main!
                            Doom Generic 0.1Z_Init: Init zone memory allocation daemon. 
-expanding heap for task 4 [6291456]
-pmm_alloc(0x600000): found space for 3 pages at 0x42400000
-map_phys_addr():  0x40c00000 -> 0x400000 | 2 pages 
+expanding heap for task 3 [6291456]
+pmm_alloc(0x600000): found space for 3 pages at 0x42000000
+map_phys_addr():  0x40600000 -> 0x400000 | 2 pages 
 idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
  p4[0] p3[0] p2[2] p1[0] 
-p4 = 0x21f000
-p4 = 0xffffffff8021f000
+p4 = 0x220000
+p4 = 0xffffffff80220000
 p4->[p3ind]=0x1200000
-initial p3 = 0xffffffff81200000 p4 = 0xffffffff8021f000, p3_phys = 0xffffffff8020b3bf  
+initial p3 = 0xffffffff81200000 p4 = 0xffffffff80220000, p3_phys = 0xffffffff8020b647  
 we have: p3 = 0xffffffff81200000 p2 = 0x1204000 
 making p3 virtual: now 0xffffffff81200000 
 making p2 virtual: now 0xffffffff81200000 
-entry 0 @ 0xffffffff81204080 = 0x40c00087 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 1100 0000 0000 0000 1000 0111 
-entry 1 @ 0xffffffff812040c0 = 0x40e00087 
- 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 1110 0000 0000 0000 1000 0111 
+entry 0 @ 0xffffffff81204080 = 0x40600087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0110 0000 0000 0000 1000 0111 
+entry 1 @ 0xffffffff812040c0 = 0x40800087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 1000 0000 0000 0000 1000 0111 
 ==flushed TLB==
 invalidated: 0x400000 
-map_user_page_tables:  0x42400000 -> 0xa00000 | 3 pages 
-idx for VA: 0xa00000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1010 0000 0000 0000 0000 0000 ] 
- p4[0] p3[0] p2[5] p1[0] 
+map_user_page_tables:  0x42000000 -> 0xc00000 | 3 pages 
+idx for VA: 0xc00000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1100 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[6] p1[0] 
 unmap_phys_addr():  unmapping 0x400000  | 2 pages 
 idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
  p4[0] p3[0] p2[2] p1[0] 
-p4 = 0xffffffff8021f000
+p4 = 0xffffffff80220000
 p4->[p3ind]=0x1200000
 we have: p3 = 0xffffffff81200000 p2 = 0x1204000 
 making p2 virtual: now 0xffffffff81200000 
 ==flushed TLB==
 invalidated: 0x400000 
-expanded heap for task 4:
-        pa 0x41200000 va0x800000 size 8192 kb 
- cr3 to restore: 0x40ffd000 
-zone memory: , 0x8fa000 allocated for zone
+expanded heap for task 3:
+        pa 0x40c00000 va0x800000 size 10240 kb 
+ cr3 to restore: 0x409fd000 
+zone memory: , 0xa80000 allocated for zone
 Using . for configuration and saves
 V_Init: allocate screens.
 M_LoadDefaults: Load system defaults.
@@ -562,7 +483,7 @@ M_LoadDefaults: Loaded
 W_Init: Init WADfiles.
  adding DOOM.iwad
 opened our wad 'file' 0x20000000we are loading WAD
-reading from 0 (size 12)We got an IWAD !reading from 12371396 (size 36896) [fbNm IMPXA1 ]  [fbNm ETTNA1 ]  [fbNm AGRDA1 ]  [fbNm E4M1 ]  [fbNm dmenupic ] Using ./.savegame/ for savegames
+reading from 0 (size 12) addr 0x20000000, end 0x20bd55e4We got an IWAD !reading from 12371396 (size 36896) addr 0x20bcc5c4, end 0x20bd55e4 [fbNm IMPXA1 ]  [fbNm ETTNA1 ]  [fbNm AGRDA1 ]  [fbNm E4M1 ]  [fbNm dmenupic ] Using ./.savegame/ for savegames
 ===========================================================================
                            The Ultimate DOOM===========================================================================
  Doom Generic is free software, covered by the GNU General Public
@@ -591,16 +512,8 @@ StUnloadLoadGFX end
 
  Doom Loaded! 
 trt 
-I_InitGraphics: framebuffer: x_res: 640, y_res: 400, x_virtual: 640, y_virtual: 400, bpp: 32
+I_InitGraphics: framebuffer: x_res: 1024, y_res: 640, x_virtual: 1024, y_virtual: 640, bpp: 32
 I_InitGraphics: framebuffer: RGBA: 8888, red_off: 16, green_off: 8, blue_off: 0, transp_off: 24
 I_InitGraphics: DOOM screen size: w x h: 320 x 200
-I_InitGraphics: Auto-scaling factor: 2
+I_InitGraphics: Auto-scaling factor: 3
 manual override for PLAYPAL
-reading from 509900 (size 8032)manual override for PLAYPAL
-reading from 1111328 (size 12382)manual override for PLAYPAL
-reading from 2280200 (size 13132)reading from 2699952 (size 4454)manual override for PLAYPAL
-reading from 509900 (size 8032)manual override for PLAYPAL
-reading from 1111328 (size 12382)manual override for PLAYPAL
-reading from 2280200 (size 13132)reading from 2699952 (size 4454)manual override for PLAYPAL
-reading from 509900 (size 8032)manual override for PLAYPAL
-reading from 1111328 (size 12382)

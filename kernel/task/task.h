@@ -46,10 +46,12 @@ typedef struct task_t{
     void* vma; 
     uint64_t cs, ds;
     struct {
-        uint8_t no_swap : 1;
-        uint8_t is_user : 1;
-        uint8_t blocks_parent : 1;
-        uint8_t sleeping : 1;
+        uint8_t no_swap ;//: 1;
+        uint8_t is_user ;//: 1;
+        uint8_t blocks_parent ;//: 1;
+        uint8_t sleeping ;//: 1;
+        uint8_t running_child ;//: 1;
+        uint8_t slept ;//: 1;
     } flags;
     void* mem;
     task_t* next;

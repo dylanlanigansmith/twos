@@ -29,24 +29,26 @@ uint64_t last_key_event = 0 ;
 KeyEventStream keyevent;
 
 
+int keymode = 0;
+
 static void keydown_isr(registers_t* regs){
     if(!shouldScan) return;
     uint8_t scan = port_byte_in(0x60); 
     if(scan == 0 || scan == 0xff || scan == 0x9d) return;
-
+    if(scan >= 254) return;
     //unknown re: 0x9d ^
     last_key_event = tick;
     if ( (scan & PS2_MAKEORBREAK) ){
         //break code, key up
-       // scan &= 0x7f; //clear msb
-        keys[scan & 0x7f] = False;
+        uint8_t rscan = scan & 0x7f; //clear msb
+        keys[rscan] = False;
        // printf("%s UP", get_scancode_name(scan));
     } else {
         //make code, key down
         keys[scan] = True;
         //printf("%s DOWN", get_scancode_name(scan));
     }
-
+   
     keystream_add(&keyevent, scan); 
 
 
@@ -97,6 +99,19 @@ uint8_t keys_last_event()
     return keystream_latest(&keyevent);
 }
 
+uint8_t keys_getqueued()
+{
+    return keystream_getandremove(&keyevent);
+}
+
+void keys_gamemode()
+{
+    if(keymode == 0){
+        port_byte_out(0x60, 0xf8); keymode = 1;
+    } else{
+        port_byte_out(0x60, 0xf6); keymode = 0;
+    }
+}
 
 uint8_t is_key_down_ascii(char c)
 {

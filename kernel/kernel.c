@@ -49,7 +49,11 @@ void task_drawtimer(){
     serial_print("task draw timer \n");
      gfx_clear_line(598, 24);
     for(;;){
-        if((last_tick + 100) < tick  ){
+        if (gfx_state.mode == 1){ //usermode has fb
+            task_sleep_ms(5000);
+            yield();
+        }
+        else if((last_tick + 100) < tick  ){
              //   serial_printi("t=", tick);
                  gfx_clear_line(598, 24);
                 last_tick = tick;
@@ -74,12 +78,11 @@ void task_drawstdout(){
     serial_print("task draw test \n");
      gfx_clear_line(498, 24);
     for(;;){
-        if(gfx_state.mode == 1){ //usermode has fb
+        if (gfx_state.mode == 1){ //usermode has fb
+            task_sleep_ms(5000);
             yield();
         }
-
-        __asm__("hlt");
-        if((last_tick2 + 100) < tick  ){
+        else if((last_tick2 + 100) < tick  ){
 
             if(stdout_dirty()){
                  gfx_clear_text();
@@ -238,15 +241,23 @@ void main(void *addr, void *magic)
     debugf("\n==MEM INIT OK==\n");
 
     io_wait(); io_wait(); io_wait();
-    __asm__("sti");
+    __asm__ volatile ("sti");
+    if(sysinfo.boot.is_uefi){
+        //PIC_sendEOI();
+        PIC_enable(); //as if we even have these
+    }
+
+
     debugf("enabled interupts.\n==boot second phase complete==\n"); 
 
+
+    __asm__ volatile ("int 1; int 32");
     
      
-    void* lol = kmalloc(69); //catch early if we break kernel heap somehow
-    kfree(lol);
+    //void* lol = kmalloc(69); //catch early if we break kernel heap somehow
+    //kfree(lol); //this is so fucked
 
-
+    debugf("loading initial ramdisk... \n");
     if(initrd(sysinfo.initrd.start, sysinfo.initrd.end - sysinfo.initrd.start) != 0){
         //shit that sucks man
 

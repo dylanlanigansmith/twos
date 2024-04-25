@@ -5,11 +5,11 @@
 #include "../common/ascii.h"
 
 uint8_t keyboard_get_lastevent();
-
+uint8_t keyboard_popevent();
  uint64_t keyboard_lastinput();
 
 
-
+void keyboard_togglemode();
 uint8_t keyboard_is_down(uint8_t sc);
 
 static inline char keyboard_sc2ascii(uint8_t sc){

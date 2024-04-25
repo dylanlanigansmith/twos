@@ -43,6 +43,7 @@ static inline bmap_t* bmap_init(uintptr_t size, bmap_malloc_fn our_malloc, bmap_
     map->bfree = our_free;
     map->bmalloc = our_malloc;
     map->prop.max_size = (size - (2 * (sizeof(bmap_t) ) ) ) / sizeof(bmap_element_t*); //this is broken
+    map->size = 0;
     return map;
 }
 

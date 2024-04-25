@@ -23,3 +23,6 @@ uint8_t is_key_down(uint8_t sc);
 
 uint8_t  keys_last_event();
 
+uint8_t  keys_getqueued();
+
+void keys_gamemode();

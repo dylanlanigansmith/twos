@@ -110,7 +110,7 @@ task_t* create_task( const char* name, task_entry_fn task_entry, uint64_t rflags
 
     task->parent_PID = TASK_ORPHAN;
     task->flags.sleeping = task->flags.is_user = task->flags.blocks_parent = 0;
- 
+    task->flags.slept = task->flags.running_child = 0;
     sched.tasks++;
     return task;
 }
@@ -264,6 +264,9 @@ task_t* remove_current_task() //itrps are off for this
                 task_t* parent = (task_t*)(task_old->parent_task);
                 if(parent->flags.sleeping){
                     parent->flags.sleeping = 0u;
+                    parent->flags.running_child = 0;
+                    parent->flags.slept = 0;
+                    parent->wake_tick = 0;
                      debugf("remove_current_task(): woke up parent (%i) of ending task (%i)...\n", task_old->parent_PID, task_old->pid);
                 }
             }
@@ -298,37 +301,41 @@ void on_timer_tick(uint64_t ticks, registers_t* reg) //dont get me started on th
 
     sched.next_switch = ticks + ARBITRARY_SWITCH_INTERVAL;
     sched.timer = ticks;
-
+   
     if(sched.current_task != nullptr && sched.skip_saving_regs == False)
     {
-    
+         
         //imagine not having two almost identical structs???
         //couldnt be me 
         //id fix this but then id have to go change all the offsets in the asm code and...
-        sched.current_task->regs.rbp = reg->rbp;
-        sched.current_task->regs.rsp = reg->rsp;
-        sched.current_task->regs.rip = reg->rip;
-        sched.current_task->regs.rflags = reg->rflags;
 
-        sched.current_task->regs.rax = reg->rax;
-        sched.current_task->regs.rcx = reg->rcx;
-        sched.current_task->regs.rdx = reg->rdx;
-        sched.current_task->regs.rbx = reg->rbx;
-        sched.current_task->regs.rdi = reg->rdi;
-        sched.current_task->regs.rsi = reg->rsi;
+        if(!sched.current_task->flags.running_child){
+            sched.current_task->regs.rbp = reg->rbp;
+            sched.current_task->regs.rsp = reg->rsp;
+            sched.current_task->regs.rip = reg->rip;
+            sched.current_task->regs.rflags = reg->rflags;
 
-        sched.current_task->regs.r9 = reg->r9;
-        sched.current_task->regs.r10 = reg->r10;
-        sched.current_task->regs.r11 = reg->r11;
-        sched.current_task->regs.r12 = reg->r12;
-        sched.current_task->regs.r13 = reg->r13;
-        sched.current_task->regs.r14 = reg->r14;
-        sched.current_task->regs.r15 = reg->r15;
+            sched.current_task->regs.rax = reg->rax;
+            sched.current_task->regs.rcx = reg->rcx;
+            sched.current_task->regs.rdx = reg->rdx;
+            sched.current_task->regs.rbx = reg->rbx;
+            sched.current_task->regs.rdi = reg->rdi;
+            sched.current_task->regs.rsi = reg->rsi;
 
-        sched.current_task->cs = reg->cs;
-        sched.current_task->ds = reg->ds;
+            sched.current_task->regs.r9 = reg->r9;
+            sched.current_task->regs.r10 = reg->r10;
+            sched.current_task->regs.r11 = reg->r11;
+            sched.current_task->regs.r12 = reg->r12;
+            sched.current_task->regs.r13 = reg->r13;
+            sched.current_task->regs.r14 = reg->r14;
+            sched.current_task->regs.r15 = reg->r15;
 
-        sched.current_task = sched.current_task->next;
+            sched.current_task->cs = reg->cs;
+            sched.current_task->ds = reg->ds;
+
+            sched.current_task = sched.current_task->next;
+        }
+        
     }
     else{
         //so we would have to set a flag or something not to dump regs for current task 
@@ -340,11 +347,19 @@ void on_timer_tick(uint64_t ticks, registers_t* reg) //dont get me started on th
             sched.skip_saving_regs = False;
         }
     }
-
+/*
+if(sched.current_task->flags.sleeping && sched.current_task->flags.running_child){
+            //we deep sleep
+            debugf("deep sleep for task %i\n", sched.current_task->pid);
+            sched.current_task =  sched.current_task->next;
+            if(sched.current_task == nullptr) //just in case we jumped bad probs not an issue anymore
+                sched.current_task = sched.root_task;
+         }
+*/
     //now at our new task...
     if(sched.current_task->flags.sleeping == 1u){
             //check if wakey time
-            if(sched.current_task->wake_tick < tick){
+            if(sched.current_task->wake_tick < tick && !sched.current_task->flags.running_child){
                 sched.current_task->flags.sleeping = 0;
                 sched.current_task->wake_tick = 0;
                // debugf("wokeup sleeping task %i at %li", sched.current_task->pid, tick);
@@ -360,34 +375,36 @@ void on_timer_tick(uint64_t ticks, registers_t* reg) //dont get me started on th
            
             
     }
-   
-   
-    reg->ss = sched.current_task->ds;
+   if(!sched.current_task->flags.running_child){ //this is ridic
+        reg->ss = sched.current_task->ds;
     //WE SWITCHIN
-    reg->cs = sched.current_task->cs;
-    reg->ds = sched.current_task->ds;
-    reg->rbp = sched.current_task->regs.rbp;
-    reg->rsp = sched.current_task->regs.rsp;
-    reg->rip = sched.current_task->regs.rip;
-    reg->rflags = sched.current_task->regs.rflags;
+        reg->cs = sched.current_task->cs;
+        reg->ds = sched.current_task->ds;
+        reg->rbp = sched.current_task->regs.rbp;
+        reg->rsp = sched.current_task->regs.rsp;
+        reg->rip = sched.current_task->regs.rip;
+        reg->rflags = sched.current_task->regs.rflags;
 
-    reg->rax = sched.current_task->regs.rax;
-    reg->rcx = sched.current_task->regs.rcx;
-    reg->rdx = sched.current_task->regs.rdx;
-    reg->rbx = sched.current_task->regs.rbx;
-    reg->rdi = sched.current_task->regs.rdi;
-    reg->rsi = sched.current_task->regs.rsi;
+        reg->rax = sched.current_task->regs.rax;
+        reg->rcx = sched.current_task->regs.rcx;
+        reg->rdx = sched.current_task->regs.rdx;
+        reg->rbx = sched.current_task->regs.rbx;
+        reg->rdi = sched.current_task->regs.rdi;
+        reg->rsi = sched.current_task->regs.rsi;
 
+        
+
+        reg->r9 = sched.current_task->regs.r9;
+        reg->r10 = sched.current_task->regs.r10;
+        reg->r11 = sched.current_task->regs.r11;
+        reg->r12 = sched.current_task->regs.r12;
+        reg->r13 = sched.current_task->regs.r13;
+        reg->r14 = sched.current_task->regs.r14;
+        reg->r15 = sched.current_task->regs.r15;
+        reg->cr3 = sched.current_task->regs.cr3;
+   }
+   
     
-
-    reg->r9 = sched.current_task->regs.r9;
-    reg->r10 = sched.current_task->regs.r10;
-    reg->r11 = sched.current_task->regs.r11;
-    reg->r12 = sched.current_task->regs.r12;
-    reg->r13 = sched.current_task->regs.r13;
-    reg->r14 = sched.current_task->regs.r14;
-    reg->r15 = sched.current_task->regs.r15;
-    reg->cr3 = sched.current_task->regs.cr3;
     //oh shit oh fuck
     //we boutta be in a different task
 }
@@ -475,9 +492,12 @@ int exec_user_task(const char *taskname, registers_t* reg)
     new_task->flags.blocks_parent = 1u;
     new_task->parent_PID = sched.current_task->pid;
     new_task->parent_task = sched.current_task;
+    
     copy_usr_vas_info(new_task, &usr);
     sched.current_task->flags.sleeping = 1u;
-
+    sched.current_task->flags.slept = 1u;
+    sched.current_task->wake_tick = UINT64_MAX - 1;
+    sched.current_task->flags.running_child = 1u;
 
     DEBUGT("scheduler: added child user task %s, pid = %i !\n", name, new_task->pid);
 
@@ -487,7 +507,7 @@ int exec_user_task(const char *taskname, registers_t* reg)
     debugf("scheduler: swapping back cr3 to %lx", sched.current_task->regs.cr3);
     swap_cr3(sched.current_task->regs.cr3); 
 
-    sched.skip_saving_regs = True;
+    sched.skip_saving_regs = True; //also for our starting task
    //manually dump regs
     sched.current_task->regs.rbp = reg->rbp;
     sched.current_task->regs.rsp = reg->rsp;

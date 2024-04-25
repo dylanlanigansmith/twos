@@ -2,7 +2,7 @@
 #include "../../kernel/stdlib.h"
 #include "color.h"
 #include "video.h"
-
+#include "../../kernel/sys/sysinfo.h"
 #define SCREEN_W 1024
 #define SCREEN_H 768
 #define SCREEN_PITCH 4096
@@ -10,7 +10,7 @@
 
 
 #define FB_PHYS_ADDR sysinfo.fb.addr
-#define FB_ADDR 0xfc000000
+#define FB_ADDR sysinfo.fb.addr
 //#define FB_PHYS_ADDR 0xfc000000
 //#define FB_ADDR 0xfc000000
 #define FB_BPP 32

@@ -37,7 +37,7 @@ void* sys_clearscreen(registers_t* regs){
     return 0;
 }
 void* sys_setgfxmode(registers_t* regs){
-    gfx_clear(color_white);
+    gfx_clear(color_black);
 
     if(gfx_state.mode == 0)
         gfx_state.mode = 1;
@@ -48,6 +48,16 @@ void* sys_setgfxmode(registers_t* regs){
 }
 
 
+void* sys_togglegamemode(registers_t* regs){
+    gfx_clear(color_black);
+
+    if(gfx_state.mode == 0)
+        gfx_state.mode = 1;
+    else gfx_state.mode = 1;
+    //TODO
+
+    return sysinfo.fb.addr;
+}
 
 
 
@@ -70,7 +80,10 @@ void* sys_sleepms(registers_t* regs){
 }
 
 
-
+void* sys_getkeyhist(registers_t* regs){
+    regs->rax = keys_getqueued();
+    return regs->rax;
+}
 
 void* sys_getlastkey(registers_t* regs){
     regs->rax = keys_last_event();
@@ -160,7 +173,7 @@ void* sys_mmap(registers_t* regs){
 
 typedef void* (*syscall_fn)(registers_t* regs);
 
-#define SYSCALL_TOTAL 17 //this is stupid
+#define SYSCALL_TOTAL 19 //this is stupid
 static void* syscalls[] =
 {
     &syscall_test, //0
@@ -179,7 +192,9 @@ static void* syscalls[] =
     &sys_exec,
     &sys_getfsroot,
     &sys_brk, //15
-    &sys_mmap
+    &sys_mmap,
+    &sys_getkeyhist,
+    &sys_togglegamemode, //18
 };
 
 static_assert(SYSCALL_TOTAL == (sizeof(syscalls) / sizeof(void*)), "SYSCALL TOTAL NOT UPDATED");

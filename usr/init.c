@@ -78,6 +78,7 @@ void cmd_testsprintf(int c, char* v)
 void cmd_doom(int c, char* v)
 {
     execc("doomos");
+    print("YEAH FUCK YOU ");
 }
 
 void cmd_dbg(int c, char* v)
@@ -211,7 +212,7 @@ void run_shell()
 
 }
 
-
+uint64_t start_tick = 0;
 void main(){
     const char* str = "I am a user task hard at work\n";
      const char* str2 = "please mr kernel give me cpu time\n";
@@ -225,11 +226,16 @@ void main(){
    memset((void*)lol, 'A', 300);
 
    
-    
+    start_tick = sys_gettick();
     uint64_t i = 0;
+    print("running doom in 30 seconds");
     while (1) {
         run_shell();
-
+        uint64_t tick = sys_gettick();
+        if(start_tick + 20000 < tick){
+            print("doom time");
+            execute_cmd("doom");
+        }
         //yield();
     }
     

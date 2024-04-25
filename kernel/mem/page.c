@@ -128,8 +128,8 @@ void paging_init()
                                                     //its hella problematic that we are mapping the framebuffer to qemu default address
                                                     //so at least we should ID map it instead of VIRTMAP bullcrap.. TODO
    
-    debugf("mapping framebuffer %lx to %lx\n", sysinfo.fb.addr, VIRTMAP);
-   ASSERT( map_phys_addr(VIRTMAP, sysinfo.fb.addr, 0x300000ULL,(PAGE_FLAGS_DEFAULT | PAGE_FLAGS_USER))) ;
+    debugf("mapping framebuffer %lx to %lx\n", sysinfo.fb.addr, sysinfo.fb.addr);
+   ASSERT( map_phys_addr(sysinfo.fb.addr, sysinfo.fb.addr, 0x300000ULL,(PAGE_FLAGS_DEFAULT | PAGE_FLAGS_USER))) ;
 
 
     init_heap();
@@ -510,7 +510,7 @@ uintptr_t map_user_page_tables(uintptr_t virt, uintptr_t phys, size_t size, user
     get_page_index_vm(HEAP_VIRT, &ind);
 
     pt->p4->entries[ind.p4] =  kp4->entries[ind.p4];
-
+                    //sysinfo.fb.addr
     get_page_index_vm(sysinfo.fb.addr, &ind); //fuck it fb too
     if(usri.p4 == ind.p4){
        
