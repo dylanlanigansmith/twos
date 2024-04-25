@@ -63,11 +63,11 @@ void cmd_testsprintf(int c, char* v)
 
 
     char b[256] = {0};
-    int i = snprintf(b, 64, "dob: %i/%i/%i name: %s sex: %s address %lx \n", 11,9,2001, "crash", "yes", (uintptr_t)b);
+    int i = snprintf(b, 64, "dob: %i/%i/%i name: %s sex: %s address %lx \n", 1,1,2001, "crash", "yes", (uintptr_t)b);
      char s[128] = {0};
     printf("returned %i vs strlen %li \n", i, strlen(b));
     printf("result: %s\n", b);
-    i = snprintf(s, 32, "dob: %i/%i/%i name: %s sex: %s address %lx \n", 11,9,2001, "crash", "yes", (uintptr_t)b);
+    i = snprintf(s, 32, "dob: %i/%i/%i name: %s sex: %s address %lx \n", 11,6,2001, "user", "maybe?", (uintptr_t)b);
 
     printf("returned %i vs strlen %li \n", i, strlen(s));
     printf("result: %s\n", s);
@@ -214,27 +214,31 @@ void run_shell()
 
 uint64_t start_tick = 0;
 void main(){
-    const char* str = "I am a user task hard at work\n";
+    //the first code we ever ran as a process in usermode
+    const char* str = "I am a user task hard at work\n"; 
      const char* str2 = "please mr kernel give me cpu time\n";
     print(str);
- 
     print(str2);
-   
+    size_t l = strlen(str);
+    char lol[300] = {0};
+    memset((void*)lol, 'A', 300);
+    //dont have the heart to get rid of it
 
-   size_t l = strlen(str);
-   char lol[300] = {0};
-   memset((void*)lol, 'A', 300);
+
+
+ 
 
    
     start_tick = sys_gettick();
     uint64_t i = 0;
-    print("running doom in 30 seconds");
+    //print("running doom in 10 seconds");
     while (1) {
         run_shell();
         uint64_t tick = sys_gettick();
-        if(start_tick + 20000 < tick){
-            print("doom time");
-            execute_cmd("doom");
+        if(start_tick + 10000 < tick){
+            //uncomment for testing on real hw w/out a ps2 kbd (thrift store plsss)
+          //  print("doom time");
+            //execute_cmd("doom");
         }
         //yield();
     }

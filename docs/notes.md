@@ -4,104 +4,65 @@
 ``` 
 ReadMe: https://pubs.opengroup.org/onlinepubs/9699919799/
 POSIX standard ^
+//post-mortem thoughts: ^ lmao yeah sure
 
 
 things to fix now
-- need physical memory management or at least a semblance of it
+- once this thing runs doom on my real modern hardware im never touching it again
+- learned so much that it all must be rewritten!
 
 
-WE CAN JUMP TO USER MODE!
-    - now what?
-    - need to expand tasking
-        - user tasks
-            -to make a user task:
-                -map a user address space
-                -load user executable or whatever
-                -call main
-            - if a user task faults we kill it
-        - kernel tasks
-            - are we gonna have stdout run as a kernel task ?
-            - we probs should move a lot of it to user space
-    - streams / buffers will be useful
-        - like for event queues etc and shit
-
-
-    - need to add syscalls
-        - interupts 
-
-Should we figure out APIC before adding more IDT stuff ? 
-
-Should we do a VFS for loading user programs ?
 
 plan:
-1. VFS 
-2. MMAP from VFS
-3. Scheduler improvements
-    - task end 
-    - task yield
-    - actually finish the base functionality lol
-        (remove hardcoded in examples for testing)
-4. Syscalls
-5. Doom
+1. VFS  [x]
+2. MMAP from VFS [x]
+3. Scheduler improvements [x]
+4. Syscalls [x]
+5. Doom [x]
+6. Doom on real modern UEFI (thwarted by ps/2 emulation and difficult debugging)
 
-notes: along the way maybe do PMM !
-APIC probably should happen too but it looks like a whole thing
-    - can config in 8529 legacy mode for uefi support..
-        - damn whyd you have to tempt me like that intel i see a shortcut i take IT
-    https://wiki.osdev.org/APIC
+
+
+- APIC probably should happen too but it looks like a whole thing
+    - can config in 8529 legacy mode for uefi support.. [x] //we ended up doing this since it worked on our physical modern HW 
+       
 
 
 - refactor when we add syscalls
-    - take all this printing BULLSHIT out of kernel
-- terminal
-- write some programs for _our operating system_
--^ see prev.
+    - take all this printing BULLSHIT out of kernel 
+    //by the time we got this far it was just about finishing the end goal of porting some software, pretty obvious where the flaws in current impl. are
+
+- terminal [x]
+- write some programs for _our operating system [x]
+
     
 
 
 
 general todos/issues:
 
--physical memory manager
-    - parse mem map
-    - remove hardcoded phys maps
-    - should be able to run on 2gb at least, ideally only ID map first 128mb or something 
+-physical memory manager [x]
+  
 
-- uefi support
-    - need apic, hpet 
-    - multiboot2 uefi headers 
+- uefi support [~] 
+    - no keyboard on modern modern hw yet (z690 chipset no CSM)
 
-- physical hardware
-    - uefi prereq. 
-    - mmap parsing prereq.
--stdout sucks and is evil and is bad and it sucks and its evil and its bad and it sucks 
-    - do you get the point?
 
-STDOUT:
 
-- if we arent sure it is up and running then:
-- we should really just gfx_print (esp for interupts)
-    - basically the idea of SAFE PRINT
+-stdout impl sucks, should do streams obviously & merge w/ vfs properly
+
+-bulletproof kprintf with framebuffer support ASAP for debugging on real hw.
 
 
 
 stdlib:
-https://pubs.opengroup.org/onlinepubs/9699919799/
-printf binary needs like %10b to only print 10 bits etc 
-
-
-
-
-- should make standardized more
-    - decide if we wanna use gcc stdint etc (sigh prob should)
+- printf-esque fns lack support for things like %2b and %2.f!! 
+- finish CRT so we can have C++ support and a nicer _init->main handler 
 
 
 fun ideas:
 
-port assembler or write tiny one
-
-port doom
-->see github portable doom repo looks easy
+port doom [x]
 
 simple window server even if just graphical tmux sorta thing
 

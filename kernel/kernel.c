@@ -254,8 +254,8 @@ void main(void *addr, void *magic)
     __asm__ volatile ("int 1; int 32");
     
      
-    //void* lol = kmalloc(69); //catch early if we break kernel heap somehow
-    //kfree(lol); //this is so fucked
+    void* lol = kmalloc(69); //catch early if we break kernel heap somehow
+    kfree(lol); //this is so fucked
 
     debugf("loading initial ramdisk... \n");
     if(initrd(sysinfo.initrd.start, sysinfo.initrd.end - sysinfo.initrd.start) != 0){
@@ -296,8 +296,8 @@ void main(void *addr, void *magic)
 
     tasking_init(&task_drawtimer); //first task should be on our main stack as its new kernel main 
     add_task("task_drawstdout",task_drawstdout);
-   // add_task("task_exit_test",task_exit_test);
-   // add_task("task_yield_test",task_test_yield);
+    add_task("task_exit_test",task_exit_test);
+    add_task("task_yield_test",task_test_yield);
 
     add_user_task("usermode", &usr);
     //we have gotten ourselves a system with processes running and usermode

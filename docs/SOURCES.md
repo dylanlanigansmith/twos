@@ -1,6 +1,6 @@
 ## These are the resources I have used to create this OS so far:
 ###### (A bookmarks folder wasn't cutting it anymore)
-
+(also i pretty much haven't touched these besides the intel manuals, and raw specs since i wrote this initially lol)
 
 - [Multiboot2 Spec via gnu.org](https://www.gnu.org/software/grub/manual/multiboot2/multiboot.html)
     - I am glad that I wrote my own bootloader first before jumping to GRUB/Multiboot 
@@ -19,6 +19,8 @@ from Scratch by Nick Blundell](https://www.cs.bham.ac.uk/%7Eexr/lectures/opsys/1
             - it has interupts and VGA graphics and is a decent example for anyone who would like to use this book as a introduction
 -  [Intel Developer Manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)
     - I spent the first stages of development mostly using wikis and textbooks, but once I realized how much OSDev content out there is just plain wrong, I went all in on RTFM 
+- [Elf64 Spec](https://uclibc.org/docs/elf-64-gen.pdf)
+    - this made the elf loader easy
 
 
 - Tenacity

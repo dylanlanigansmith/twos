@@ -550,8 +550,18 @@ void exit(int err){
    task_t* old = remove_current_task() ;
 
     debugf("old parent pid = %i", old->parent_PID);
-   // kfree(old->mem); //used to have a smart way of doing this, now we have 8 extra bytes and a dumb way
-    //yeah our heap is corrupt!
+    //kfree(old->mem); //used to have a smart way of doing this, now we have 8 extra bytes and a dumb way
+   //bad shit happens when we free this
+    //yeah our kernel heap is corrupt! yeah i can think of 1000 ways to make it better now that ive gotten a MVP going, and yeah.. if i ever want to do this again its all about dem memory managers baby, ones u can TRUST from the getgo
+        //for the record heap worked mint until we moved to higher half
+            //is that bc we had 0x0 ID mapped... maybe.... (yes)
+
+
+
+   //we dont free like our page tables or anything so thats bad but at this point ive accepted that i could rewrite 99% of this way better 
+                //and to just bootstrap us to doom OS running on modern UEFI hardware to call this v1 finished
+   
+    
    
    // debugf("task removed, next task now %i", sched.);
 
