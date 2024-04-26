@@ -169,7 +169,7 @@ uintptr_t load_elf(vfs_node* file, user_vas_t* usr)
     //we should just stick these in with the loaded binary
     //map kernel 
 
-    size_t vas_size = size_paligned + PAGE_SIZE; //add a page for now just to stick our extra shit in 
+    size_t vas_size = size_paligned + PAGE_SIZE + PAGE_SIZE; //add a page for now just to stick our extra shit in 
     uintptr_t phys = pmm_alloc(vas_size); 
 
 
@@ -205,14 +205,14 @@ uintptr_t load_elf(vfs_node* file, user_vas_t* usr)
     usr->vaddr.h = vaddr_high;
     usr->vaddr.l = vaddr_low;
     usr->vaddr.len = vaddr_high - vaddr_low;
-    usr->stack.top = (uintptr_t)usr->pt.p4; 
+    usr->stack.top = (uintptr_t)usr->pt.p4 - 0x100; 
 
     if(usr->stack.top % 0x10 > 0){
         usr->stack.top =- (usr->stack.top % 0x10); //align to 16 bytes 
     }
     usr->stack.bot = vaddr_high + 0x20; //idk make a lil safety for weird bugs to slip thru the cracks with
 
-    debugf("usr stack @ %lx, size = %li kb", usr->stack.top, BYTES_TO_KIB( (usr->stack.top - usr->stack.bot) ));
+    debugf("usr stack @ %lx, %lx size = %li kb", usr->stack.top, usr->stack.bot, BYTES_TO_KIB( (usr->stack.top - usr->stack.bot) ));
 
     
     

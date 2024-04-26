@@ -2,7 +2,7 @@
 #include "../stdlib.h"
 #define STDOUT_BUFFER 4096
 #define FORCE_STDOUT
-#define STDOUT_MAXLINES 78
+#define STDOUT_MAXLINES 76 //((sysinfo.fb.h / 14) - 1) //78 for 768 but /10 doesnt work
 enum stdout_flags
 {
     stdout_none = 0,

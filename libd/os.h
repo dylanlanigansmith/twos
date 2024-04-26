@@ -17,7 +17,7 @@ static inline void sys_sleepms(uint64_t ms){
      __asm__ volatile ( "mov rax, 3; int 0x69;" :::  "rax") ;
 }
 
-void* set_gfx_mode(); 
+
 void exit(uint64_t er );
 
 void yield();

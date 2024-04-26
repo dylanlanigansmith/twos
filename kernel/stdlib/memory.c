@@ -1,6 +1,7 @@
 #include "memory.h"
 
 void* memcpy(void* dest, void* src, size_t num_bytes){
+     if(!dest || !num_bytes || !src) return 0;
     char *d = dest;
     const char *s = src;
     while (num_bytes--)
@@ -10,6 +11,7 @@ void* memcpy(void* dest, void* src, size_t num_bytes){
 
 
 void* memset(void* dest, register uint8_t val, register size_t num_bytes){
+    if(!dest ) return 0;
     register uint8_t *d = (uint8_t*)dest;
     while(num_bytes-- > 0)
         *d++ = val;

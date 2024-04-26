@@ -121,15 +121,19 @@ void paging_init()
     debugf("==init paging==\n");
     //reserve framebuffer first
 
-    pmm_mark_frames_used(sysinfo.fb.addr, 0x300000ULL); //it already should be reserved anyhow but jic
+    pmm_mark_frames_used(sysinfo.fb.addr, PAGE_SIZE * 2); //it already should be reserved anyhow but jic
     debugf("unmapping initial identity\n");
    
     palloc_init();
                                                     //its hella problematic that we are mapping the framebuffer to qemu default address
                                                     //so at least we should ID map it instead of VIRTMAP bullcrap.. TODO
-   
-    debugf("mapping framebuffer %lx to %lx\n", sysinfo.fb.addr, sysinfo.fb.addr);
-   ASSERT( map_phys_addr(sysinfo.fb.addr, sysinfo.fb.addr, 0x300000ULL,(PAGE_FLAGS_DEFAULT | PAGE_FLAGS_USER))) ;
+                                                    //psych U WERE WRONG BiTCH VIRTMAP 4 LIFE
+    sysinfo.fb.addr_phys = sysinfo.fb.addr; 
+    sysinfo.fb.addr = VIRTMAP;
+
+    //0x300000ULL 
+    debugf("mapping framebuffer %lx to %lx\n", sysinfo.fb.addr_phys , sysinfo.fb.addr);  
+   ASSERT( map_phys_addr(sysinfo.fb.addr, sysinfo.fb.addr_phys ,sysinfo.fb.size ,(PAGE_FLAGS_DEFAULT | PAGE_FLAGS_USER))) ;
 
 
     init_heap();
@@ -477,7 +481,7 @@ uintptr_t map_user_page_tables(uintptr_t virt, uintptr_t phys, size_t size, user
 
     pt->p4->entries[ind.p4] = (uintptr_t)pt->p3p |  (PT_FLAGS | 0b100) ; //map p4 to phys addr of p3
 
-    pt->p3->entries[ind.pdpt3] = ((uintptr_t)pt->p2p | (PT_FLAGS | 0b100)); //map p3 to phys addr of p2
+    pt->p3->entries[ind.pdpt3] = (uintptr_t)pt->p2p | (PT_FLAGS | 0b100); //map p3 to phys addr of p2
      
     
 
@@ -486,6 +490,10 @@ uintptr_t map_user_page_tables(uintptr_t virt, uintptr_t phys, size_t size, user
         uint64_t current_physical_address = phys + (i * PAGE_SIZE); //page size = 2MiB
 
         int idx = (current_virtual_address >> 21) & 0x1FF; //index will change if num_pages > 1 so calc on the fly
+        if(pt->p2->entries[idx] != 0ull){
+            debugf("WHAT THE FUCK! \n");
+            debugf("existing entry at p2 %i, CVA %lx  entry: %lx\n\n", idx, current_virtual_address, pt->p2->entries[idx]);
+        }
         pt->p2->entries[idx] = current_physical_address |  (PAGE_FLAGS_DEFAULT | PAGE_FLAGS_USER); //add our flags and magic 
      
     }

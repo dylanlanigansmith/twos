@@ -47,7 +47,7 @@ uint64_t last_tick = 0;
 void task_drawtimer(){
     
     serial_print("task draw timer \n");
-     gfx_clear_line(598, 24);
+     gfx_clear_line(738, 24);
     for(;;){
         if (gfx_state.mode == 1){ //usermode has fb
             task_sleep_ms(5000);
@@ -55,15 +55,15 @@ void task_drawtimer(){
         }
         else if((last_tick + 100) < tick  ){
              //   serial_printi("t=", tick);
-                 gfx_clear_line(598, 24);
+                 gfx_clear_line(738, 24);
                 last_tick = tick;
-                gfx_print_pos(lltoa(tick, 10), v2(5, 600));
+                gfx_print_pos(lltoa(tick, 10), v2(5, 740));
 
                 uint8_t sc = keys_last_event();
                 if(sc){
-                    gfx_print_pos(itoa(sc, 10), v2(200, 600));
-                    gfx_print_pos((sc & PS2_MAKEORBREAK) ? "UP" : "DOWN", v2(230, 600));
-                    gfx_print_pos(get_scancode_name(sc & 0x7f), v2(265, 600));
+                    gfx_print_pos(itoa(sc, 10), v2(200, 740));
+                    gfx_print_pos((sc & PS2_MAKEORBREAK) ? "UP" : "DOWN", v2(230, 740));
+                    gfx_print_pos(get_scancode_name(sc & 0x7f), v2(265, 740));
                     
                 }
                 uint64_t rax = 0;
@@ -76,7 +76,6 @@ uint64_t last_tick2 = 0;
 void task_drawstdout(){
     
     serial_print("task draw test \n");
-     gfx_clear_line(498, 24);
     for(;;){
         if (gfx_state.mode == 1){ //usermode has fb
             task_sleep_ms(5000);
@@ -278,7 +277,7 @@ void main(void *addr, void *magic)
     gfx_init(color_cyan);
     //we are so back
      
-
+    void* aghhhhhhh = pmm_alloc(PAGE_SIZE * 16 + 32);
    
     
     //uh wait it worked?

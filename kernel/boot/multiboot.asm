@@ -279,7 +279,7 @@ section .rodata
 ;intel manual pg. 3098
 ;https://wiki.osdev.org/Global_Descriptor_Table#Segment_Descriptor
  ; flag defs moved to GDT.h for ref
-;align 16
+align 16
 gdt64: 
     dq 0 ;null segment
 ; KERNEL CODE 0x8

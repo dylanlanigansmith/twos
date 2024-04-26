@@ -1,6 +1,6 @@
 #pragma once
 #include "../../kernel/stdlib/stdint.h"
-#include "video.h"
+#include "../../common/video.h"
 #define VIDEO_MEM_ADDR 0xb8000
 
 #define CONSOLE_W 80
@@ -17,7 +17,9 @@
  * 
  * 
  * this is for 80x25 terminal mode which we dont really suppoort anymore
-*/
+ * 
+ * this is completely UNUSED now
+
 
 static inline uint8_t get_color(uint8_t fg, uint8_t bg){ //for text
     return (bg << 4) | (fg & 0x0f);
@@ -53,3 +55,5 @@ void set_cursor_offset(uint16_t pos);
 
 void disable_cursor();
 void enable_cursor(uint8_t start, uint8_t end);
+
+*/

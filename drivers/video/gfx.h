@@ -1,11 +1,11 @@
 #pragma once
 #include "../../kernel/stdlib.h"
 #include "color.h"
-#include "video.h"
+#include "../../common/video.h"
 #include "../../kernel/sys/sysinfo.h"
-#define SCREEN_W 1024
-#define SCREEN_H 768
-#define SCREEN_PITCH 4096
+#define SCREEN_W sysinfo.fb.w
+#define SCREEN_H sysinfo.fb.h
+#define SCREEN_PITCH sysinfo.fb.pitch
 #define SCREEN_BPP 4 //bytes
 
 
@@ -27,6 +27,7 @@ static inline vec2 v2(const uint32_t x, const uint32_t y) { vec2 p = {x,y}; retu
 
 
 
+
 #define GFX_FONT font8x8_basic
 #define GET_FONT(str, chr) GFX_FONT[str[chr]]
 
@@ -42,10 +43,13 @@ typedef struct {
     color clear_color;
 
     uint8_t mode; 
+
+    gfx_info_t info;
+    
 } gfx_state_t; 
 
 //this is where my lack of clarity re: c vs cpp best practices is shown
-#define GFX_STATE_SET_DEFAULTS(gfx) gfx.has_init=False; *(uint32_t*)(&(gfx.draw_color)) = 0xff000000; *(uint32_t*)(&(gfx.clear_color)) = 0xffffffff; gfx.mode = 0;
+
 
 extern gfx_state_t gfx_state;
 
@@ -60,6 +64,16 @@ static inline uint32_t* get_pixel(const vec2 pos){
 static inline void set_pixel(const vec2 pos, const color clr){
     color* pixel = get_pixel(pos);
     *pixel = clr;
+}
+
+static inline void gfx_get_info(gfx_info_t* gi){
+    if(!gi) return 0;
+    gi->fb = gfx_state.info.fb;
+    gi->w = gfx_state.info.w;
+    gi->h = gfx_state.info.h;
+    gi->p = gfx_state.info.p;
+    gi->bpp = gfx_state.info.bpp;
+    gi->curmode = gfx_state.mode;
 }
 
 
@@ -89,7 +103,7 @@ void gfx_fill_rect(const vec2 pos, const vec2 size, const color clr);
 void gfx_draw_str(const char* str, vec2 pos, const color clr);
 void gfx_draw_char(const char* font_char, const vec2 pos, const color clr);
 
-
+void reset_last_draw();
 void gfx_draw_char_at(const char* font_char, const vec2 pos, const color clr);
 
 void gfx_print(const char* str);

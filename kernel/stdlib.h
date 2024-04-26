@@ -19,3 +19,10 @@ static_assert(sizeof(void*) == sizeof(uintptr_t) && sizeof(uintptr_t) == sizeof(
 static_assert(sizeof(uint8_t) == 1, "bytes dont bite!");
 static_assert(sizeof(uint16_t) == 2, "shorts aint short enough");
 static_assert(sizeof(uint32_t) == 4, "yeah if you are seeing this good f-ing luck");
+
+#define BYTES_TO_KIB(bytes) (bytes / 1024llu)
+#define BYTES_TO_MIB(bytes) (bytes / 1048576llu)
+#define BYTES_TO_GIB(bytes) (bytes / 1073741824llu)
+
+#define ONE_GIB 0x40000000llu
+#define ONE_MIB 0x100000llu

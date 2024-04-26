@@ -64,7 +64,7 @@ QEMU_UEFI:=/usr/share/ovmf/x64/OVMF.fd
 QEMU_ARGS_VM:=-accel kvm -device VGA,vgamem_mb=32 -audiodev pa,id=speaker -machine pcspk-audiodev=speaker -m 8G
 QEMU_ARGS_DBG:=-serial file:com1.log  
 #-d int,page,cpu_reset -s -S
-QEMU_ARGS_DBG2:=-serial file:com1.log  -no-reboot
+QEMU_ARGS_DBG2:=-serial file:com1.log  -no-reboot -d int,page,cpu_reset -s -S
 #,cpu_reset
 #====TARGETS======
 
@@ -87,6 +87,9 @@ runb: clean all
 #todo make this build with bochs flags for e9 hack or somethin
 	@echo "==Running BOCHS==="
 	bochs
+
+runvb: clean all
+	VBOX_GUI_DBG_AUTO_SHOW=1 VBOX_GUI_DBG_ENABLED=1 virtualbox 
 
 iso: kernel.bin
 	cp kernel.bin $(ISO_ROOTDIR)/boot/
@@ -123,7 +126,7 @@ libd: crt
 
 doom: libd
 	@$(MAKE) -C usr/port/doom-myos/doomgeneric clean all install
-
+#-j14
 usr: doom
 	@$(MAKE) -C usr clean all install
 

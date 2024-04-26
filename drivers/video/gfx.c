@@ -132,17 +132,30 @@ void gfx_clear_from_pos(const color clr, const vec2 pos) //this is broken
     uintptr_t end_addr =  (void*)(get_pixel(v2(SCREEN_W - 1, SCREEN_H - 1)));
     size_t num_pixels = ((uintptr_t)(addr) - FB_ADDR) / sizeof(uint32_t); //this is lazy
 
-    oprintf(_COM, "\n addr %lx end_addr %lx num %li x %i y %i \n", addr, end_addr, num_pixels, pos.x, pos.y);
+    debugf(_COM, "\n addr %lx end_addr %lx num %li x %i y %i \n", addr, end_addr, num_pixels, pos.x, pos.y);
     memset_u32((void*)(FB_ADDR), clr.argb,  num_pixels);
 }
 void gfx_init(const color clear_clr)
 {
+    debugf("==GFX INIT==/n");
+    memset(&gfx_state, 0, sizeof(gfx_state_t));
+    gfx_state.has_init=False; 
+    *(uint32_t*)(&(gfx_state.draw_color)) = 0xff000000; 
+    *(uint32_t*)(&(gfx_state.clear_color)) = 0xffffffff; 
+    
+    gfx_state.mode = 0;
+    
+    gfx_state.info.fb = FB_ADDR;
+    gfx_state.info.w = SCREEN_W;
+    gfx_state.info.h = SCREEN_H;
+    gfx_state.info.p = SCREEN_PITCH;
+    gfx_state.info.bpp = SCREEN_BPP;
+    gfx_state.info.curmode = gfx_state.mode;
 
-    GFX_STATE_SET_DEFAULTS(gfx_state);
     gfx_clear(clear_clr);
     reset_last_draw();
     gfx_state.has_init = True;
-    oprintf(_COM,"Graphics Init %i x %i x %i ready = %i \n", SCREEN_W, SCREEN_H, SCREEN_BPP * 8, gfx_state.has_init);
+    debugf("Graphics Init %i x %i x %i ready = %i \n", SCREEN_W, SCREEN_H, SCREEN_BPP * 8, gfx_state.has_init);
 }
 
 int gfx_has_init()

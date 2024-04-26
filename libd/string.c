@@ -57,25 +57,25 @@ char*  itoa(int val, char *buffer, unsigned int base)
 	for(; val && i ; --i, val /= base)
 		buf[i] = "0123456789abcdef"[val % base];
 	
-	return strcpy(buffer, &buf[i+1]) ;
+	return strcpy(buffer, buf + i + 1) ;
 }
 
 char* lltoa(uint64_t val, char *buffer, unsigned int base) //give it 32 chars at least
 {
-	char buf[32] = {0};
+	char buf[62] = {0};
 	buf[31] = 0;
 	//weird bug
 	if(val == 0ull){
 		return strcpy(buffer, zero);
 	}
 
-	int i = 30;
+	int i = 60;
 	
 	for(; val && i ; --i, val /= base)
 		buf[i] = "0123456789abcdef"[val % base];
 	
 
-	return strcpy(buffer, &buf[i+1]) ;
+	return strncpy(buffer, buf + i + 1, 32);
 }
 
 uint32_t atou(const char *str) //returns max uint32 on failure

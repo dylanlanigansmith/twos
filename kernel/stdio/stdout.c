@@ -1,6 +1,6 @@
 #include "stdout.h"
 #include "../mem/heap.h"
-
+#include "../sys/sysinfo.h"
 #include "../../drivers/video/gfx.h"
 #include "../../drivers/input/keyboard.h"
 stdout_t stdout; 
@@ -92,36 +92,55 @@ int find_idx_after_lines(int lines){
 
     const char* buf = get_stdout();
     while(buf[i] != '\0'){
-        if(buf[i] == '\n') found++;
-        if(found == lines)
-            return i + 1;
+        if(buf[i] == '\n'){
+          //  debugf("found \\n @ %i/%i %i", found, lines, i);
+            found++;
+        } 
+        if(found >= lines)
+            return i;
         i++;
     }
-
+    ;
     return 0;
 }
 
-uint8_t stdout_safescroll(uint8_t lines)
+uint8_t stdout_safescroll(uint8_t lines) //broken
 {
    
-    int to_remove = lines - (lines / 3);
+    int to_remove =  (lines / 5); //remove 20% of lines
    
     int idx = find_idx_after_lines(to_remove);
-     debugf("scrolling stdout! %i to remove, before idx %i \n", to_remove, idx);
-    if(idx == 0){
+     debugf("scrolling stdout! %i to remove, before idx %i, at index %i \n", to_remove, idx, stdout.index);
+    if(idx == 0 || idx >= (stdout.index - 1 ) || 1){ //could be all short \ns
         stdout_clear(); return 0;
     }
-    
-    char* new_buf = stdout_alloc(STDOUT_BUFFER);         
-    ASSERT(new_buf);
-    stdout_free(stdout.buffer);
-    stdout.buffer = memcpy(new_buf, stdout.buffer + idx, stdout.index - idx);
-    ASSERT(stdout.buffer);
-     stdout.size = STDOUT_BUFFER; //should already be
-    memset(stdout.buffer + idx, 0, stdout.size - idx);
-    stdout.index = 0;
-    stdout.lines -= to_remove;
+    stdout_lock();
+    char* new_buf = stdout_alloc(STDOUT_BUFFER); 
+     ASSERT(new_buf);        
+     memset(new_buf, 0, STDOUT_BUFFER );
+   
 
+    size_t curend, cursize, curoff, newend, newsize;
+    curoff = stdout.buffer + idx;
+    curend = stdout.buffer + stdout.index;
+    cursize = curend - curoff;
+
+    debugf("copying from %lx to %lx (%lx) (to new at %lx) \n", curoff, curend, cursize, new_buf);
+    new_buf = memcpy(new_buf, curoff, cursize);
+   
+    newend = new_buf + cursize;
+     stdout.size = STDOUT_BUFFER; //should already be
+   //   debugf("settingfrom %lx to %lx (%lx) (to new)\n", new_buf + (stdout.index - idx),(new_buf + (stdout.index - idx)) + (stdout.index - (stdout.index - idx)),  stdout.index - (stdout.index - idx));
+   
+
+    stdout_free(stdout.buffer);
+    stdout.buffer = new_buf;
+     debugf("len now: %li", strlen(stdout.buffer));
+    stdout.index = strlen(stdout.buffer);
+    stdout.lines -= to_remove;
+    stdout_unlock();
+    gfx_clear(gfx_state.clear_color);
+    //stdout.dirty = 1;
     //return number of lines removed 
     return 0;
 }
@@ -160,7 +179,7 @@ void stdout_onoverflow(){
 
 void stdout_putchar(uint8_t c)
 {
-    stdout.dirty = 1;
+  //  stdout.dirty = 1;
     //ASSERT(stdout.flags & stdout_backspace);
     if( (stdout.flags & stdout_backspace) || 1 ){
         //buffered term mode 
@@ -191,8 +210,9 @@ void stdout_putchar(uint8_t c)
     }
    
     if(stdout.lines > STDOUT_MAXLINES){
-       stdout_safescroll(STDOUT_MAXLINES);
+       stdout_safescroll(stdout.lines);
     }
+    stdout.dirty = 1;
 }
 
 void stdout_bytein(uint8_t byte)

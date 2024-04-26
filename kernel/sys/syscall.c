@@ -8,7 +8,8 @@
 #include "../timer/timer.h"
 #include "sysinfo.h"
 #include "../fs/initrd.h"
-
+#include "../boot/multiboot2.h"
+#include "../stdio/stdout.h"
 void* syscall_test(registers_t* regs){
     print("your sis called ;)");
 
@@ -36,7 +37,7 @@ void* sys_clearscreen(registers_t* regs){
     if(regs->rdi < 255) clr = gfx_state.clear_color;
    gfx_clear(clr);
     
-    return 0;
+    return (void*)0;
 }
 void* sys_setgfxmode(registers_t* regs){
     
@@ -86,26 +87,26 @@ void* sys_sleepms(registers_t* regs){
 
 void* sys_getkeyhist(registers_t* regs){
     regs->rax = keys_getqueued();
-    return regs->rax;
+    return (void*)regs->rax;
 }
 
 void* sys_getlastkey(registers_t* regs){
     regs->rax = keys_last_event();
-    return regs->rax;
+    return (void*)regs->rax;
 }
 
 void* sys_iskeydown(registers_t* regs){
     uint8_t sc = (uint8_t)(regs->rax & 0xff) ;
     regs->rax = is_key_down(sc);
-    return regs->rax & 0xff;
+    return (void*)(regs->rax & 0xff);
 }
 
 void* sys_getcurtick(registers_t* regs){
-   return tick;
+   return (void*)tick;
 }
 
 void* sys_getlastkeytick(registers_t* regs){
-   return last_key_event;
+   return (void*)last_key_event;
 }
 
 void* sys_exec(registers_t* regs){
@@ -114,7 +115,7 @@ void* sys_exec(registers_t* regs){
         err = exec_user_task((char*)regs->rdi, regs);
     }
 
-    return err;
+    return (void*)err;
 }
 
 
@@ -140,6 +141,18 @@ void* sys_shutdown(registers_t* regs){
    return 0;
 }
 
+void* sys_getgfx_info(registers_t* regs){
+    //lets say usr has alloced a spot for this
+    
+    if(regs->rdi != 0){
+        memset((gfx_info_t*)regs->rdi, 0, sizeof(gfx_info_t));
+        gfx_get_info((gfx_info_t*)regs->rdi);
+       
+    }
+
+    return sysinfo.fb.addr;
+}
+
 void* sys_getfsroot(registers_t* regs){ //does it deserve this tho
 
     initrd_demo();
@@ -162,6 +175,34 @@ void* sys_brk(registers_t* regs){
     return r;
 
 }
+const char* mmap_typess[6] = {"mem_unknown", "mem_avail", "mem_reserved", "mem_acpi_reclaimable", "mem_nvs", "mem_badram" };
+void* sys_dumpmemmap(registers_t* regs)
+{
+     struct multiboot_tag_mmap *mmaps = (struct multiboot_tag_mmap *)sysinfo.mem.mb_map;
+
+    sysinfo.mem.mb_map = mmaps;
+  
+    printf("===MULTIBOOT_TAG_TYPE_MMAP===\n");
+    printf("mmaps->total_size=%i mmaps->entry_size=%i mmaps->entry_version=%i\n num_entries = %li\n",mmaps->size, mmaps->entry_size,  mmaps->entry_version,  sysinfo.mem.mb_size);
+    //(size_t)( (sizeof(struct multiboot_tag_mmap) - sizeof(multiboot_memory_map_t)) + (mmaps->e)  
+ 
+   
+    for (int i = 0; i <  sysinfo.mem.mb_size; ++i)
+    {
+
+        multiboot_memory_map_t mmap = mmaps->entries[i];
+        uint32_t type = (mmap.type > 5) ? 0 : mmap.type;
+        printf("mmap [%i]:{ @%lx - %lx } size %lx |  %s %i \n", i,
+               mmap.addr, mmap.addr + mmap.len, mmap.len, mmap_typess[type], mmap.type);
+    }
+    printf("fb @ %lx [%li kb] [%ix%i] %ip/%ibpp \n", sysinfo.fb.addr, BYTES_TO_MIB(sysinfo.fb.size), sysinfo.fb.w,  sysinfo.fb.h, sysinfo.fb.pitch, sysinfo.fb.bpp);
+    return (void*)sysinfo.mem.mb_size;
+}
+
+void* sys_cls(registers_t* regs){
+    stdout_clear();
+    return 0;
+}
 
 void* sys_mmap(registers_t* regs){ 
     //AYO GIMME SOME MEMORY BRO
@@ -177,7 +218,7 @@ void* sys_mmap(registers_t* regs){
 
 typedef void* (*syscall_fn)(registers_t* regs);
 
-#define SYSCALL_TOTAL 19 //this is stupid
+#define SYSCALL_TOTAL 22 //this is stupid
 static void* syscalls[] =
 {
     &syscall_test, //0
@@ -199,6 +240,9 @@ static void* syscalls[] =
     &sys_mmap,
     &sys_getkeyhist,
     &sys_togglegamemode, //18
+    &sys_getgfx_info,
+    &sys_dumpmemmap,
+    &sys_cls //21
 };
 
 static_assert(SYSCALL_TOTAL == (sizeof(syscalls) / sizeof(void*)), "SYSCALL TOTAL NOT UPDATED");

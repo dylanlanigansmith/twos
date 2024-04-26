@@ -65,12 +65,13 @@ void handle_tag_framebuffer(struct multiboot_tag *tag)
     // if(tagfb->common.framebuffer_width != 1024) continue; //all sorts of garbage comes from this so we should look into it
 
     sysinfo.framebuffer_common = &tagfb->common;
-    sysinfo.fb.addr = tagfb->common.framebuffer_addr;
+    sysinfo.fb.addr_phys = sysinfo.fb.addr = tagfb->common.framebuffer_addr;
     sysinfo.fb.w = tagfb->common.framebuffer_width;
     sysinfo.fb.h = tagfb->common.framebuffer_height;
     sysinfo.fb.pitch = tagfb->common.framebuffer_pitch;
     sysinfo.fb.bpp = tagfb->common.framebuffer_bpp;
-    debugf("fb @ %lx h= %i p= %i \n", sysinfo.fb.addr, sysinfo.fb.h, sysinfo.fb.pitch);
+    sysinfo.fb.size = (size_t)(sysinfo.fb.h * sysinfo.fb.pitch);
+    debugf("fb @ %lx [%li kb] [%ix%i] %ip/%ibpp \n", sysinfo.fb.addr, BYTES_TO_MIB(sysinfo.fb.size), sysinfo.fb.w,  sysinfo.fb.h, sysinfo.fb.pitch, sysinfo.fb.bpp);
     if (!DUMP_FB_TAG)
         return;
     serial_print("\n found framebuffer tag");
@@ -164,6 +165,10 @@ void handle_tag_mmap(struct multiboot_tag *tag)
     }
 }
 
+
+void handle_tag_uefimap(struct multiboot_tag *tag){
+    
+}
 
 void handle_tag_module(struct multiboot_tag *tag)
 {

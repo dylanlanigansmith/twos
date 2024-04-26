@@ -7,7 +7,7 @@
 //https://wiki.osdev.org/VGA_Fonts
 
 
-
+/*
 
 #ifdef VGA_MODE_CHAR
 #define VGA_MODE_CHECK()  ;
@@ -142,3 +142,5 @@ void enable_cursor(uint8_t start, uint8_t end) //set the start and end scanlines
     port_byte_out(REG_SCREEN_DATA, (port_byte_in(REG_SCREEN_DATA) & 0xE0) | end);
 
 }
+
+*/

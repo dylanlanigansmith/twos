@@ -34,7 +34,9 @@ typedef struct {
     void* vbe_mode_info;
     void* framebuffer_common;
     struct {
+        uintptr_t addr_phys;
         uintptr_t addr; 
+        size_t size;
         uint32_t w, h, pitch, bpp;
     }fb;
     struct{

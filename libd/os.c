@@ -1,13 +1,6 @@
 #include "os.h"
 
-void *set_gfx_mode()
-{
-     print("set gfx mode!");
-     uint64_t ret = 0;
-     __asm__ volatile ( "mov rax, 7; int 0x69; mov %0, rax; " : "=r"(ret) ::  "rax") ;
 
-     return (void*)ret;
-}
 
 void exit(uint64_t er)
 {

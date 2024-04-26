@@ -94,7 +94,17 @@
 			"csignal": "cpp",
 			"strstream": "cpp",
 			"shared_mutex": "cpp",
-			"typeindex": "cpp"
+			"typeindex": "cpp",
+			"*.def": "c",
+			"*.inc": "c",
+			"*.ipp": "c",
+			"cassert": "c",
+			"cerrno": "c",
+			"cfloat": "c",
+			"ciso646": "c",
+			"climits": "c",
+			"version": "c",
+			"*.rh": "c"
 		}
 	}
 }

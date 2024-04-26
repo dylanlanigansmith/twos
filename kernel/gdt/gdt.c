@@ -218,7 +218,7 @@ void make_tss()
     gdt_entry_sys_t tss_entry = {}; //{0x0067, 0x0000, 0x00, 0xE9, 0x00, 0x00, 0x00000000, 0x00000000}; 
     memset(&tss_entry, 0, sizeof(tss_entry));
 
-    tss_entry.size = sizeof(task_state_segment) - 1; //unknown if sub 1 necessary or correct but seems to work with/without & we do for our gdtr so.. \_(0_0)_/ 
+    tss_entry.size = sizeof(task_state_segment) ;//- 1; //unknown if sub 1 necessary or correct but seems to work with/without & we do for our gdtr so.. \_(0_0)_/ 
     tss_entry.base_0_15 =  (addr & 0xffff);
     tss_entry.base_16_23 = (addr >> 16) & 0xff;
     tss_entry.base_24_31 = (addr >> 24) & 0xff;
@@ -236,7 +236,7 @@ void make_tss()
     
     memcpy((void*)GDT_TSS_PTR, &tss_entry, sizeof(tss_entry));
 
-	debugf("copied GDT tss to %lx", &kernel_stack); 
+	debugf("copied GDT tss to %lx", &GDT_TSS_PTR); 
     //dump_gdt(gdt, 1);
 	//so bochs now shows this as a 32 bit tss 
 	// and then an unknown descriptor after it

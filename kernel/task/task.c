@@ -668,9 +668,9 @@ void *task_alloc_heap(size_t req_size)
     debugf("allocated a heap for task %i:\n        pa %lx va%lx size %li kb \n cr3 to restore: %lx \n", task->pid, task->maps.heap_phys, task->maps.heap_virt, BYTES_TO_KIB( task->maps.heap_size ), old_cr3);
     
     swap_cr3(sched.current_task->regs.cr3);
-    
+    flush_tlb();
     invalidate_page(virt);
-
+    
   
     return (void*)virt;
 
@@ -700,14 +700,14 @@ void *task_mmap_file(const char *name)
     //ok where we gonna put it    
      uintptr_t old_cr3 = swap_cr3(sched.root_task->regs.cr3);
          
-    //fuck it stick it at one gib until we ever need to mmap more than one file
-    uintptr_t virt = ONE_GIB  / 2;
+    //fuck it stick it at one gib until we ever need to mmap more than one  //yeah that didnt work 
+    uintptr_t virt = ONE_GIB - ( PAGE_SIZE * (pages + 2) ); //how about here!
     ASSERT(map_phys_addr(usr->vaddr.l, usr->phys,usr->size , PAGE_FLAGS_DEFAULT | PAGE_FLAGS_USER));
     
     ASSERT(map_phys_addr(virt, phys, size, PAGE_FLAGS_DEFAULT | PAGE_FLAGS_USER));
     memcpy(virt, file->addr, file->length);
 
-    ASSERT(map_user_page_tables(virt, phys, size, &usr->pt, 1));
+    ASSERT(map_user_page_tables(virt, phys, size, &usr->pt, 1)); //remember that virt must be > heap < 1gb since theres only 1 user p2!!!! 
 
     unmap_phys_addr(usr->vaddr.l, usr->size ); //from kernel
     unmap_phys_addr(virt, size);
@@ -719,7 +719,12 @@ void *task_mmap_file(const char *name)
     
     swap_cr3(sched.current_task->regs.cr3);
     invalidate_page(virt);
+    invalidate_page(sched.current_task->regs.rip);
+    flush_tlb();
+
     return (void*)virt;
+
+
 }
 
 void task_sleep_ms(uint64_t ms)

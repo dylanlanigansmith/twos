@@ -20,3 +20,11 @@
 #define ___static_assert_str(c, str) _Static_assert(c,str)
 #define ___static_assert_impl(c, str) ___static_assert_str(c, str)
 #define static_assert(...) ___static_assert_impl(__VA_ARGS__, "Static Assertion Failed")
+
+
+#define BYTES_TO_KIB(bytes) (bytes / 1024llu)
+#define BYTES_TO_MIB(bytes) (bytes / 1048576llu)
+#define BYTES_TO_GIB(bytes) (bytes / 1073741824llu)
+
+#define ONE_GIB 0x40000000llu
+#define ONE_MIB 0x100000llu

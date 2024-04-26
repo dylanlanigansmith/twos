@@ -13,7 +13,7 @@ size_t __print_stub(const char *str)
 }
 __printf_out_fn __print = __print_stub;
 
-void printf2(const char *fmt, ...)
+void printf2(const char *fmt, ...) //doesnt buffer
 {
     va_list args;
     va_start(args, fmt);
@@ -21,7 +21,7 @@ void printf2(const char *fmt, ...)
     va_end(args);
 }
 
-void printf(const char *fmt, ...)
+void printf(const char *fmt, ...) //buffers for less syscalls
 {
     va_list args;
     va_start(args, fmt);
@@ -31,6 +31,20 @@ void printf(const char *fmt, ...)
     print(b);
     va_end(args);
 }
+
+void debugf(const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    char b[PRINTF_BUF];
+    vsnprintf(b, PRINTF_BUF, fmt, args);
+ 
+    
+    //replace with method of choice!   
+    print(b);
+    va_end(args);
+}
+
 
 void vprintf(const char* fmt, va_list ap){
      __vprintf(__print, fmt, 0, 0, ap);
@@ -230,7 +244,7 @@ size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t 
                     case 'x': // btw this will prefix with 0x by default!
                     case 'X': // out of spec but this doesnt prefix with 0x
                          
-                        __PRINT_LLTOA(va_arg(args, int), 16, ub);
+                        __PRINT_LLTOA(va_arg(args, unsigned long long), 16, ub);
                         total += _print(ub, buf_out, len);
                         last_fmt_len = 2;
                         break;
@@ -246,7 +260,7 @@ size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t 
                                                     // where we want default case of printing as decimal long
                     default:
                         
-                        __PRINT_LLTOA(va_arg(args, int), 10, ub);
+                        __PRINT_LLTOA(va_arg(args, unsigned long long), 10, ub);
                         total += _print(ub, buf_out, len);
                         last_fmt_len++;
                         break;
@@ -288,6 +302,7 @@ int sscanf(const char *str, const char *fmt, ...){
     va_list ap;
 	va_start(ap, fmt);
 	//vsnprintf
+    ASSERT(1 == 0);
 	va_end(ap);
 	return ret;
 }   
@@ -298,12 +313,14 @@ int fprintf(FILE *restrict f, const char *restrict fmt, ...)
 	va_list ap;
 	va_start(ap, fmt);
 	ret = 0;//vfprintf(f, fmt, ap);
+    ASSERT(1 == 0);
 	va_end(ap);
 	return ret;
 }
 
 int vfprintf(FILE *restrict f, const char *restrict fmt, va_list ap)
 {
+    ASSERT(1 == 0);
     return 0;
 }
 

@@ -18,7 +18,7 @@ static uintptr_t round_up_to_page(uintptr_t addr){
 }
 
 
-static void* brk(size_t sz){
+void* brk(size_t sz){
     uintptr_t ret = 0;
      __asm__ volatile ( "mov rdi, %1; mov rax, 15; int 0x69; mov %0, rax; " : "=r"(ret) : "r"(sz):  "rax", "rdi") ;
 

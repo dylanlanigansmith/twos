@@ -1,5 +1,5 @@
 #include "../libd/libd.h"
-
+#include "../libd/graphics.h"
 
 bool update_prompt = True;
 bool lshift = False;
@@ -104,17 +104,7 @@ void cmd_dbg(int c, char* v)
 
 void cmd_mem(int c, char* v)
 {
-
-    
-
-     
-    void* alloc = malloc(PAGE_SIZE * 3 + 42);
-    printf("malloc! %lx", (uintptr_t)alloc);
-    if(!alloc){
-        print("malloc failed!"); return;
-    } alloc = 0;
-
-    alloc = malloc(69);
+    void* alloc =  malloc(69);
     if(!alloc){
         print("malloc failed!"); return;
     } 
@@ -160,6 +150,14 @@ void cmd_crash(int c, char* v){
     
 }
 
+void cmd_cls(int c, char* v){
+    syscall(21, 0);
+}
+void cmd_dumpmem(int c, char* v){
+    syscall(20, 0);
+}
+
+void cmd_help(int c, char *v);
 
 shell_cmd_t cmds[] =
 {
@@ -170,9 +168,20 @@ shell_cmd_t cmds[] =
     {"doom", 0, cmd_doom},
     {"malloc", 0, cmd_mem},
     {"sprint", 0, cmd_testsprintf},
-    {"crash", 0, cmd_crash}
+    {"crash", 0, cmd_crash},
+    {"infomem", 0, cmd_dumpmem},
+    {"cls", 0, cmd_cls},
+    {"help", 0, cmd_help},
+    {0,0,0}
 };
 
+void cmd_help(int c, char *v){
+    printf("listing all commands!\n");
+     for( int i = 0; cmds[i].name != 0; ++i){
+        printf("    cmd: < '%s' >\n", cmds[i].name);
+    }
+    printf("hope that helped! \n");
+}
 
 int execute_cmd(const char* cmd){
     print("\r \n");
@@ -262,8 +271,8 @@ void main(){
     //dont have the heart to get rid of it
 
 
-
- 
+    gfx_info_t* gi = gfx_get_info();
+    
 
    
     start_tick = sys_gettick();
