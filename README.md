@@ -1,39 +1,38 @@
 # I Wrote An Operating System
 ### no like for real too, it isn't just booting and printing "hello world"
-##### I'm pretty proud of this, it has been quite hard. 
+##### I'm pretty proud of this, it has been quite hard. It runs DOOM, not just in a VM either! 
+
+TODO: THIS IS ALL OUT OF DATE MOST OF THE STUFF IS DONE AND WORKING
+IT BOOTS ON REAL MODERN UEFI PCS AND RUNS DOOM, IN USER MODE, LOADED FROM A CUSTOM FILESYSTEM AS AN ELF64 EXECUTABLE BUILT WITH OUR CROSS COMPILER, WITH SUPPORT FOR MULTI TASKING ALL ALONG THE WAY
+BADA BING BADA BOOM
+
 
 ## Feature Overview
     - x86 64 bit
     - Multiboot2 spec. compatible
-    - VGA/VBE Graphics Drivers, up to 1024x768 32 bit color support
+    - VGA/VBE Graphics Drivers, full HD 1080p, 32 bit color support
     - Filesystem
     - Multi-tasking Kernel
-    - The only thing that isn't from scratch is the use GRUB/Multiboot bootloader 
+    - The only thing that isn't from scratch is the use of GRUB/Multiboot bootloader and the base Doom src which took quite a few tweaks to port
         - Built completely freestanding, custom libc, from scratch standard library, etc.
         - Custom memory allocator/heap, custom scheduler
     - C and C++ Support, Custom Toolchain/Cross Compiler via GCC/Binutils
         - Automated Installation and setup! 
     - Kernel is written in primarily C and Assembly 
-        - C++ will be used for OS APIs accessible from User Mode
-        - I keep saying I will use C++ after being a huge proponent of it for a long time, but then write more C
-        - I am not an addict I swear (clutches copy of 'The C Programming Language')
+        - I keep saying I will use C++ after being a huge proponent of it for a long time, but then write more C.. wouldn't want to write a 3D engine in C, wouldn't want to write an OS in C++...
+        - I don't think 
 
 ## In Progress
-    - porting doom
-
-    - now that we have reached user mode a lot of kernel code can be tidied up and moved to userspace, or refactored into a API for usage from user space
-
-    - switching to APIC from legacy PICs, UEFI support 
+    - At this point all it could use is some input tweaks for playing DOOM and a USB Keyboard driver for real hardware (works with ps2! luckily my very new z690 mobo has a port suprisingly)
     
 ## Planned
-    - Vsync and double buffering
-    - Port DOOM (as a user mode process)
-    - Cross compiler for easier use of our standard library [x]
-        - Need to do libc and setup for building usermode programs
+    - double buffering (sorta)
+    - Port DOOM (as a user mode process) [x]
+    - Cross compiler + C Runtime for easier use of our standard library [x]
     - UEFI Support to boot on real hardware [x]
-        - I don't have anything old with decent BIOS support kicking around
-        - Need to parse mmaps from bootloader better and switch to APIC for full UEFI
-
+    - now that we have reached user mode a lot of kernel code can be tidied up and moved to userspace, or refactored into a API for usage from user space
+        - you can tell what was added in the last stage of this project 
+        - I would like to rewrite this someday, learned too many lessons not to
 
 
 #### Detailed Features
@@ -51,6 +50,9 @@
 - a stdout-type buffer and text renderer
 
 - custom standard library, with strings, printf, malloc, memory functions, etc. all implemented from scratch
+    - one for kernel and one for user space, user space has it's own C Runtime
+    - libc-ish enough that stuff is portable
+- it runs Doom, really well too. and in multi-tasked user space... no cheating!
 
 - custom initrd filesystem and VFS implementation, with subdirs, etc. 
 

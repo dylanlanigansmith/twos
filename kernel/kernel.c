@@ -66,8 +66,6 @@ void task_drawtimer(){
                     gfx_print_pos(get_scancode_name(sc & 0x7f), v2(265, 740));
                     
                 }
-                uint64_t rax = 0;
-               //  __asm__ volatile ( "mov rax, 3; int 0x69; mov %0, rax; " : "=r"(rax) ::  "rax") ;
 
             }
     }
@@ -177,7 +175,7 @@ void main(void *addr, void *magic)
    
     debugf("boot start\n");
 
-    //should check multiboot here while we have a working system
+ 
 
    
    
@@ -206,14 +204,14 @@ void main(void *addr, void *magic)
     if(parse_multiboot_header(addr, (uint64_t)magic) == MB_HEADER_PARSE_ERROR){ //gets acpi, framebuffer, etc
         KPANIC("multiboot parse fail");
     }else{
-        //do shit like are we uefi, what vm is this etc etc etc 
+        //do any other shit like are we uefi, what vm is this etc etc etc that the initial read didnt get
     }
 
 
     //we are doing the new and improved... lower half kernel!!!!
+    //aka i dont wanna do higher half, i dont like it 
 
-    //aka i dont wanna do higher half, i dont like it the bootstrapping required
-    //so we will try and keep the kernel under 1gb
+    //update^^ this kernel is high as fuk now and i was wrong higher half is way better ^^^
     pmm_init();
     initrd_reserve_space(sysinfo.initrd.start, sysinfo.initrd.end - sysinfo.initrd.start);
     
@@ -226,6 +224,7 @@ void main(void *addr, void *magic)
     //no cpp in kernel atm
     _init_cpp(); //todo fix global constructors and actually write some cpp
                     //or just save it for user space where it belongs :))))
+                    //^ we did that
     debugf("skipping acpi\n");
     if(sysinfo.rsdp && 0){  
 
@@ -243,18 +242,17 @@ void main(void *addr, void *magic)
     __asm__ volatile ("sti");
     if(sysinfo.boot.is_uefi){
         //PIC_sendEOI();
-        PIC_enable(); //as if we even have these
+        PIC_enable(); //dont ask why just nod and smile
     }
 
 
     debugf("enabled interupts.\n==boot second phase complete==\n"); 
 
 
-   // __asm__ volatile ("int 1; int 32");
     
      
     void* lol = kmalloc(69); //catch early if we break kernel heap somehow
-    kfree(lol); //this is so fucked
+    kfree(lol); //this is so fucked, update: ig it isnt anymore lol it healed
 
     debugf("loading initial ramdisk... \n");
     if(initrd(sysinfo.initrd.start, sysinfo.initrd.end - sysinfo.initrd.start) != 0){
@@ -277,17 +275,19 @@ void main(void *addr, void *magic)
     gfx_init(color_cyan);
     //we are so back
      
-    void* aghhhhhhh = pmm_alloc(PAGE_SIZE * 16 + 32);
+    void* aghhhhhhh = pmm_alloc(PAGE_SIZE * 16 + 32); //never found out if this actually did anything but i aint taking it out at this point
    
     
-    //uh wait it worked?
+
     /*
         todo:
         - i would like user VAS/page tables [x]
         - get user tasking to work [x]
-        - make a user program with gfx etc
-        - make basic libc
-        -PORT DOOM 
+        - make a user program with gfx etc [x]
+        - make basic libc [x]
+        -PORT DOOM [x]
+        - run on real hw [x]
+
     
     */    
 
@@ -316,6 +316,7 @@ void main(void *addr, void *magic)
    //if we arent doing tasking for some reason
 
    //heres a left over demo from initrd bringup
+   /*
     uint64_t last_tick = 0;
 
     initrd_demo();
@@ -350,7 +351,7 @@ void main(void *addr, void *magic)
         }
         
     }
-
+*/
     // kernel ends, we can return to entry pt which hangs or just do it here for transparency while we develop
     __asm__("cli");
     for (;;)

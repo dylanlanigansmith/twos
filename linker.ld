@@ -71,6 +71,6 @@ SECTIONS {
     {
         *(.comment)
         *(note.*)
-        *(.eh_frame) /* discard this, unless you are implementing runtime support for C++ exceptions. */
+        *(.eh_frame) /* stuff for cpp rt excepts, rtti etc we arent gonna use */
     }
 }

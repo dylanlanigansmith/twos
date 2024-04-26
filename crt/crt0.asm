@@ -7,29 +7,29 @@ section .text
 
 global _start
 _start:
-	; Set up end of the stack frame linked list.
+	;fix end of stack frame
 	mov rbp, 0
 	push rbp  ;rip - 0
 	push rbp  ; rbp=0
 	mov rbp, rsp
 
-	; We need those in a moment when we call main.
+	; pass args to main
 	push rsi
 	push rdi
 
-	; Prepare signals, memory allocation, stdio and such.
+	; init malloc etc 
 	call _libd_init
 
-	; Run the global constructors.
+	; global constructors.
 	call _init
 
-	; Restore argc and argv.
+	; argc and argv.
 	pop rdi
 	pop rsi
 
-	; Run main
+	; enter our elf files "real" entry pt
 	call main
 
-	; Terminate the process with the exit code.
+	; call exit when main returns with ret val
 	mov rdi, rax
 	call exit
