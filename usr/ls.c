@@ -12,8 +12,8 @@ int main(int argc, char* argv)
 }
 
 
-void _start(){
+/*void _start(){
   
     int err = main(0,0);
     exit(err);
-}
+}*/

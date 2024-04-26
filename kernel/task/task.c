@@ -621,7 +621,7 @@ void* task_expand_heap(task_t* task, size_t req_size)
     
     swap_cr3(sched.current_task->regs.cr3);
     
-    
+    invalidate_page(virt);
 
   
     return (void*)virt;
@@ -669,7 +669,7 @@ void *task_alloc_heap(size_t req_size)
     
     swap_cr3(sched.current_task->regs.cr3);
     
-    
+    invalidate_page(virt);
 
   
     return (void*)virt;
@@ -718,7 +718,7 @@ void *task_mmap_file(const char *name)
     debugf("task %i has file len='%li' mmaped at va %lx pa %lx size %li kb", task->pid,file->length, virt, phys, BYTES_TO_KIB( size ));
     
     swap_cr3(sched.current_task->regs.cr3);
-
+    invalidate_page(virt);
     return (void*)virt;
 }
 
@@ -727,6 +727,11 @@ void task_sleep_ms(uint64_t ms)
     sched.current_task->flags.sleeping = 1;
     sched.current_task->wake_tick = tick + ms;
     //DEBUGT("task %i sleeping for %li ms, until %li\n", sched.current_task->pid, ms, sched.current_task->wake_tick );
+}
+
+task_t *get_current_task()
+{
+    return sched.current_task;
 }
 
 //stack is running into page tables

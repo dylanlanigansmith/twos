@@ -33,7 +33,7 @@ int snprintf(char *s, size_t n, const char* fmt, ...);
 int fprintf(FILE *restrict f, const char *restrict fmt, ...);
 int vfprintf(FILE *restrict f, const char *restrict fmt, va_list ap);
 
-int vsnprintf(char *restrict s, size_t n, const char *restrict fmt, va_list ap);
+int vsnprintf(char *s, size_t n, const char * fmt, va_list args);
 int sscanf(const char *str, const char *format, ...);
 
 static inline FILE *fopen(const char *restrict filename, const char *restrict mode){ return 0;}

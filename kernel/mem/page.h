@@ -76,7 +76,7 @@ static inline uintptr_t round_up_to_page(uintptr_t addr){
 static inline int calc_num_pages(uint64_t addr_size){
     return (addr_size + PAGE_SIZE - 1) / PAGE_SIZE;
 }
-
+void invalidate_page(uintptr_t virtual_addr);
 /* //fucking gcc cant handle this one
 static inline uintptr_t swap_cr3(uintptr_t new_cr3){
     uintptr_t old_cr3 = 0;

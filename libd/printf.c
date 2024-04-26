@@ -13,13 +13,22 @@ size_t __print_stub(const char *str)
 }
 __printf_out_fn __print = __print_stub;
 
-
+void printf2(const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    __vprintf(__print, fmt, 0, 0, args);
+    va_end(args);
+}
 
 void printf(const char *fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
-    __vprintf(__print, fmt, 0, 0, args);
+    char b[PRINTF_BUF];
+    vsnprintf(b, PRINTF_BUF, fmt, args);
+  //  __vprintf(__print, fmt, 0, 0, args);
+    print(b);
     va_end(args);
 }
 
@@ -79,10 +88,20 @@ int snprintf(char *s, size_t n, const char * fmt, ...)
 	return (int)ret;
     
 }
+int vsnprintf(char *s, size_t n, const char * fmt, va_list args)
+{
+    memset(s, 0, n);
+   
+    size_t ret = __vprintf(__sprintfn, fmt, s, n, args);
 
-#define __PRINT_LLTOA(num, base) lltoa(num, base)
-#define __PRINT_ITOA(num, base) itoa(num, base)
-#define __PRINT_HTOA(num) htoa(num)
+
+   // s[n - 1] = 0; //s[n] ?
+	return (int)ret;
+    
+}
+#define __PRINT_LLTOA(num, base, buf) lltoa(num, buf, base)
+#define __PRINT_ITOA(num, base, buf) itoa(num, buf, base)
+#define __PRINT_HTOA(num, buf) lltoa(num, buf, 16)
 
 
 
@@ -130,19 +149,25 @@ size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t 
                 // 57 = 9 in ascii
             } // loop used for like %2f vs just %i
             // tldr it gets us to the format char in ch1
+            char ub[32] = {0};
+            memset(ub, 0, 32);
             switch (ch1)
             {
                 case 'i':
                 case 'd':
                 case 'u':
                     // Integers:
-                    total += _print(__PRINT_ITOA(va_arg(args, int), 10), buf_out, len);
+                    
+                    __PRINT_ITOA(va_arg(args, int), 10, ub);
+                    total += _print(ub, buf_out, len);
                     last_fmt_len = 1;
                     break;
                 case 'x':
                     // Int but Hex
                     total += _print("0x", buf_out, len); //make behaviour consistent with our messy HTOA and LLTOA funcs for 32 bit integers
-                    total += _print(__PRINT_ITOA(va_arg(args, int), 16), buf_out, len);
+                    
+                    __PRINT_ITOA(va_arg(args, int), 16, ub);
+                    total += _print(ub, buf_out, len);
                     last_fmt_len = 1;
                     break;
                 case 'B': //stoopid temp for 8 bit override 
@@ -203,12 +228,10 @@ size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t 
                        
                         break;
                     case 'x': // btw this will prefix with 0x by default!
-                        total += _print(__PRINT_HTOA(va_arg(args, unsigned long long)), buf_out, len);
-                        last_fmt_len = 2;
-
-                        break;
                     case 'X': // out of spec but this doesnt prefix with 0x
-                        total += _print(__PRINT_LLTOA(va_arg(args, unsigned long long), 16), buf_out, len);
+                         
+                        __PRINT_LLTOA(va_arg(args, int), 16, ub);
+                        total += _print(ub, buf_out, len);
                         last_fmt_len = 2;
                         break;
                     case 'f': // double, long double
@@ -222,7 +245,9 @@ size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t 
                         last_fmt_len = 1; //since default probs means was no ch2 we let it inc for these cases,
                                                     // where we want default case of printing as decimal long
                     default:
-                        total += _print(__PRINT_LLTOA(va_arg(args, unsigned long long), 10), buf_out, len);
+                        
+                        __PRINT_LLTOA(va_arg(args, int), 10, ub);
+                        total += _print(ub, buf_out, len);
                         last_fmt_len++;
                         break;
                     }
@@ -282,6 +307,3 @@ int vfprintf(FILE *restrict f, const char *restrict fmt, va_list ap)
     return 0;
 }
 
-int vsnprintf(char *restrict s, size_t n, const char *restrict fmt, va_list ap){
-    return 0;
-}

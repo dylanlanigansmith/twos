@@ -5,10 +5,13 @@ extern "C" {
 
 #include "stdint.h"
 
-char* itoa(int val, int base);
-char* lltoa(uint64_t val, int base);
+char* _itoa(int val, int base);
+char* _lltoa(uint64_t val, int base); 
+//these might be unsafe ^ 
+char*  itoa(int val, char * buffer, unsigned int base);
 
-char* htoa(uint64_t val); 
+char*  lltoa(uint64_t val, char * buffer, unsigned int base);
+//these probs are too but i am hoping they arent
 
 uint32_t atou(const char* str);
 int atoi(const char* str);

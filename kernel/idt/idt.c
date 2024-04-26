@@ -4,6 +4,7 @@
 #include "../../drivers/video/console.h"
 
 #include "../sys/syscall.h"
+
 extern void* isr_stub_table[]; //in asm/idt.asm
 
 

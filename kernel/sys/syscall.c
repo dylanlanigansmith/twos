@@ -18,7 +18,9 @@ void* syscall_test(registers_t* regs){
 
 void* sys_print(registers_t* regs){
     if(regs->rdi != 0){
-        print((char*)regs->rdi);
+        char* str = (char*)regs->rdi;
+       // debugf(" printing %s len = %li",str, strlen(str));
+        print(str);
     }
 
     return 0;
@@ -37,11 +39,16 @@ void* sys_clearscreen(registers_t* regs){
     return 0;
 }
 void* sys_setgfxmode(registers_t* regs){
-    gfx_clear(color_black);
+    
 
-    if(gfx_state.mode == 0)
+    if(gfx_state.mode == 0){
+        gfx_clear(color_white);
         gfx_state.mode = 1;
-    else gfx_state.mode = 1;
+    }
+    else{
+        gfx_state.mode = 0;
+        gfx_clear(color_cyan);
+    } 
     //TODO
 
     return sysinfo.fb.addr;
@@ -49,14 +56,11 @@ void* sys_setgfxmode(registers_t* regs){
 
 
 void* sys_togglegamemode(registers_t* regs){
-    gfx_clear(color_black);
-
-    if(gfx_state.mode == 0)
-        gfx_state.mode = 1;
-    else gfx_state.mode = 1;
+    
+    keys_gamemode();
     //TODO
 
-    return sysinfo.fb.addr;
+    return 0;
 }
 
 

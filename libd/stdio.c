@@ -8,7 +8,7 @@ void print(const char* str){
 
 
 void putc(char c){
-    uint64_t ch = c;
+    uint64_t ch = (uint64_t)c;
      __asm__ volatile ("mov rdi, %0; mov rax, 5; int 0x69; " :: "r"(ch) : "rdi", "rax") ;
 }
 

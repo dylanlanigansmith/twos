@@ -2,7 +2,7 @@
 #include "../stdlib.h"
 #define STDOUT_BUFFER 4096
 #define FORCE_STDOUT
-
+#define STDOUT_MAXLINES 78
 enum stdout_flags
 {
     stdout_none = 0,
@@ -26,6 +26,8 @@ typedef struct
     uint8_t dirty;
 
     uint8_t has_fb; //todo: bitfields
+
+    uint8_t lines;
 } stdout_t;
 
 extern stdout_t stdout; 
@@ -53,3 +55,5 @@ void stdout_set_updating(uint8_t val);
 bool stdout_hasFB();
 
 void stdout_clear();
+
+void stdout_force(int clr);

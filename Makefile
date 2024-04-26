@@ -1,29 +1,20 @@
 #dls: makefile for randOS
 
-USE_TOOLCHAIN:=1
 
-ifdef USE_TOOLCHAIN
-#	@echo using toolchain
-	TOOLCHAIN_PATH:=toolchain/cross
-#	@echo adding to path $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$(PATH)
-	export PATH := $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$(PATH)
 
-	TC_PREFIX:=smith-
 
-	CC:=$(TC_PREFIX)gcc
-	CXX:=$(TC_PREFIX)g++
-	LD:=$(TC_PREFIX)ld
-	AS:=nasm
-#nasm
-#as -msyntax=intel -mnaked-reg
-else
-	@echo no toolchain
-	CC:=gcc
-	CXX:=g++
-	LD:=ld
-	AS:=nasm
 
-endif
+TOOLCHAIN_PATH:=toolchain/cross
+$(info adding to path $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$$(PATH) )
+export PATH := $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$(PATH)
+
+TC_PREFIX:=smith-
+
+CC:=$(TC_PREFIX)gcc
+CXX:=$(TC_PREFIX)g++
+LD:=$(TC_PREFIX)ld
+AS:=nasm
+
 
 VM:=qemu-system-x86_64
 BOOT_CREATE:=grub-mkrescue
@@ -124,15 +115,17 @@ kernel.bin: $(OBJ_LINK_LIST)
 
 
 # user / util targets
+crt:
+	@$(MAKE) -C usr crt
 
-libd: 
+libd: crt
 	@$(MAKE) -C libd clean all install
 
 doom: libd
 	@$(MAKE) -C usr/port/doom-myos/doomgeneric clean all install
 
 usr: doom
-	@$(MAKE) -C usr clean install
+	@$(MAKE) -C usr clean all install
 
 
 
@@ -169,5 +162,12 @@ clean:
 	rm -rf kernel/*.o boot/*.bin drivers/*.o
 #like uh it could be really bad if iso_rootdir wasnt set and this ran as root but like who would do that 
 	rm -rf $(ISO_ROOTDIR)/boot/kernel.bin
+	
+
+cleanobj:
 	find . -type f -name '*.o' -delete
 
+
+installreal:
+	sudo cp iso/boot/kernel.bin /boot/
+	sudo cp iso/boot/init.rd /boot/

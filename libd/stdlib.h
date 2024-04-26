@@ -1,8 +1,10 @@
 #pragma once
 #include "stdint.h"
 
-void* memcpy(void* dest, void* src, size_t num_bytes);
+#define HEAP_INITIAL_SIZE PAGE_SIZE*2
 
+void* memcpy2(register void* dest, register void* src, register size_t num_bytes);
+void * memcpy(void *dst0, const void *src0, size_t length);
 void* memset(void* dest, register uint8_t val, register size_t num_bytes);
 
 void* malloc(size_t size);

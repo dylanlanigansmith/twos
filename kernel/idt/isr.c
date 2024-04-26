@@ -6,8 +6,9 @@
 #include "../pic/pic.h"
 #include "../stdlib/memory.h"
 #include "../../drivers/serial/serial.h"
-
+#include "../stdio/stdout.h"
 #include "isr_exceptions.h"
+#include "../task/task.h"
 
 isr_t interupt_handlers[256];
 
@@ -70,8 +71,16 @@ void handle_error_generic(registers_t* regs, bool recover){
          EXCEPTION_PRINTI("ISR_Unknown", num);
     }
     EXCEPTION_PRINTLN("=======");
+    task_t* task = get_current_task();
+    stdout_force(0);
+    if(task){
+        if(task->flags.is_user){
+            exit(0);
+        }
+    }
+    
     if(num == last_num || !recover)
-        KPANIC("double exception! ");
+        KPANIC("Can't Recover From Exception");
     
     last_num = num;
 
@@ -98,16 +107,22 @@ void handle_pagefault(registers_t* regs){
     if(regs->err_code & 0b1000000) EXCEPTION_PRINTLN("CAUSE = SHADOW STACK ACCESS");
 
     EXCEPTION_PRINTLN("==============");
-
-  //  if((regs->err_code & 0b1000) ) return;
-    num_pfs++;
-   
+     stdout_force(0);
+    task_t* task = get_current_task();
     if(num_pfs > 3){
         print_isr_regs(regs, 1);
-        for(;;){
-            __asm__("hlt");
+        KPANIC("Triple Fault!");
+    }
+    num_pfs++;
+    if(task){
+        if(task->flags.is_user){
+            exit(0);
         }
     }
+  //  if((regs->err_code & 0b1000) ) return;
+    
+   
+    
         
    
 }
@@ -122,10 +137,16 @@ void handle_gpf(registers_t* regs){
     EXCEPTION_PRINTLN("==============");
     //EXCEPTION_PRINTF("rsp %lx \n", regs->esp);
     print_isr_regs(regs, 1);
-    if(num_gpfs > 1)
-        for(;;){
-            __asm__("hlt");
+     stdout_force(0);
+     task_t* task = get_current_task();
+    if(task){
+        if(task->flags.is_user){
+            exit(0);
         }
+    }
+    if(num_gpfs > 1)
+        KPANIC("Triple Fault!");
+        
 
 }
 

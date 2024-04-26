@@ -22,7 +22,7 @@ static void* brk(size_t sz){
     uintptr_t ret = 0;
      __asm__ volatile ( "mov rdi, %1; mov rax, 15; int 0x69; mov %0, rax; " : "=r"(ret) : "r"(sz):  "rax", "rdi") ;
 
-     return ret;
+     return (void*)ret;
 }
 
 void* mmap_file(const char *name)
@@ -32,7 +32,7 @@ void* mmap_file(const char *name)
      __asm__ volatile ( "mov rdi, %1; mov rax, 16; int 0x69; mov %0, rax; " : "=r"(ret) : "r"(n):  "rax", "rdi") ;
 
     
-    return ret;
+    return (void*)ret;
 }
 
 
@@ -42,7 +42,7 @@ void* expand_heap(size_t sz){
     size_t size = round_up_to_page(sz);
    
     if( !brk(size)  ){
-        print("heap init failure");
+        print("libd: heap init failure");
         exit(1);
     }
 
@@ -57,7 +57,7 @@ void _init_heap(size_t sz){
     allstate.base = allstate.addr = brk(size);
     allstate.size += size;
     if(allstate.addr == 0){
-        print("heap init failure");
+        print("libd: heap init failure");
         exit(1);
     }
 
@@ -67,7 +67,7 @@ void _init_heap(size_t sz){
 void* malloc(size_t size)
 {
     if(!allstate.addr || !allstate.size) //our per proc alloc state 
-        _init_heap(size);
+        _init_heap(size); //otherwise we already initialized heap to default size
 
     if(allstate.addr + size > (allstate.base + allstate.size)){
         expand_heap(round_up_to_page(size));

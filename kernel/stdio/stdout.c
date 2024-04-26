@@ -7,10 +7,29 @@ stdout_t stdout;
 
 
 void stdout_clear(){
+
     stdout.index = 0; 
     memset(stdout.buffer, 0, stdout.size);
-    stdout.buffer[stdout.index] = '>';
+    stdout.buffer[stdout.index] = '.';
+    stdout.lines = 0;
     stdout.dirty = 1;
+
+    gfx_clear(gfx_state.clear_color); //hate it
+}
+
+void stdout_force(int clr) //itrps should b off
+{
+    if(!stdout_ready()) return;
+    if(clr == 0)
+        gfx_clear_text();
+    else
+        gfx_clear(color_red);
+   // PIC_disable();
+    gfx_print(get_stdout());
+    stdout_flush();
+   // PIC_enable();
+    
+            
 }
 
 char* stdout_alloc(size_t size){
@@ -18,6 +37,12 @@ char* stdout_alloc(size_t size){
     if(!tmp) KPANIC("stdout buffer alloc fail");
 
     return tmp;
+}
+
+void stdout_free(char* buf){
+    void* p = (void*)buf;
+    debugf("stdout_free( %lx )\n", p);
+    kfree(p);
 }
 
 void stdout_lock(){
@@ -51,13 +76,54 @@ void stdout_init()
     stdout.buffer =  stdout_alloc(STDOUT_BUFFER);
     stdout.size = STDOUT_BUFFER;
     stdout_clear();
-
+    stdout.lines = 0;
    
     //set default flags
-    stdout.flags |= stdout_backspace | stdout_wipeoverflow;
+    stdout.flags |= (stdout_backspace | stdout_wipeoverflow);
     stdout_unlock();
 
     oprintf(_COM,"\n=== stdout init @ %lx size %i idx %i  ready = %i ===\n", (uintptr_t)stdout.buffer, stdout.size, stdout.index, stdout_ready());
+}
+
+
+int find_idx_after_lines(int lines){
+    // we should really treat width as a line here too on the gfx side but :/
+    int i = 0,found = 0;
+
+    const char* buf = get_stdout();
+    while(buf[i] != '\0'){
+        if(buf[i] == '\n') found++;
+        if(found == lines)
+            return i + 1;
+        i++;
+    }
+
+    return 0;
+}
+
+uint8_t stdout_safescroll(uint8_t lines)
+{
+   
+    int to_remove = lines - (lines / 3);
+   
+    int idx = find_idx_after_lines(to_remove);
+     debugf("scrolling stdout! %i to remove, before idx %i \n", to_remove, idx);
+    if(idx == 0){
+        stdout_clear(); return 0;
+    }
+    
+    char* new_buf = stdout_alloc(STDOUT_BUFFER);         
+    ASSERT(new_buf);
+    stdout_free(stdout.buffer);
+    stdout.buffer = memcpy(new_buf, stdout.buffer + idx, stdout.index - idx);
+    ASSERT(stdout.buffer);
+     stdout.size = STDOUT_BUFFER; //should already be
+    memset(stdout.buffer + idx, 0, stdout.size - idx);
+    stdout.index = 0;
+    stdout.lines -= to_remove;
+
+    //return number of lines removed 
+    return 0;
 }
 
 uint8_t stdout_update() //i think u can trash this
@@ -110,6 +176,11 @@ void stdout_putchar(uint8_t c)
                stdout.index--; //do we want to just leave backspaces in and render them instead? //yeah
         //bug here sorta because gfx is handling backspaces live, we aint rewriting text every time
             break;
+       
+        case '\0':
+            break; //this is likely bad added like 4 weeks after i wrote this so probably not needed
+        case '\n':
+            stdout.lines++;
         default:
             stdout_bytein(c);
             break;
@@ -117,6 +188,10 @@ void stdout_putchar(uint8_t c)
     }
     else{
         stdout_bytein(c);
+    }
+   
+    if(stdout.lines > STDOUT_MAXLINES){
+       stdout_safescroll(STDOUT_MAXLINES);
     }
 }
 

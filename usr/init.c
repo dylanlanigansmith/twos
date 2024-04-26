@@ -9,6 +9,7 @@ uint64_t last_processed_input = 0;
 void shell_init() {
     update_prompt = True;
     memset((void*)cmd, 0, sizeof(cmd));
+    lshift = False;
     cmd_idx = 0;
     last_processed_input = 0;
 }
@@ -60,6 +61,15 @@ void cmd_testsprintf(int c, char* v)
        
     }
    
+    print("\n=====\n");
+    for (int i=0; i<10; ++i)
+    {
+        char buf[12];
+
+       int aa = snprintf(buf, sizeof(buf), "chatmacro%i", i);
+       printf("%i '%s' \n", i, buf);
+    }
+     print("\n=====\n");
 
 
     char b[256] = {0};
@@ -78,7 +88,7 @@ void cmd_testsprintf(int c, char* v)
 void cmd_doom(int c, char* v)
 {
     execc("doomos");
-    print("YEAH FUCK YOU ");
+    print("DOOM EXITED");
 }
 
 void cmd_dbg(int c, char* v)
@@ -95,12 +105,9 @@ void cmd_dbg(int c, char* v)
 void cmd_mem(int c, char* v)
 {
 
-     void* mmwad = mmap_file("DOOM.iwad");
-    print("did we do it???");
+    
 
-     printf("mmap wad %lx", (uintptr_t)mmwad);
-
-     /*
+     
     void* alloc = malloc(PAGE_SIZE * 3 + 42);
     printf("malloc! %lx", (uintptr_t)alloc);
     if(!alloc){
@@ -113,13 +120,44 @@ void cmd_mem(int c, char* v)
     } 
      printf("malloced a little %lx", (uintptr_t)alloc);
      alloc = 0;
-    alloc = malloc(PAGE_SIZE * 8);
+    alloc = malloc(PAGE_SIZE * 4);
     if(!alloc){
         print("malloc failed!"); return;
     } 
+
+
     printf("malloced a lot %lx", (uintptr_t)alloc);
 
-*/
+    printf("now testing write/read\n");
+    memset(alloc, 69, PAGE_SIZE);
+
+    uint8_t val = *(uint8_t*)(alloc + 8000); 
+    printf("[%i] == 69? \n", val);
+
+
+    *(uint64_t*)(alloc + 33000) = 8008135llu;
+
+
+    uint64_t vv = *(uint64_t*)(alloc + 33000);
+     printf("[%li] == 8008135? \n", vv);
+
+    print("testing mmap... ");
+    void* mmwad = mmap_file("DOOM.WAD");
+    print("did we do it???\n");
+
+    printf("mmap wad [%lx] \n", (uintptr_t)mmwad);
+
+    char* s = malloc(10);
+    memcpy(s, mmwad, 5);
+    s[6] = 0;
+     printf("mmap wad = '%s' \n", s);
+
+}
+
+void cmd_crash(int c, char* v){
+    *(uint64_t*)(0x000) = 69;
+
+    
 }
 
 
@@ -130,7 +168,9 @@ shell_cmd_t cmds[] =
     {"q", 0, cmd_quit},
     {"dbg", 0, cmd_dbg},
     {"doom", 0, cmd_doom},
-    {"malloc", 0, cmd_mem}
+    {"malloc", 0, cmd_mem},
+    {"sprint", 0, cmd_testsprintf},
+    {"crash", 0, cmd_crash}
 };
 
 
@@ -143,7 +183,7 @@ int execute_cmd(const char* cmd){
             return 0;
         }
     }
-    printf("unknown command: %s\n", cmd);
+    printf("unknown command: '%s' \n\0", cmd);
     return 1;
    
 }
@@ -154,8 +194,8 @@ void run_shell()
     uint64_t tick = sys_gettick();
    
     if(update_prompt){
-        
-        printf("\n%li$>>> ", tick); update_prompt = False;
+        print("\n");
+        printf("usr@os> "); update_prompt = False;
     }
     uint64_t keytick =  keyboard_lastinput();
     if(keytick == last_processed_input) return;
@@ -196,7 +236,7 @@ void run_shell()
             if(c != '\r'){
                 cmd[cmd_idx] = c;
                 if(c == '\b')
-                    cmd_idx--;
+                    cmd_idx = (cmd_idx > 0) ? cmd_idx - 1 : 0;
                 else cmd_idx++;
             }
 
@@ -219,9 +259,6 @@ void main(){
      const char* str2 = "please mr kernel give me cpu time\n";
     print(str);
     print(str2);
-    size_t l = strlen(str);
-    char lol[300] = {0};
-    memset((void*)lol, 'A', 300);
     //dont have the heart to get rid of it
 
 
@@ -230,25 +267,24 @@ void main(){
 
    
     start_tick = sys_gettick();
-    uint64_t i = 0;
+   shell_init();
     //print("running doom in 10 seconds");
     while (1) {
         run_shell();
-        uint64_t tick = sys_gettick();
-        if(start_tick + 10000 < tick){
-            //uncomment for testing on real hw w/out a ps2 kbd (thrift store plsss)
-          //  print("doom time");
-            //execute_cmd("doom");
-        }
-        //yield();
+        yield();
+       
     }
     
     syscall(2,0);
     
 }
 
+
+extern void _start();
+/*
 void _start(){
   
     main();
     for(;;) { __asm__ volatile ("mov rax, 0xcafebabe; hlt"); }
 }
+*/

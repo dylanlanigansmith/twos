@@ -251,7 +251,7 @@ void main(void *addr, void *magic)
     debugf("enabled interupts.\n==boot second phase complete==\n"); 
 
 
-    __asm__ volatile ("int 1; int 32");
+   // __asm__ volatile ("int 1; int 32");
     
      
     void* lol = kmalloc(69); //catch early if we break kernel heap somehow

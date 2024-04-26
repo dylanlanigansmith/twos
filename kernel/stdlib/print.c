@@ -18,7 +18,7 @@ size_t __print_stdout(const char* str){
 }
 
 void print_stdout(const char* str){
-
+     
     for(int c = 0; str[c] != 0; ++c){
         stdout_putchar(str[c]);
     }
@@ -211,7 +211,7 @@ size_t __vprintf(__printf_out_fn _print, const char *fmt, char *buf_out, size_t 
     
     // later we can check if buf is not 0 and use it vs printing
     char buf[PRINTF_MAX];
-    
+     memset(buf, 0, PRINTF_MAX);
    
     size_t total = 0;
     int c = 0;

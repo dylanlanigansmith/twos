@@ -1,9 +1,14 @@
 #include "../stdlib.h"
 
 #include "panic.h"
+#include "../stdio/stdout.h"
 
 void post_panic(){
-    __asm__ volatile ("cli; mov rdi, 0xDEAD");
+    __asm__ volatile ("cli;");
+
+    stdout_force(1);
+
+    __asm__ volatile (" mov rdi, 0xDEAD");
     for(;;)
         __asm__ volatile ("hlt");
 }

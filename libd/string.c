@@ -5,16 +5,14 @@
 */
 #include "string.h"
 #include "stdlib.h"
-
-char* itoa(int val, int base){
+const char* zero = "0";
+char* _itoa(int val, int base){
 	
 	static char buf[32] = {0};
 	
 	//weird bug
 	if(val == 0){
-		buf[0] = '0';
-		buf[1] = 0;
-		return &buf[0];
+		return zero;
 	}
 
 	int i = 30;
@@ -26,15 +24,13 @@ char* itoa(int val, int base){
 	return &buf[i+1];
 	
 }
-char* lltoa(uint64_t val, int base){
+char* _lltoa(uint64_t val, int base){
 	
 	static char buf[62] = {0};
 	
 	//weird bug
-	if(val == 0){
-		buf[0] = '0';
-		buf[1] = 0;
-		return &buf[0];
+	if(val == 0u){
+		return zero;
 	}
 
 	int i = 60;
@@ -46,16 +42,40 @@ char* lltoa(uint64_t val, int base){
 	return &buf[i+1];
 	
 }
-char* htoa(uint64_t val)
-{
-	const char prefix[2] = {"0x"};
-	static char buf[64] = {0};
-	buf[0] = prefix[0];
-	buf[1] = prefix[1];
-	buf[2] = 0;
 
+char*  itoa(int val, char *buffer, unsigned int base)
+{
+	char buf[32] = {0};
+	buf[31] = 0;
+	//weird bug
+	if(val == 0){
+		return strcpy(buffer, zero);
+	}
+
+	int i = 30;
 	
-	return strcat(buf, lltoa(val, 16));
+	for(; val && i ; --i, val /= base)
+		buf[i] = "0123456789abcdef"[val % base];
+	
+	return strcpy(buffer, &buf[i+1]) ;
+}
+
+char* lltoa(uint64_t val, char *buffer, unsigned int base) //give it 32 chars at least
+{
+	char buf[32] = {0};
+	buf[31] = 0;
+	//weird bug
+	if(val == 0ull){
+		return strcpy(buffer, zero);
+	}
+
+	int i = 30;
+	
+	for(; val && i ; --i, val /= base)
+		buf[i] = "0123456789abcdef"[val % base];
+	
+
+	return strcpy(buffer, &buf[i+1]) ;
 }
 
 uint32_t atou(const char *str) //returns max uint32 on failure
@@ -179,7 +199,7 @@ size_t strnlen(const char *str, size_t max)
 
 int strncmp(const char *str1, const char* str2, size_t num)
 {
-	if(!str1 || !str2 || !num) return 0;	
+	/*if(!str1 || !str2 || !num) return 0;	
 	int matching = 0;
     int c = 0;
 	while(str1[c] == str2[c] && c < num && str1[c] != 0 && str2[c] != 0){
@@ -187,17 +207,46 @@ int strncmp(const char *str1, const char* str2, size_t num)
 		c++;
 	}
 
-	/*
-		spec is < 0 when lower first not match in 1 v 2
-
-		0 when equal 
-
-		> 0 when greater first not match in 1 v 2
-	*/ //this is gonna be wrong bc i wrote it to return num matching chars earlier 
-	if(matching == num) return 0; //this is broken
+	
+	if(matching == num) return 0; 
 	if(str1[c] > str2[c]) return -1; 
 	else return 1; 
+*/
+ if (!str1 || !str2 || !num) {
+        return 0;
+    }
 
+    size_t c = 0;
+    while (c < num && str1[c] != 0 && str2[c] != 0) {
+        if (str1[c] != str2[c]) {
+            unsigned char uc1 = (unsigned char)str1[c];
+            unsigned char uc2 = (unsigned char)str2[c];
+            if (uc1 > uc2) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+        c++;
+    }
+
+    if (c == num) {
+        return 0;
+    }
+
+    if (str1[c] == 0) {
+        return -1;
+    } else if (str2[c] == 0) {
+        return 1;
+    }
+
+    unsigned char uc1 = (unsigned char)str1[c];
+    unsigned char uc2 = (unsigned char)str2[c];
+    if (uc1 > uc2) {
+        return 1;
+    } else {
+        return -1;
+    }
 }
 
 int strcmp(const char *str1, const char *str2)
@@ -210,31 +259,6 @@ int strcmp(const char *str1, const char *str2)
     return (str1[i] > str2[i]) ? 1 : -1;
 }
 
-char *strdup(const char *s){
-	size_t l = strlen(s);
-
-	char* str = malloc(l);
-	str[l - 1] = 0;
-	
-	return strcpy(str, s);
-}
-
-char * strstr (const char * str1, const char * str2 ){
-	return 0;
- }
-
-int toupper(char c)
- {
-	if('a' <= c && c <= 'z')
-     	return c - 0x20;
-	return c;
- }
-int tolower(char c){
-    if('A' <= c && c <= 'Z'){
-        return c + 0x20 ; 
-    }
-    return c;
-}
 int strcasecmp(const char *s1, const char *s2)
 {
     const unsigned char *us1 = (const unsigned char *)s1;
@@ -266,6 +290,33 @@ int strncasecmp(const char *s1, const char *s2, size_t n)
     }
     return 0;
 }
+
+
+char *strdup(const char *s){
+	size_t l = strlen(s);
+
+	char* str = malloc(l + 1);
+	str[l] = 0;
+	
+	return strcpy(str, s);
+}
+
+char * strstr (const char * str1, const char * str2 ){
+	return 0;
+ }
+int toupper(char c)
+ {
+	if('a' <= c && c <= 'z')
+     	return c - 0x20;
+	return c;
+ }
+int tolower(char c){
+    if('A' <= c && c <= 'Z'){
+        return c + 0x20 ; 
+    }
+    return c;
+}
+
 
 /*
 int strcasecmp(const char *s1, const char *s2)

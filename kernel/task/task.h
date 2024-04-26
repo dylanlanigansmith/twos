@@ -123,3 +123,5 @@ static inline uint64_t rdtsc() //idk where else to put this
 }
 
 void task_sleep_ms(uint64_t ms);
+
+task_t* get_current_task();
