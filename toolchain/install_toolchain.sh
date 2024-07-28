@@ -1,20 +1,27 @@
 #!/bin/bash
 
 BINUTILS_URL=https://ftp.gnu.org/gnu/binutils/binutils-2.42.tar.gz
-GCC_URL=https://ftp.gnu.org/gnu/gcc/gcc-13.2.0/gcc-13.2.0.tar.gz
+GCC_URL=https://ftp.gnu.org/gnu/gcc/gcc-13.3.0/gcc-13.3.0.tar.gz
 BINUTILS_TAR=binutils.tar.gz
 GCC_TAR=gcc.tar.gz
 
 
 TARGET=x86_64-elf
 
-EXTRA_MAKE_FLAGS="-j 14"
+EXTRA_MAKE_FLAGS="-j 8"
 
 PROGRAM_PREFIX=smith-
 
 PWD=$(pwd)
 PREFIX=$PWD/cross
 
+MAC=0
+if [[ "$(uname)" == "Darwin" ]]; then
+    # gcc needs help because macos library paths are a shitshow, see below (ctrl+f MAC) for where patch is applied to change paths
+    MAC=1
+    echo "Running on MACOS"
+    #also switched to newer gcc version, see: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111632
+fi
 
 CONFIRM_BUILD=1
 
@@ -151,7 +158,13 @@ else
     cd build-gcc
     echo Building GCC with options:
 
-    echo ../gcc*/configure --target=$TARGET --prefix="$PREFIX" --program-prefix=$PROGRAM_PREFIX --disable-nls -disable-werror  --enable-languages=c,c++ --without-headers 
+    GCCCMD="../gcc*/configure --target=$TARGET --prefix=\"$PREFIX\" --program-prefix=$PROGRAM_PREFIX --disable-nls --disable-werror --enable-languages=c,c++ --without-headers"
+    if [ "$MAC" -eq 1 ]; then
+        GCCCMD="$GCCCMD --with-gmp=/opt/homebrew/Cellar/gmp/6.3.0 --with-mpfr=/opt/homebrew/Cellar/mpfr/4.2.1 --with-mpc=/opt/homebrew/Cellar/libmpc/1.3.1"
+    fi
+
+
+    echo "$GCCCMD"
     echo and makeflags 
     echo make $EXTRA_MAKE_FLAGS
     echo in dir 
@@ -162,7 +175,7 @@ else
         read -r
     fi
 
-    ../gcc*/configure --target=$TARGET --prefix="$PREFIX" --program-prefix=$PROGRAM_PREFIX --disable-nls -disable-werror  --enable-languages=c,c++ --without-headers 
+    eval $GCCCMD
     
     make $EXTRA_MAKE_FLAGS all-gcc 
     make $EXTRA_MAKE_FLAGS all-target-libgcc 

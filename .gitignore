@@ -1,6 +1,8 @@
 *.bin
 os-image
 *.o
+thirdparty/build
+thirdparty/grub
 toolchain/gcc*
 toolchain/binu*
 toolchain/cross

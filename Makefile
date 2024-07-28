@@ -1,14 +1,26 @@
 #dls: makefile for randOS
 
+UNAME_S := $(shell uname -s)
 
+MACOS = 0
+THIRDPARTY_BIN=
+# Additional flags for macOS
+ifeq ($(UNAME_S),Darwin)
+    MACOS = 1
+	THIRDPARTY_BIN = $(CURDIR)/thirdparty/build/bin/
+endif
+$(info building on Macos!)
 
 
 
 TOOLCHAIN_PATH:=toolchain/cross
 $(info adding to path $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$$(PATH) )
-export PATH := $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$(PATH)
 
-TC_PREFIX:=smith-
+export PATH := $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$(PATH)
+$(info path = $(PATH))
+#macs for whatever fucking reason dont let us just have a temp path within makefile soooo
+
+TC_PREFIX:=$(CURDIR)/$(TOOLCHAIN_PATH)/bin/smith-
 
 CC:=$(TC_PREFIX)gcc
 CXX:=$(TC_PREFIX)g++
@@ -16,8 +28,9 @@ LD:=$(TC_PREFIX)ld
 AS:=nasm
 
 
-VM:=qemu-system-x86_64
-BOOT_CREATE:=grub-mkrescue
+
+
+
 
 
 #==== SOURCES AND COMPILING=====
@@ -58,10 +71,25 @@ OBJ_LINK_LIST:= $(ASM_OBJ) $(OBJ) $(CPP_OBJ)
 #====FILE STUFF====
 ISO_OUT:=randos.iso
 ISO_ROOTDIR:=iso
-
+BOOT_CREATE=grub-mkrescue
+ifeq ($(MACOS),1)
+    BOOT_CREATE:=$(THIRDPARTY_BIN)grub-mkrescue
+endif
 #===QEMU======
+
+VM:=qemu-system-x86_64
+
 QEMU_UEFI:=/usr/share/ovmf/x64/OVMF.fd
-QEMU_ARGS_VM:=-accel kvm -device VGA,vgamem_mb=32 -audiodev pa,id=speaker -machine pcspk-audiodev=speaker -m 8G
+
+QEMU_ARGS_AUDIO=-audiodev pa,id=speaker
+QEMU_ARGS_MEM=-m 8G
+QEMU_ARGS_ACCEL=-accel kvm
+ifeq ($(MACOS),1)
+    QEMU_ARGS_AUDIO=-audiodev coreaudio,id=speaker
+	QEMU_ARGS_MEM=-m 4G
+	QEMU_ARGS_ACCEL=
+endif
+QEMU_ARGS_VM:=$(QEMU_ARGS_ACCEL) -device VGA,vgamem_mb=32 $(QEMU_ARGS_AUDIO) -machine pcspk-audiodev=speaker $(QEMU_ARGS_MEM)
 QEMU_ARGS_DBG:=-serial file:com1.log  
 #-d int,page,cpu_reset -s -S
 QEMU_ARGS_DBG2:=-serial file:com1.log  -no-reboot -d int,page,cpu_reset -s -S

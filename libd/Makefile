@@ -9,7 +9,7 @@ ifdef USE_TOOLCHAIN
 #	@echo adding to path $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$(PATH)
 	export PATH := $(PARENT_DIR)/$(TOOLCHAIN_PATH)/bin:$(PATH)
 
-	TC_PREFIX:=smith-
+	TC_PREFIX:=$(PARENT_DIR)/$(TOOLCHAIN_PATH)/bin/smith-
 
 	CC:=$(TC_PREFIX)gcc
 	CXX:=$(TC_PREFIX)g++
