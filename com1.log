@@ -312,4 +312,316 @@ I am a user task hard at work
 please mr kernel give me cpu time
 { [1920x1080@4] 0xfc000000/7680p }
 
-usr@os> yieldingyieldingyielding
+usr@os> yieldingyieldingyieldingdooyieldingmyield test overtask 3 exited with code: 0
+found task task_drawstdout pointing to del task task_yield_test
+old parent pid = 65535
+ 
+found space at 0. need size 0x6 found size 0x51 
+using existing block at 0xffffbeefed200000 / block_size=81 
+exec_user_task(): old cr3 0x405fd000 new cr3 0x220000 insane 0x405fd000 wtf 0xffffbeefed200008
+file doomos is valid elf64. loading..
+phdr load  vaddr = 0x400000, aligned to 0x1000, X  R  
+phdr load  vaddr = 0x473000, aligned to 0x1000,  W R  
+lowest vaddr 0x400000 highest vaddr 0x4d78e0, size 0x200000
+pmm_alloc(0x600000): found space for 3 pages at 0x43200000
+map_phys_addr():  0x43200000 -> 0x400000 | 3 pages 
+idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[2] p1[0] 
+p4 = 0x220000
+p4 = 0xffffffff80220000
+p4->[p3ind]=0x1600000
+initial p3 = 0xffffffff81600000 p4 = 0xffffffff80220000, p3_phys = 0xffffffff8020bb0e  
+we have: p3 = 0xffffffff81600000 p2 = 0x1604000 
+making p3 virtual: now 0xffffffff81600000 
+making p2 virtual: now 0xffffffff81600000 
+entry 0 @ 0xffffffff81604080 = 0x43200087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0011 0010 0000 0000 0000 1000 0111 
+entry 1 @ 0xffffffff816040c0 = 0x43400087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0011 0100 0000 0000 0000 1000 0111 
+entry 2 @ 0xffffffff81604100 = 0x43600087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0011 0110 0000 0000 0000 1000 0111 
+==flushed TLB==
+invalidated: 0x400000 
+allocated user pages: [phys address] =  p4 0x437fd000 p3 0x437fe000 p2 0x437ff000
+ [virt] vstart = 0x400000 vend = 0xa00000, size palign 0x200000 size total 0x600000
+map_user_page_tables:  0x43200000 -> 0x400000 | 3 pages 
+idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[2] p1[0] 
+kp4 phys = 0x220000
+kp4 virt = 0xffffffff80220000
+copying kp4 at idx 511 (contents 0x224023) to user p4
+idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[2] p1[0] 
+idx for VA: 0xffffbeefed000000 [0b1111 1111 1111 1111 1011 1110 1110 1111 1110 1101 0000 0000 0000 0000 0000 0000 ] 
+ p4[381] p3[447] p2[360] p1[0] 
+idx for VA: 0xfc000000 [0b0000 0000 0000 0000 0000 0000 0000 0000 1111 1100 0000 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[3] p2[480] p1[0] 
+usr stack @ 0x9fcf00, 0x4d7900 size = 5269 kb
+copying header 0x400000 to 0x400000. fs= 0x72a10 ms = 0x72a10
+copying header 0x473000 to 0x473000. fs= 0x21f70 ms = 0x648e0
+unmap_phys_addr():  unmapping 0x400000  | 3 pages 
+idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[2] p1[0] 
+p4 = 0xffffffff80220000
+p4->[p3ind]=0x1600000
+we have: p3 = 0xffffffff81600000 p2 = 0x1604000 
+making p2 virtual: now 0xffffffff81600000 
+==flushed TLB==
+invalidated: 0x400000 
+loaded ELF: doomos [882912 kb]
+exec_user_task():
+     usr entry = 0x4000c0 usr phys = 0x43200000 usr lo 0x400000 usr rsp 0x9fcf00, usr cr3 = 0x437fd000
+adding USER task doomos, child of 4 !
+we found no space to fit size 0x2000, making new block at 0xffffbeefed20cc3d size=8217 /  footer @ 0xffffbeefed20ec4a 
+adding to alloc map, prev. # allocs = 10 
+ added to alloc map, new # allocs = 11 
+stack  0xffffbeefed20eb2c isn't aligned! repairing to = 0xffffbeefed20eb20 
+create_task doomos pid 5 rip 0x4000c0 !
+we found no space to fit size 0x70, making new block at 0xffffbeefed20ec56 size=137 /  footer @ 0xffffbeefed20ecd3 
+adding to alloc map, prev. # allocs = 11 
+ added to alloc map, new # allocs = 12 
+scheduler: added child user task doomos, pid = 5 !
+scheduler: swapping back cr3 to 0x405fd000
+allocated a heap for task 5
+pmm_alloc(0x400000): found space for 2 pages at 0x43a00000
+map_phys_addr():  0x43200000 -> 0x400000 | 3 pages 
+idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[2] p1[0] 
+p4 = 0x220000
+p4 = 0xffffffff80220000
+p4->[p3ind]=0x1600000
+initial p3 = 0xffffffff81600000 p4 = 0xffffffff80220000, p3_phys = 0xffffffff8020bb0e  
+we have: p3 = 0xffffffff81600000 p2 = 0x1604000 
+making p3 virtual: now 0xffffffff81600000 
+making p2 virtual: now 0xffffffff81600000 
+entry 0 @ 0xffffffff81604080 = 0x43200087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0011 0010 0000 0000 0000 1000 0111 
+entry 1 @ 0xffffffff816040c0 = 0x43400087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0011 0100 0000 0000 0000 1000 0111 
+entry 2 @ 0xffffffff81604100 = 0x43600087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0011 0110 0000 0000 0000 1000 0111 
+==flushed TLB==
+invalidated: 0x400000 
+map_user_page_tables:  0x43a00000 -> 0xa00000 | 2 pages 
+idx for VA: 0xa00000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1010 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[5] p1[0] 
+unmap_phys_addr():  unmapping 0x400000  | 3 pages 
+idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[2] p1[0] 
+p4 = 0xffffffff80220000
+p4->[p3ind]=0x1600000
+we have: p3 = 0xffffffff81600000 p2 = 0x1604000 
+making p2 virtual: now 0xffffffff81600000 
+==flushed TLB==
+invalidated: 0x400000 
+allocated a heap for task 5:
+        pa 0x43a00000 va0xa00000 size 4096 kb 
+ cr3 to restore: 0x437fd000 
+==flushed TLB==
+invalidated: 0xa00000 
+starting doomos!{ [1920x1080@4] 0xfc000000/7680p }
+using gfx mode (1280x960x4) 
+expanding heap for task 5 [6291456]
+pmm_alloc(0x600000): found space for 3 pages at 0x44000000
+map_phys_addr():  0x43200000 -> 0x400000 | 3 pages 
+idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[2] p1[0] 
+p4 = 0x220000
+p4 = 0xffffffff80220000
+p4->[p3ind]=0x1600000
+initial p3 = 0xffffffff81600000 p4 = 0xffffffff80220000, p3_phys = 0xffffffff8020bb0e  
+we have: p3 = 0xffffffff81600000 p2 = 0x1604000 
+making p3 virtual: now 0xffffffff81600000 
+making p2 virtual: now 0xffffffff81600000 
+entry 0 @ 0xffffffff81604080 = 0x43200087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0011 0010 0000 0000 0000 1000 0111 
+entry 1 @ 0xffffffff816040c0 = 0x43400087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0011 0100 0000 0000 0000 1000 0111 
+entry 2 @ 0xffffffff81604100 = 0x43600087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0011 0110 0000 0000 0000 1000 0111 
+==flushed TLB==
+invalidated: 0x400000 
+map_user_page_tables:  0x44000000 -> 0xe00000 | 3 pages 
+idx for VA: 0xe00000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1110 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[7] p1[0] 
+unmap_phys_addr():  unmapping 0x400000  | 3 pages 
+idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[2] p1[0] 
+p4 = 0xffffffff80220000
+p4->[p3ind]=0x1600000
+we have: p3 = 0xffffffff81600000 p2 = 0x1604000 
+making p2 virtual: now 0xffffffff81600000 
+==flushed TLB==
+invalidated: 0x400000 
+expanded heap for task 5:
+        pa 0x43a00000 va0xa00000 size 10240 kb 
+ cr3 to restore: 0x437fd000 
+invalidated: 0xe00000 
+created frame buffer 0
+mmap WAD
+
+ task_mmap_file(): DOOM.WAD to be mmaped in 6 pages from 0xffffffff807b0eec
+pmm_alloc(0xc00000): found space for 6 pages at 0x44800000
+map_phys_addr():  0x43200000 -> 0x400000 | 3 pages 
+idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[2] p1[0] 
+p4 = 0x220000
+p4 = 0xffffffff80220000
+p4->[p3ind]=0x1600000
+initial p3 = 0xffffffff81600000 p4 = 0xffffffff80220000, p3_phys = 0xffffffff8020bb0e  
+we have: p3 = 0xffffffff81600000 p2 = 0x1604000 
+making p3 virtual: now 0xffffffff81600000 
+making p2 virtual: now 0xffffffff81600000 
+entry 0 @ 0xffffffff81604080 = 0x43200087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0011 0010 0000 0000 0000 1000 0111 
+entry 1 @ 0xffffffff816040c0 = 0x43400087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0011 0100 0000 0000 0000 1000 0111 
+entry 2 @ 0xffffffff81604100 = 0x43600087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0011 0110 0000 0000 0000 1000 0111 
+==flushed TLB==
+invalidated: 0x400000 
+map_phys_addr():  0x44800000 -> 0x3f000000 | 6 pages 
+idx for VA: 0x3f000000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0011 1111 0000 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[504] p1[0] 
+p4 = 0x220000
+p4 = 0xffffffff80220000
+p4->[p3ind]=0x1600000
+initial p3 = 0xffffffff81600000 p4 = 0xffffffff80220000, p3_phys = 0xffffffff8020bb0e  
+we have: p3 = 0xffffffff81600000 p2 = 0x1604000 
+making p3 virtual: now 0xffffffff81600000 
+making p2 virtual: now 0xffffffff81600000 
+entry 0 @ 0xffffffff8160be00 = 0x44800087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0100 1000 0000 0000 0000 1000 0111 
+entry 1 @ 0xffffffff8160be40 = 0x44a00087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0100 1010 0000 0000 0000 1000 0111 
+entry 2 @ 0xffffffff8160be80 = 0x44c00087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0100 1100 0000 0000 0000 1000 0111 
+entry 3 @ 0xffffffff8160bec0 = 0x44e00087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0100 1110 0000 0000 0000 1000 0111 
+entry 4 @ 0xffffffff8160bf00 = 0x45000087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0101 0000 0000 0000 0000 1000 0111 
+entry 5 @ 0xffffffff8160bf40 = 0x45200087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0101 0010 0000 0000 0000 1000 0111 
+==flushed TLB==
+invalidated: 0x3f000000 
+map_user_page_tables:  0x44800000 -> 0x3f000000 | 6 pages 
+idx for VA: 0x3f000000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0011 1111 0000 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[504] p1[0] 
+unmap_phys_addr():  unmapping 0x400000  | 3 pages 
+idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[2] p1[0] 
+p4 = 0xffffffff80220000
+p4->[p3ind]=0x1600000
+we have: p3 = 0xffffffff81600000 p2 = 0x1604000 
+making p2 virtual: now 0xffffffff81600000 
+==flushed TLB==
+invalidated: 0x400000 
+unmap_phys_addr():  unmapping 0x3f000000  | 6 pages 
+idx for VA: 0x3f000000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0011 1111 0000 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[504] p1[0] 
+p4 = 0xffffffff80220000
+p4->[p3ind]=0x1600000
+we have: p3 = 0xffffffff81600000 p2 = 0x1604000 
+making p2 virtual: now 0xffffffff81600000 
+==flushed TLB==
+invalidated: 0x3f000000 
+task 5 has file len='12408292' mmaped at va 0x3f000000 pa 0x44800000 size 12288 kb
+invalidated: 0x3f000000 
+invalidated: 0x4000c0 
+==flushed TLB==
+mmaped that shitwad loaded at 3f000000
+init doom @ 6752
+calling doom main!
+                           Doom Generic 0.1Z_Init: Init zone memory allocation daemon. 
+expanding heap for task 5 [6291456]
+pmm_alloc(0x600000): found space for 3 pages at 0x45600000
+map_phys_addr():  0x43200000 -> 0x400000 | 3 pages 
+idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[2] p1[0] 
+p4 = 0x220000
+p4 = 0xffffffff80220000
+p4->[p3ind]=0x1600000
+initial p3 = 0xffffffff81600000 p4 = 0xffffffff80220000, p3_phys = 0xffffffff8020bb0e  
+we have: p3 = 0xffffffff81600000 p2 = 0x1604000 
+making p3 virtual: now 0xffffffff81600000 
+making p2 virtual: now 0xffffffff81600000 
+entry 0 @ 0xffffffff81604080 = 0x43200087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0011 0010 0000 0000 0000 1000 0111 
+entry 1 @ 0xffffffff816040c0 = 0x43400087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0011 0100 0000 0000 0000 1000 0111 
+entry 2 @ 0xffffffff81604100 = 0x43600087 
+ 0b0000 0000 0000 0000 0000 0000 0000 0000 0100 0011 0110 0000 0000 0000 1000 0111 
+==flushed TLB==
+invalidated: 0x400000 
+map_user_page_tables:  0x45600000 -> 0x1400000 | 3 pages 
+idx for VA: 0x1400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0001 0100 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[10] p1[0] 
+unmap_phys_addr():  unmapping 0x400000  | 3 pages 
+idx for VA: 0x400000 [0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0100 0000 0000 0000 0000 0000 ] 
+ p4[0] p3[0] p2[2] p1[0] 
+p4 = 0xffffffff80220000
+p4->[p3ind]=0x1600000
+we have: p3 = 0xffffffff81600000 p2 = 0x1604000 
+making p2 virtual: now 0xffffffff81600000 
+==flushed TLB==
+invalidated: 0x400000 
+expanded heap for task 5:
+        pa 0x43a00000 va0xa00000 size 16384 kb 
+ cr3 to restore: 0x437fd000 
+invalidated: 0x1400000 
+zone memory: , 0xeb0010 allocated for zone
+Using . for configuration and saves
+V_Init: allocate screens.
+M_LoadDefaults: Load system defaults.
+M_LoadDefaults: Binding Variables
+Bound Variables
+M_LoadDefaults: Loaded
+W_Init: Init WADfiles.
+ adding DOOM.WAD
+opened our wad 'file' 3f000000we are loading WAD
+
+reading WAD [+0x0] (size 12) addr 3f000000, end 3fbd55e4 read WAD ... 
+We got an IWAD ! 0xeb00b8
+
+reading WAD [+0xbcc5c4] (size 36896) addr 3fbcc5c4, end 3fbd55e4 read WAD ... 
+ [fbNm IMPXA1 ]  [fbNm ETTNA1 ]  [fbNm AGRDA1 ]  [fbNm E4M1 ]  [fbNm dmenupic ] Using ./.savegame/ for savegames
+===========================================================================
+                           The Ultimate DOOM===========================================================================
+ Doom Generic is free software, covered by the GNU General Public
+ License.  There is NO warranty; not even for MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. You are welcome to change and distribute
+ copies under certain conditions. See the source for more information.
+===========================================================================
+I_Init: Setting up machine state.
+D_ConnectNetGame() 
+Skipping Checksum 
+InitConnectData(OK)
+Almost past setup
+M_Init: Init miscellaneous info.
+R_Init: Init DOOM refresh daemon !!!! .. we have 351 appatches
+.....textures [ok]flats [ok]............sprites [ok].. .. .. .. .. .. R_Init().. done!  
+
+P_Init: Init Playloop state.
+S_Init: Setting up sound.
+D_CheckNetGame: Checking network game status.
+ ... StartNetGame(1)... Emulating the behavior of the 'Ultimate Doom' executable.
+HU_Init: Setting up heads up display.
+ loading hud font... init HUD okay!
+ST_Init: Init status bar.
+manual override for PLAYPAL
+StUnloadLoadGFX end
+
+ Doom Loaded! 
+trt 
+DoomSetWindow: The Ultimate DOOM 
+I_InitGraphics: framebuffer: x_res: 1280, y_res: 960, x_virtual: 1280, y_virtual: 960, bpp: 32
+I_InitGraphics: framebuffer: RGBA: 8888, red_off: 16, green_off: 8, blue_off: 0, transp_off: 24
+I_InitGraphics: DOOM screen size: w x h: 320 x 200
+I_InitGraphics: Auto-scaling factor: 4
+manual override for PLAYPAL
+no frame buffer set?set gfx mode!{ [1920x1080@4] 0xfc000000/7680p }
+
+reading WAD [+0x7c7cc] (size 8032) addr 3f07c7cc, end 3fbd55e4 read WAD ... 
+manual override for PLAYPAL
+
+reading WAD [+0x10f520] (size 12382) addr 3f10f520, end 3fbd55e4 read WAD ... 

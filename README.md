@@ -2,9 +2,9 @@
 ### no like for real too, it isn't just booting and printing "hello world"
 ##### I'm pretty proud of this, it has been quite hard. It runs DOOM, not just in a VM either! 
 
-TODO: THIS IS ALL OUT OF DATE MOST OF THE STUFF IS DONE AND WORKING
-IT BOOTS ON REAL MODERN UEFI PCS AND RUNS DOOM, IN USER MODE, LOADED FROM A CUSTOM FILESYSTEM AS AN ELF64 EXECUTABLE BUILT WITH OUR CROSS COMPILER, WITH SUPPORT FOR MULTI TASKING ALL ALONG THE WAY
-BADA BING BADA BOOM
+
+
+![Doom running as a user process, from a userspace CLI, in my operating system](docs/doom_demo.png)
 
 
 ## Feature Overview
@@ -24,12 +24,12 @@ BADA BING BADA BOOM
 
 ## In Progress
     - At this point all it could use is some input tweaks for playing DOOM and a USB Keyboard driver for real hardware (works with ps2! luckily my very new z690 mobo has a port suprisingly)
-    
+    - I want to rewrite it from scratch, learned so much along the way I could do it better the second time around 
 ## Planned
     - double buffering (sorta)
-    - Port DOOM (as a user mode process) [x]
-    - Cross compiler + C Runtime for easier use of our standard library [x]
-    - UEFI Support to boot on real hardware [x]
+    - Port DOOM (as a user mode process) [COMPLETE]
+    - Cross compiler + C Runtime for easier use of our standard library [COMPLETE]
+    - UEFI Support to boot on real hardware [COMPLETE]
     - now that we have reached user mode a lot of kernel code can be tidied up and moved to userspace, or refactored into a API for usage from user space
         - you can tell what was added in the last stage of this project 
         - I would like to rewrite this someday, learned too many lessons not to
@@ -65,6 +65,12 @@ BADA BING BADA BOOM
 
 
 #### Notes/Misc
+ THIS MIGHT BE OUT OF DATE IN SOME PLACES - MOST STUFF IS DONE AND WORKING AS OF 5.1.24
+IT BOOTS ON REAL MODERN UEFI PCS AND RUNS DOOM, IN USER MODE, LOADED FROM A CUSTOM FILESYSTEM AS AN ELF64 EXECUTABLE BUILT WITH OUR CROSS COMPILER, WITH SUPPORT FOR MULTI TASKING ALL ALONG THE WAY
+BADA BING BADA BOOM
+
+- builds on linux/macos, toolchain scripts still work as of 7.28.24
+
 - writing asm is sorta zen
 
 - this was my first big C project and first I was missing C++ a lot.. then things started coming along and TLDR: C and I are on good terms now 
