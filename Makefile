@@ -17,7 +17,7 @@ TOOLCHAIN_PATH:=toolchain/cross
 $(info adding to path $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$$(PATH) )
 
 export PATH := $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$(PATH)
-$(info path = $(PATH))
+#$(info path = $(PATH))
 #macs for whatever fucking reason dont let us just have a temp path within makefile soooo
 
 TC_PREFIX:=$(CURDIR)/$(TOOLCHAIN_PATH)/bin/smith-
@@ -34,31 +34,30 @@ AS:=nasm
 
 
 #==== SOURCES AND COMPILING=====
-C_SOURCES = $(wildcard kernel/*.c kernel/**/*.c drivers/*.c drivers/**/*.c)
-CPP_SOURCES = $(wildcard kernel/*.cpp kernel/**/*.cpp drivers/*.cpp drivers/**/*.cpp)
-ASM_SOURCES =  $(wildcard kernel/asm/**.asm kernel/boot/*.asm kernel/cpp/*.asm kernel/task/*.asm)
+#https://stackoverflow.com/questions/2483182/recursive-wildcards-in-gnu-make/18258352#18258352
+rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 
-HEADERS = $(wildcard kernel/*.h kernel/**/*.h drivers/**/*.h)
-CPP_HEADERS = $(wildcard kernel/*.hpp kernel/**/*.hpp drivers/**/*.hpp)
+#C_SOURCES = $(wildcard src/kernel/**.c)
+C_SOURCES = $(call rwildcard,src,*.c)
+ASM_SOURCES =  $(wildcard src/kernel/asm/**.asm src/boot/*.asm )
+
+HEADERS = $(call rwildcard,include,*.h)
+
 
 OBJ = ${C_SOURCES:.c=.o}
-CPP_OBJ = ${CPP_SOURCES:.cpp=.o}
+
 ASM_OBJ = ${ASM_SOURCES:.asm=.o}
 
-#for c++ to work, and not very well might i add
-#THIS IS BROKEN NOW
-CRTI_OBJ:=kernel/cpp/crti.o
-CRTBEGIN_OBJ:=$(shell $(CXX) -print-file-name=crtbegin.o)
-CRTEND_OBJ:=$(shell $(CXX) -print-file-name=crtend.o)
-CRTN_OBJ:=kernel/cpp/crtn.o
 
 
 
-C_FLAGS:=-masm=intel -m64 -mcmodel=large -ffreestanding -nostdlib -fno-pie -fno-stack-protector -mno-shstk -mno-red-zone -fmacro-prefix-map=$(CURDIR)=.
-CPP_FLAGS:=-nostartfiles -fno-exceptions -fno-rtti
+
+C_FLAGS=-masm=intel -m64 -mcmodel=large -ffreestanding -nostdlib -fno-pie -fno-stack-protector -mno-shstk -mno-red-zone -fmacro-prefix-map=$(CURDIR)=.
+
+C_FLAGS+= -I./include
 
 #Linking
-LD_FLAGS:=--nmagic --script=linker.ld 
+LD_FLAGS:=--nmagic --script=./src/linker.ld 
 
 OBJ_LINK_LIST:= $(ASM_OBJ) $(OBJ) $(CPP_OBJ) 
 #$
@@ -69,7 +68,7 @@ OBJ_LINK_LIST:= $(ASM_OBJ) $(OBJ) $(CPP_OBJ)
 
 
 #====FILE STUFF====
-ISO_OUT:=randos.iso
+ISO_OUT:=twos.iso
 ISO_ROOTDIR:=iso
 BOOT_CREATE=grub-mkrescue
 ifeq ($(MACOS),1)
@@ -89,14 +88,18 @@ ifeq ($(MACOS),1)
 	QEMU_ARGS_MEM=-m 4G
 	QEMU_ARGS_ACCEL=
 endif
-QEMU_ARGS_VM:=$(QEMU_ARGS_ACCEL) -device VGA,vgamem_mb=32 $(QEMU_ARGS_AUDIO) -machine pcspk-audiodev=speaker $(QEMU_ARGS_MEM)
-QEMU_ARGS_DBG:=-serial file:com1.log  
+QEMU_ARGS_VM:=$(QEMU_ARGS_ACCEL) -device VGA,vgamem_mb=32 $(QEMU_ARGS_AUDIO) -machine pcspk-audiodev=speaker $(QEMU_ARGS_MEM) 
+QEMU_ARGS_DBG:=-serial file:com1.log  -monitor telnet:127.0.0.1:6969,server,nowait;
 #-d int,page,cpu_reset -s -S
 QEMU_ARGS_DBG2:=-serial file:com1.log  -no-reboot -d int,page,cpu_reset -s -S
 #,cpu_reset
 #====TARGETS======
 
 all: iso
+
+.PHONY: qterm
+qterm:
+	telnet localhost 6969 
 
 run: clean all 
 	@echo "======="
@@ -116,12 +119,10 @@ runb: clean all
 	@echo "==Running BOCHS==="
 	bochs
 
-runvb: clean all
-	VBOX_GUI_DBG_AUTO_SHOW=1 VBOX_GUI_DBG_ENABLED=1 virtualbox 
 
 iso: kernel.bin
-	cp kernel.bin $(ISO_ROOTDIR)/boot/
-	$(BOOT_CREATE) -o $(ISO_OUT) $(ISO_ROOTDIR) -quiet 
+	@cp kernel.bin $(ISO_ROOTDIR)/boot/
+	@$(BOOT_CREATE) -o $(ISO_OUT) $(ISO_ROOTDIR) -quiet 
 	@echo "==Made ISO=="
 
 
@@ -139,24 +140,10 @@ kernel.bin: $(OBJ_LINK_LIST)
 	@echo "[ $< ]"
 	$(CC) $(C_FLAGS)  -c $< -o $@
 
-%.o : %.cpp $(HEADERS) $(CPP_HEADERS)
-	@echo " CPP [ $< ]"
-	$(CXX) $(C_FLAGS) $(CPP_FLAGS) -c $< -o $@
 
 
 
-# user / util targets
-crt:
-	@$(MAKE) -C usr crt
 
-libd: crt
-	@$(MAKE) -C libd clean all install
-
-doom: libd
-	@$(MAKE) -C usr/port/doom-myos/doomgeneric clean all install
-#-j14
-usr: doom
-	@$(MAKE) -C usr clean all install
 
 
 
@@ -189,16 +176,13 @@ configure:
 .PHONY: clean
 clean:
 #rewrite this
-	rm -rf *.bin *.dis *.o *.iso
-	rm -rf kernel/*.o boot/*.bin drivers/*.o
+	@rm -rf *.bin *.dis *.o *.iso
+	@rm -rf kernel/*.o boot/*.bin 
+	@find . -type f -name '*.o' -delete
 #like uh it could be really bad if iso_rootdir wasnt set and this ran as root but like who would do that 
-	rm -rf $(ISO_ROOTDIR)/boot/kernel.bin
+	@rm -rf $(ISO_ROOTDIR)/boot/kernel.bin
 	
 
 cleanobj:
 	find . -type f -name '*.o' -delete
 
-
-installreal:
-	sudo cp iso/boot/kernel.bin /boot/
-	sudo cp iso/boot/init.rd /boot/

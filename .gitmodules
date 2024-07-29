@@ -1,3 +1,0 @@
-[submodule "usr/port/doom-myos"]
-	path = usr/port/doom-myos
-	url = https://github.com/dylanlanigansmith/doom-myos.git

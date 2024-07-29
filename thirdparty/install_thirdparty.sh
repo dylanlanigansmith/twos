@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#builds grub on macos so we can easily use grub-mkresuce to make our isos
+#builds grub on macos so we can easily use grub-mkrescue to make our final image
 #ty https://gist.github.com/emkay/a1214c753e8c975d95b4
 
 PWD=$(cd ..; pwd)
@@ -21,7 +21,9 @@ if [ ! -d "grub" ]; then
   git clone --depth 1 git://git.savannah.gnu.org/grub.git
 fi
 
-echo "../configure --disable-werror TARGET_CC=$TC_PREFIX-gcc TARGET_OBJCOPY=$TC_PREFIX-objcopy TARGET_STRIP=$TC_PREFIX-strip TARGET_NM=$TC_PREFIX-nm TARGET_RANLIB=$TC_PREFIX-ranlib --target=$TARGET --prefix=$PREFIX"
+GRUB_TOOLS="TARGET_CC=$TC_PREFIX-gcc TARGET_OBJCOPY=$TC_PREFIX-objcopy TARGET_STRIP=$TC_PREFIX-strip TARGET_NM=$TC_PREFIX-nm TARGET_RANLIB=$TC_PREFIX-ranlib"
+
+echo "../configure --disable-werror $GRUB_TOOLS --target=$TARGET --prefix=$PREFIX"
 exit
 
 cd grub
@@ -30,8 +32,10 @@ export PREFIX=$PREFIX
 ./bootstrap
 mkdir -p build-grub
 cd build-grub
-../configure --disable-werror TARGET_CC=$TC_PREFIX-gcc TARGET_OBJCOPY=$TC_PREFIX-objcopy \
-TARGET_STRIP=$TC_PREFIX-strip TARGET_NM=$TC_PREFIX-nm TARGET_RANLIB=$TC_PREFIX-ranlib --target=$TARGET --prefix=$PREFIX
+#changed without testing see prev commit if broken
+
+eval "./configure --disable-werror $GRUB_TOOLS --target=$TARGET --prefix=$PREFIX"
+
 make
 make install
 
