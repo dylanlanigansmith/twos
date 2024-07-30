@@ -1,5 +1,9 @@
 #pragma once
-#include <stdint.h>
+#ifdef __INTELLISENSE__
+    #include <stdint-gcc.h>
+#else
+    #include <stdint.h> //intellisense didnt like this 
+#endif
 
 
 #define PAGE_SIZE 0x200000
@@ -18,14 +22,19 @@
 #define PAGE_USER         (1ULL << 2)
 #define PAGE_SIZE_2MB     (1ULL << 7) // PSE flag
 
+
+#define PAGE_DEFAULT PAGE_SIZE_2MB | PAGE_PRESENT_FLAG | PAGE_WRITE_FLAG
+#define PAGE_USER_DEFAULT PAGE_SIZE_2MB | PAGE_PRESENT_FLAG | PAGE_WRITE_FLAG | PAGE_USER
+
+
 #define K_ID_MAP_START 0x00LLU
 #define K_ID_MAP_END 0x40000000LLU
 #define K_ID_MAP_SIZE (size_t)(K_ID_MAP_END - K_ID_MAP_START)
 
-#define KERN_VAS_END KERNEL_ADDR + K_ID_MAP_SIZE
 
-#define KERNEL_P4_IDX 511
-#define KERNEL_P3_IDX 510
+
+#define K_ID_P4_IDX 511
+#define K_ID_P3_IDX 510
 
 
 static inline uintptr_t round_up_to_page(uintptr_t addr){

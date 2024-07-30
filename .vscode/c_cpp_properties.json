@@ -4,13 +4,18 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/drivers/**",
-                "${workspaceFolder}/kernel/**"
+                "${workspaceFolder}/include/**",
+                "${workspaceFolder}/toolchain/cross/lib/gcc/x86_64-elf/13.3.0/include/**"
             ],
-            "defines": [],
-            "compilerPath": "/usr/bin/gcc",
+            "defines": [
+                "__STDC_HOSTED__"
+            ],
+            "compilerPath": "${workspaceFolder}/toolchain/cross/bin/smith-gcc",
+            "compilerArgs": [
+                "-masm=intel","-std=c2x","-m64","-mcmodel=large","-ffreestanding","-nostdlib"
+            ],
             "cStandard": "c23",
-            "cppStandard": "c++17",
+            "cppStandard": "c++23"
         }
     ],
     "version": 4

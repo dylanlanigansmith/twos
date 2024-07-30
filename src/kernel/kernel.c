@@ -31,7 +31,7 @@ void kmain(struct multiboot_header* header, uint64_t magic)
 
     int args = 0;
     size_t total_mem = 0;
-    RSDP_t *rsdp = nullptr;
+    rsdp_t *rsdp = nullptr;
 
     memset(&kboot, 0, sizeof(kernel_boot_t));
     struct multiboot_tag *tag = (struct multiboot_tag *)((uintptr_t)header + 8);
@@ -67,37 +67,36 @@ void kmain(struct multiboot_header* header, uint64_t magic)
             }
             case MULTIBOOT_TAG_TYPE_MMAP:{
                  struct multiboot_tag_mmap *mmaps = (struct multiboot_tag_mmap *)tag;
-                 kboot.mb.mmap_size = (mmaps->size - sizeof(struct multiboot_tag_mmap)) / (size_t)mmaps->entry_size;
-                debugf("===MULTIBOOT_TAG_TYPE_MMAP===",0);
-                debugf("mmaps->total_size=%i mmaps->entry_size=%i mmaps->entry_version=%i\n num_entries = %li",mmaps->size, mmaps->entry_size,  mmaps->entry_version,  kboot.mb.mmap_size);
-              
-            
-                const char* mmap_types[6] = {"mem_unknown", "mem_avail", "mem_reserved", "mem_acpi_reclaimable", "mem_nvs", "mem_badram" };
-                for (int i = 0; i <  kboot.mb.mmap_size; ++i)
-                {
-                    
-                    multiboot_memory_map_t mmap = mmaps->entries[i];
-                    uint32_t type = (mmap.type > 5) ? 0 : mmap.type;
-                    debugf("mmap [%i]:{ @%lx - %lx } size %lx |  %s %i \n", i,
-                        mmap.addr, mmap.addr + mmap.len, mmap.len, mmap_types[type], mmap.type);
+                kboot.mb.mmap_size = (mmaps->size - sizeof(struct multiboot_tag_mmap)) / (size_t)mmaps->entry_size;
+                
+                if(cmdline_numargs() && cmdline_hasarg("dumpmem")){
+                    const char* mmap_types[6] = {"mem_unknown", "mem_avail", "mem_reserved", "mem_acpi_reclaimable", "mem_nvs", "mem_badram" };
+                    debugf("===MULTIBOOT_TAG_TYPE_MMAP===");
+                    debugf("mmaps->total_size=%i mmaps->entry_size=%i mmaps->entry_version=%i\n num_entries = %li",mmaps->size, mmaps->entry_size,  mmaps->entry_version,  kboot.mb.mmap_size);
+                    for (int i = 0; i <  kboot.mb.mmap_size; ++i){
+                        multiboot_memory_map_t mmap = mmaps->entries[i];
+                        uint32_t type = (mmap.type > 5) ? 0 : mmap.type;
+                        debugf("mmap [%i]:{ @%lx - %lx } size %lx |  %s %i \n", i,
+                            mmap.addr, mmap.addr + mmap.len, mmap.len, mmap_types[type], mmap.type);
+                    }
                 }
+                
                 //PMM INIT
                 total_mem = physmem_init(mmaps, kboot.mb.mmap_size);
                 if(!total_mem)  panic("PMM Fail - Init Failed");
 
                 BOOT_STAGE("Physical Memory Manager READY");
                 printk(LOG_INFO, "%li MiB of Physical Memory Available", BYTES_TO_MIB(total_mem));
-
-               
                 continue;
             }
 
             case MULTIBOOT_TAG_TYPE_ACPI_NEW:
             case MULTIBOOT_TAG_TYPE_ACPI_OLD:{
                 struct multiboot_tag_old_acpi *acpi = (struct multiboot_tag_old_acpi *)tag;
-               rsdp = (RSDP_t *)acpi->rsdp;
-                if(!validate_rsdp(rsdp)) panic("ACPI - RSDP Invalid?!");
-                BOOT_STAGE("ACPI START");
+               rsdp = (rsdp_t *)acpi->rsdp;
+                if(!acpi_validate_rsdp(rsdp)) panic("ACPI - RSDP Invalid?!");
+                BOOT_STAGE("ACPI - RSDP FOUND");
+                continue;
             }
 
             default:{
@@ -105,40 +104,42 @@ void kmain(struct multiboot_header* header, uint64_t magic)
             }
         }
     }
+
     if(!total_mem)  panic("PMM Fail - No MB MMAP?");
-       
     virtmem_init();
     BOOT_STAGE("Virtual Memory Manager READY");
-    kalloc_init();
-    BOOT_STAGE("Kernel Heap READY");
 
-    
+    kalloc_init();
     void* malloc_test = kmalloc(512);
     debugf("malloced all over the place %lx", malloc_test);
     kfree(malloc_test);
+    BOOT_STAGE("Kernel Heap READY");
 
+    BOOT_STAGE("Framebuffer READY");
+    framebuffer_display_test_pattern(kboot.fb.ptr, kboot.fb.w, kboot.fb.h, kboot.fb.pitch);
     //at this point we now have:
     //  interupts for cpu exception handling
     //  phys mem management
     //  virtual memory management 
     //  kernel heap (kmalloc)
     //  framebuffer info, ID mapped for now
-
-
-   
     
-    framebuffer_display_test_pattern(kboot.fb.ptr, kboot.fb.w, kboot.fb.h, kboot.fb.pitch);
+    acpi_init(rsdp);
+    BOOT_STAGE("ACPI Information READY");
+
+
+
+
+
   /*
-        twOS bootup
+        twOS bootup next stages:
         - we need acpi and shit
         - consoles and streams
         - ring buffers
-
-        - we need pmm and page managing asap 
     */
 
 
-   
+
     if(cmdline_hasarg("autooff"))
         port_word_out(0x604, 0x0 | 0x2000);
     __asm__("cli");

@@ -3,7 +3,7 @@
 
 typedef uintptr_t oarray_element_t; 
 
-typedef void* (*oarray_malloc_fn)(void* );
+typedef void* (*oarray_malloc_fn)(size_t );
 typedef size_t (*oarray_mfree_fn)(void* );
 
 typedef void (*oarray_print_element_fn)(oarray_element_t* );

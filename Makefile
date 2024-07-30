@@ -1,26 +1,44 @@
 #dls: makefile for randOS
 
+
+VM_USE_UEFI ?= 1
+
+
 UNAME_S := $(shell uname -s)
 
-MACOS = 0
+MACOS ?= 0
+THIRDPARTY_DIR=$(CURDIR)/thirdparty
 THIRDPARTY_BIN=
+TOOLCHAIN_PATH:=toolchain/cross
+CC_PREF:=smith-
+TC_PREFIX=$(CURDIR)/$(TOOLCHAIN_PATH)/bin/$(CC_PREF)
+
 # Additional flags for macOS
 ifeq ($(UNAME_S),Darwin)
-    MACOS = 1
-	THIRDPARTY_BIN = $(CURDIR)/thirdparty/build/bin/
-endif
-$(info building on Macos!)
+    MACOS=1
+	THIRDPARTY_BIN=$(THIRDPARTY_DIR)/build/bin/
 
+$(info building on MacOS )
 
-
-TOOLCHAIN_PATH:=toolchain/cross
-$(info adding to path $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$$(PATH) )
-
-export PATH := $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$(PATH)
-#$(info path = $(PATH))
+    TC_PREFIX=$(CURDIR)/$(TOOLCHAIN_PATH)/bin/$(CC_PREF)
 #macs for whatever fucking reason dont let us just have a temp path within makefile soooo
+else
+$(info building on linux-type )
+	
+$(info adding to path $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$$(PATH) )
+	export PATH:= $(CURDIR)/$(TOOLCHAIN_PATH)/bin:$(PATH)
+	TC_PREFIX=$(CC_PREF)
 
-TC_PREFIX:=$(CURDIR)/$(TOOLCHAIN_PATH)/bin/smith-
+endif
+
+
+
+
+
+
+
+
+
 
 CC:=$(TC_PREFIX)gcc
 CXX:=$(TC_PREFIX)g++
@@ -77,8 +95,12 @@ endif
 #===QEMU======
 
 VM:=qemu-system-x86_64
+ifeq ($(MACOS),1)
+    QEMU_UEFI=$(THIRDPARTY_DIR)/ovmf/OVMF64.fd
+else
+	QEMU_UEFI=/usr/share/ovmf/x64/OVMF.fd
+endif
 
-QEMU_UEFI:=/usr/share/ovmf/x64/OVMF.fd
 
 QEMU_ARGS_AUDIO=-audiodev pa,id=speaker
 QEMU_ARGS_MEM=-m 8G
@@ -88,14 +110,29 @@ ifeq ($(MACOS),1)
 	QEMU_ARGS_MEM=-m 4G
 	QEMU_ARGS_ACCEL=
 endif
-QEMU_ARGS_VM:=$(QEMU_ARGS_ACCEL) -device VGA,vgamem_mb=32 $(QEMU_ARGS_AUDIO) -machine pcspk-audiodev=speaker $(QEMU_ARGS_MEM) 
+
+QEMU_ARGS_BIOS= 
+
+VM_LAUNCH_MSG="== Starting QEMU w/ LEGACY BIOS =="
+
+ifeq ($(VM_USE_UEFI),1)
+$(info Running in UEFI )
+$(info "    ->Using BIOS File $(QEMU_UEFI)" )
+	QEMU_ARGS_BIOS= -bios $(QEMU_UEFI)
+	VM_LAUNCH_MSG="== Starting QEMU w/ UEFI=="
+endif
+
+
+
+
+QEMU_ARGS_VM:=$(QEMU_ARGS_BIOS) $(QEMU_ARGS_ACCEL) -device VGA,vgamem_mb=32 $(QEMU_ARGS_AUDIO) -machine pcspk-audiodev=speaker $(QEMU_ARGS_MEM) 
 QEMU_ARGS_DBG:=-serial file:com1.log  -monitor telnet:127.0.0.1:6969,server,nowait;
 #-d int,page,cpu_reset -s -S
 QEMU_ARGS_DBG2:=-serial file:com1.log  -no-reboot -d int,page,cpu_reset -s -S  -monitor telnet:127.0.0.1:6969,server,nowait;
 #,cpu_reset
 
 
-QEMU_BASE_CMD:=$(VM)  -cdrom $(ISO_OUT) $(QEMU_ARGS_VM)
+QEMU_BASE_CMD:=$(VM) -cdrom $(ISO_OUT) -cpu Haswell -smp 2 $(QEMU_ARGS_VM)
 
 #			localhost tries ipv6 first 
 QEMU_CONNECT_CMD:=telnet 127.0.0.1 6969
@@ -111,7 +148,7 @@ qterm:
 
 .PHONY: runbg
 runbg:
-	@echo "== Starting QEMU =="
+	@echo "$(VM_LAUNCH_MSG)"
 	screen -d -m $(QEMU_BASE_CMD) $(QEMU_ARGS_DBG) 
 	@echo connecting...
 	sleep 1

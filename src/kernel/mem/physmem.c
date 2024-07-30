@@ -92,10 +92,12 @@ size_t physmem_init(void *mb_mmap, size_t mmap_size)
 
     debugf("%i %i %i %i", get_phys(0xfffc0000), get_phys(0x100000000 + (PAGE_SIZE)), get_phys(0x100000000), get_phys(0xbffe0000 - PAGE_SIZE));
 
-
-    for(int i = 0; i < physmem.mm_end; ++i){
-        debugf("[%d] %lb  {%lx - %lx}", i, pmm[i], (uint64_t)((uint64_t)PAGE_SIZE * i * 64), (uint64_t)((uint64_t)PAGE_SIZE * (uint64_t)i * (uint64_t)64) + ((uint64_t)PAGE_SIZE * 64));
+    bool dump = 0;
+    if(dump){
+        for(int i = 0; i < physmem.mm_end; ++i)
+            debugf("[%d] %lb  {%lx - %lx}", i, pmm[i], (uint64_t)((uint64_t)PAGE_SIZE * i * 64), (uint64_t)((uint64_t)PAGE_SIZE * (uint64_t)i * (uint64_t)64) + ((uint64_t)PAGE_SIZE * 64));
     }
+    
     return physmem.total_avail;
 }
 

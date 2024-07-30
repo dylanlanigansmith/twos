@@ -3,9 +3,7 @@
 #include <kernel/printk.h>
 
 //from randos
-#define PAGE_FLAGS_DEFAULT 0b10000011LLU
-#define PAGE_FLAGS_OLD (0b11llu | 0b100)
-#define PAGE_FLAGS_USER 0b100
+
 extern uint64_t get_cr3();
 void flush_tlb(){
      __asm__ volatile ("movq rax, cr3; movq cr3, rax; nop; movq rax, cr3; movq cr3, rax;"); //this is old but i guess i was paranoid?
@@ -149,7 +147,7 @@ extern uintptr_t p2_table;
 extern uintptr_t p3_table;
 extern uintptr_t p4_table;
 
-pagedir_t* virtmem_current_pd(){
+pagedir_t* virt_current_pd(){
     return get_cr3() + KERNEL_VADDR;
 }
 

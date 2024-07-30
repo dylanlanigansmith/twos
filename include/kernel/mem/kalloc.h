@@ -24,11 +24,13 @@
 
 
 
-void* kmalloc(size_t size);
+void* kmalloc(size_t size); //look at linux kmalloc options https://stackoverflow.com/questions/20079767/what-is-different-functions-malloc-and-kmalloc
+
 
 size_t kfree(void* address);
 
 void kalloc_init();
 
-
+//#define malloc(size) kmalloc(size)
+//#define free(addr) kfree(addr)
 

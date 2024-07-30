@@ -17,4 +17,4 @@ void virt_unmap_page(pagedir_t pt, uintptr_t virt);
 
 void virtmem_init();
 
-pagedir_t* virtmem_current_pd();
+pagedir_t* virt_current_pd();

@@ -2,7 +2,15 @@
 #include <kstdlib.h>
 
 
-enum KLOGLEVELS {
+
+
+
+enum KLOGLEVELS
+#ifdef __INTELLISENSE__
+{
+#else
+ : uint8_t { 
+#endif 
     LOG_DEFAULT = 0u,
     LOG_DEBUG = 0u,
     LOG_CRITICAL,
@@ -10,6 +18,8 @@ enum KLOGLEVELS {
     LOG_WARN,
     LOG_INFO,
 };
+
+
 
 uint8_t printk(uint8_t level, const char* fmt, ...);
 

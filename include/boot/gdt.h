@@ -1,5 +1,9 @@
 #pragma once
-#include <stdint.h>
+#ifdef __INTELLISENSE__
+    #include <stdint-gcc.h>
+#else
+    #include <stdint.h> //this is stupid
+#endif
 
 
 #define GDT_NULL_ENTRY 0x0 //first GDT entry (duh) (for clarity) 

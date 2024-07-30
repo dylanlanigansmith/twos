@@ -1,103 +1,95 @@
-==twOS==
+[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01HBdsDxe: loading Boot0001 "UEFI QEMU DVD-ROM QM00003 " from PciRoot(0x0)/Pci(0x1,0x1)/Ata(Secondary,Master,0x0)
+BdsDxe: starting Boot0001 "UEFI QEMU DVD-ROM QM00003 " from PciRoot(0x0)/Pci(0x1,0x1)/Ata(Secondary,Master,0x0)
+  Booting `twoOS'
+
+==twOS==
 ==init GDT, TSS==
-gdt ptr = ffffffff80208000, tss ptr = ffffffff80208028 tss - gdt = 28
-stack top = ffffffff8020e000 end = ffffffff8020a000 size = 4000
-copied GDT tss to ffffffff80209508
+gdt ptr = ffffffff80209000, tss ptr = ffffffff80209028 tss - gdt = 28
+stack top = ffffffff8020f000 end = ffffffff8020b000 size = 4000
+copied GDT tss to ffffffff8020a7a8
 ==Reloaded GDT, Loaded TSS==
 PARSING BOOTLOADER INFO
-cmdline=serial=1 dbg=1
+cmdline=serial=1 dbg=1 dumpmem=1
 bootloader=GRUB 2.13
 ===MULTIBOOT_TAG_TYPE_MMAP===
-mmaps->total_size=208 mmaps->entry_size=24 mmaps->entry_version=0
- num_entries = 8
-mmap [0]:{ @0 - 9fc00 } size 9fc00 |  mem_avail 1 
-mmap [1]:{ @9fc00 - a0000 } size 400 |  mem_reserved 2 
-mmap [2]:{ @f0000 - 100000 } size 10000 |  mem_reserved 2 
-mmap [3]:{ @100000 - bffe0000 } size bfee0000 |  mem_avail 1 
-mmap [4]:{ @bffe0000 - c0000000 } size 20000 |  mem_reserved 2 
-mmap [5]:{ @fffc0000 - 100000000 } size 40000 |  mem_reserved 2 
-mmap [6]:{ @100000000 - 140000000 } size 40000000 |  mem_avail 1 
-mmap [7]:{ @fd00000000 - 10000000000 } size 300000000 |  mem_reserved 2 
-mmap [0]:{ @0 - 9fc00 } size 9fc00 |  1 [AVAIL] 
-mmap [1]:{ @9fc00 - a0000 } size 400 |  2 [USED] 
-mmap [2]:{ @f0000 - 100000 } size 10000 |  2 [USED] 
-mmap [3]:{ @100000 - bffe0000 } size bfee0000 |  1 [AVAIL] 
-mmap [4]:{ @bffe0000 - c0000000 } size 20000 |  2 [USED] 
-mmap [5]:{ @fffc0000 - 100000000 } size 40000 |  2 [USED] 
-mmap [6]:{ @100000000 - 140000000 } size 40000000 |  1 [AVAIL] 
-mmap [7]:{ @fd00000000 - 10000000000 } size 300000000 |  2 [USED] 
+mmaps->total_size=544 mmaps->entry_size=24 mmaps->entry_version=0
+ num_entries = 22
+mmap [0]:{ @0 - a0000 } size a0000 |  mem_avail 1 
+mmap [1]:{ @100000 - 800000 } size 700000 |  mem_avail 1 
+mmap [2]:{ @800000 - 808000 } size 8000 |  mem_nvs 4 
+mmap [3]:{ @808000 - 80b000 } size 3000 |  mem_avail 1 
+mmap [4]:{ @80b000 - 80c000 } size 1000 |  mem_nvs 4 
+mmap [5]:{ @80c000 - 811000 } size 5000 |  mem_avail 1 
+mmap [6]:{ @811000 - 900000 } size ef000 |  mem_nvs 4 
+mmap [7]:{ @900000 - bee7e000 } size be57e000 |  mem_avail 1 
+mmap [8]:{ @bee7e000 - bef08000 } size 8a000 |  mem_reserved 2 
+mmap [9]:{ @bef08000 - bf8ed000 } size 9e5000 |  mem_avail 1 
+mmap [10]:{ @bf8ed000 - bf9ed000 } size 100000 |  mem_reserved 2 
+mmap [11]:{ @bf9ed000 - bfaed000 } size 100000 |  mem_unknown 20 
+mmap [12]:{ @bfaed000 - bfb6d000 } size 80000 |  mem_reserved 2 
+mmap [13]:{ @bfb6d000 - bfb7f000 } size 12000 |  mem_acpi_reclaimable 3 
+mmap [14]:{ @bfb7f000 - bfbff000 } size 80000 |  mem_nvs 4 
+mmap [15]:{ @bfbff000 - bfeb2000 } size 2b3000 |  mem_avail 1 
+mmap [16]:{ @bfeb2000 - bfeb6000 } size 4000 |  mem_reserved 2 
+mmap [17]:{ @bfeb6000 - bfeb8000 } size 2000 |  mem_nvs 4 
+mmap [18]:{ @bfeb8000 - bfeec000 } size 34000 |  mem_avail 1 
+mmap [19]:{ @bfeec000 - bff70000 } size 84000 |  mem_reserved 2 
+mmap [20]:{ @bff70000 - c0000000 } size 90000 |  mem_nvs 4 
+mmap [21]:{ @100000000 - 140000000 } size 40000000 |  mem_avail 1 
+mmap [0]:{ @0 - a0000 } size a0000 |  1 [AVAIL] 
+mmap [1]:{ @100000 - 800000 } size 700000 |  1 [AVAIL] 
+mmap [2]:{ @800000 - 808000 } size 8000 |  4 [USED] 
+mmap [3]:{ @808000 - 80b000 } size 3000 |  1 [AVAIL] 
+mmap [4]:{ @80b000 - 80c000 } size 1000 |  4 [USED] 
+mmap [5]:{ @80c000 - 811000 } size 5000 |  1 [AVAIL] 
+mmap [6]:{ @811000 - 900000 } size ef000 |  4 [USED] 
+mmap [7]:{ @900000 - bee7e000 } size be57e000 |  1 [AVAIL] 
+mmap [8]:{ @bee7e000 - bef08000 } size 8a000 |  2 [USED] 
+mmap [9]:{ @bef08000 - bf8ed000 } size 9e5000 |  1 [AVAIL] 
+mmap [10]:{ @bf8ed000 - bf9ed000 } size 100000 |  2 [USED] 
+mmap [11]:{ @bf9ed000 - bfaed000 } size 100000 |  20 [USED] 
+mmap [12]:{ @bfaed000 - bfb6d000 } size 80000 |  2 [USED] 
+mmap [13]:{ @bfb6d000 - bfb7f000 } size 12000 |  3 [USED] 
+mmap [14]:{ @bfb7f000 - bfbff000 } size 80000 |  4 [USED] 
+mmap [15]:{ @bfbff000 - bfeb2000 } size 2b3000 |  1 [AVAIL] 
+mmap [16]:{ @bfeb2000 - bfeb6000 } size 4000 |  2 [USED] 
+mmap [17]:{ @bfeb6000 - bfeb8000 } size 2000 |  4 [USED] 
+mmap [18]:{ @bfeb8000 - bfeec000 } size 34000 |  1 [AVAIL] 
+mmap [19]:{ @bfeec000 - bff70000 } size 84000 |  2 [USED] 
+mmap [20]:{ @bff70000 - c0000000 } size 90000 |  4 [USED] 
+mmap [21]:{ @100000000 - 140000000 } size 40000000 |  1 [AVAIL] 
 low addr 0x0000 high addr 140000000 in 2624 bits end = 40
 1 0 0 0
-[0] 0b0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 1111 1111 1111 1111   {0 - 8000000}
-[1] 0b0000  {8000000 - 10000000}
-[2] 0b0000  {10000000 - 18000000}
-[3] 0b0000  {18000000 - 20000000}
-[4] 0b0000  {20000000 - 28000000}
-[5] 0b0000  {28000000 - 30000000}
-[6] 0b0000  {30000000 - 38000000}
-[7] 0b0000  {38000000 - 40000000}
-[8] 0b0000  {40000000 - 48000000}
-[9] 0b0000  {48000000 - 50000000}
-[10] 0b0000  {50000000 - 58000000}
-[11] 0b0000  {58000000 - 60000000}
-[12] 0b0000  {60000000 - 68000000}
-[13] 0b0000  {68000000 - 70000000}
-[14] 0b0000  {70000000 - 78000000}
-[15] 0b0000  {78000000 - 80000000}
-[16] 0b0000  {80000000 - 88000000}
-[17] 0b0000  {88000000 - 90000000}
-[18] 0b0000  {90000000 - 98000000}
-[19] 0b0000  {98000000 - a0000000}
-[20] 0b0000  {a0000000 - a8000000}
-[21] 0b0000  {a8000000 - b0000000}
-[22] 0b0000  {b0000000 - b8000000}
-[23] 0b0000  {b8000000 - c0000000}
-[24] 0b1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111   {c0000000 - c8000000}
-[25] 0b1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111   {c8000000 - d0000000}
-[26] 0b1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111   {d0000000 - d8000000}
-[27] 0b1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111   {d8000000 - e0000000}
-[28] 0b1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111   {e0000000 - e8000000}
-[29] 0b1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111   {e8000000 - f0000000}
-[30] 0b1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111   {f0000000 - f8000000}
-[31] 0b1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111   {f8000000 - 100000000}
-[32] 0b0000  {100000000 - 108000000}
-[33] 0b0000  {108000000 - 110000000}
-[34] 0b0000  {110000000 - 118000000}
-[35] 0b0000  {118000000 - 120000000}
-[36] 0b0000  {120000000 - 128000000}
-[37] 0b0000  {128000000 - 130000000}
-[38] 0b0000  {130000000 - 138000000}
-[39] 0b0000  {138000000 - 140000000}
 Physical Memory Manager READY
-4095 MiB of Physical Memory Available
-framebuffer fc000000 {1920x1080}(7680) [32bpp]
-ACPI START
+4089 MiB of Physical Memory Available
+framebuffer c0000000 {1920x1080}(7680) [32bpp]
+ACPI - RSDP FOUND
+ACPI - RSDP FOUND
 virtmem_init()
 phys_malloc(8000000) found 64 ctp at 2000000
 virtmem_init() 2000000 ffffffff82000000
-dumping pt ffffffff80210000
+dumping pt ffffffff80211000
 PT entry @ 511
 total 1 entries in pt
-virt_map_page(p4 = ffffffff80210000, phys = fc000000, virt = fc000000, flags = 131)
+virt_map_page(p4 = ffffffff80211000, phys = c0000000, virt = c0000000, flags = 131)
 phys_malloc(200000) found 1 ctp at a000000
 vmm: making new pt_alloc_block
 new_page_table -> ffffffff8a000000
 new_page_table -> ffffffff8a002000
 ==flushed TLB==
-invlpg vaddr fc000000
-virt_map_page(p4 = ffffffff80210000, phys = fc200000, virt = fc200000, flags = 131)
+invlpg vaddr c0000000
+virt_map_page(p4 = ffffffff80211000, phys = c0200000, virt = c0200000, flags = 131)
 ==flushed TLB==
-invlpg vaddr fc200000
-virt_map_page(p4 = ffffffff80210000, phys = fc400000, virt = fc400000, flags = 131)
+invlpg vaddr c0200000
+virt_map_page(p4 = ffffffff80211000, phys = c0400000, virt = c0400000, flags = 131)
 ==flushed TLB==
-invlpg vaddr fc400000
-virt_map_page(p4 = ffffffff80210000, phys = fc600000, virt = fc600000, flags = 131)
+invlpg vaddr c0400000
+virt_map_page(p4 = ffffffff80211000, phys = c0600000, virt = c0600000, flags = 131)
 ==flushed TLB==
-invlpg vaddr fc600000
+invlpg vaddr c0600000
 Virtual Memory Manager READY
 oarray [ ffffffffb0000000 ] size=0 
 max size = 262138 max_size_bytes = 200000 
-Kernel Heap READY
 making new block at ffffffffb0200000 size=537 / 
  footer @ ffffffffb020020d 
 adding to alloc map, prev. # allocs = 0 
@@ -105,3 +97,54 @@ adding to alloc map, prev. # allocs = 0
 malloced all over the place ffffffffb020000d
 freeing block at ffffffffb0200000 / block_size=524 
 block freed, size of allocs = 1 
+Kernel Heap READY
+Framebuffer READY
+rsdp = ffffffff80004558
+virt_map_page(p4 = ffffffff80211000, phys = bfa00000, virt = bfa00000, flags = 131)
+new_page_table -> ffffffff8a004000
+==flushed TLB==
+invlpg vaddr bfa00000
+rsdt found and validated at bfb7d074
+found space at 0. need size 100 found size 20c 
+using existing block at ffffffffb0200000 / block_size=524 
+we found no space to fit size 100, 
+making new block at ffffffffb0200219 size=281 / 
+ footer @ ffffffffb0200326 
+adding to alloc map, prev. # allocs = 1 
+ added to alloc map, new # allocs = 2 
+we found no space to fit size 100, 
+making new block at ffffffffb0200332 size=281 / 
+ footer @ ffffffffb020043f 
+adding to alloc map, prev. # allocs = 2 
+ added to alloc map, new # allocs = 3 
+we found no space to fit size 100, 
+making new block at ffffffffb020044b size=281 / 
+ footer @ ffffffffb0200558 
+adding to alloc map, prev. # allocs = 3 
+ added to alloc map, new # allocs = 4 
+we found no space to fit size 100, 
+making new block at ffffffffb0200564 size=281 / 
+ footer @ ffffffffb0200671 
+adding to alloc map, prev. # allocs = 4 
+ added to alloc map, new # allocs = 5 
+we found no space to fit size 100, 
+making new block at ffffffffb020067d size=281 / 
+ footer @ ffffffffb020078a 
+adding to alloc map, prev. # allocs = 5 
+ added to alloc map, new # allocs = 6 
+we found no space to fit size 100, 
+making new block at ffffffffb0200796 size=281 / 
+ footer @ ffffffffb02008a3 
+adding to alloc map, prev. # allocs = 6 
+ added to alloc map, new # allocs = 7 
+== MADT Init Dump ==
+  Processor Local APIC count: 2
+  IO APIC count: 1
+  IO APIC Interrupt Source Override count: 5
+  IO APIC NMI Source count: 0
+  Local APIC NMI count: 1
+  Local APIC Address Override count: 0
+  Processor Local x2 APIC count: 0
+ == end MADT dump ==
+
+ACPI Information READY
