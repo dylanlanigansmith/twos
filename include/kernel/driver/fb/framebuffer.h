@@ -53,3 +53,19 @@ static inline void framebuffer_display_test_pattern(uint32_t *framebuffer, uint3
         }
     }
 }
+
+
+
+static inline void framebuffer_display_animated_pattern(uint32_t *framebuffer, uint32_t width, uint32_t height, uint32_t pitch, uint8_t cycle) {
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            uint16_t hue = (uint16_t)(((uint32_t)x * 256 / width) + cycle) % 256; // 0 to 255 with cycle offset
+            uint8_t r, g, b;
+            HSVtoRGB(hue, 255, 255, &r, &g, &b);
+            uint32_t color = (r << 16) | (g << 8) | b; // RGB to uint32_t color
+            framebuffer[y * (pitch / 4) + x] = color;
+        }
+    }
+
+    
+}

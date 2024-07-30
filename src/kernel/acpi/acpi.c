@@ -20,10 +20,12 @@ acpi_inst_t acpi;
 
 
 acpi_sdt_header_t* acpi_find_tbl(const char* sig) {
-    uint64_t num_entries = (acpi.rsdt->header.length - sizeof(acpi.rsdt->header)) / (acpi.is_v2 ? 8 : 4);
+    if(acpi.is_v2 == 0) panic("lazy acpi v1 support not done");
+
+    uint64_t num_entries = (acpi.xsdt->header.length - sizeof(acpi.xsdt->header)) / (acpi.is_v2 ? 8 : 4);
     acpi_sdt_header_t* entry;
     for (uint64_t i = 0; i < num_entries; i++) {
-        entry = (acpi_sdt_header_t*)((uintptr_t)acpi.rsdt->entries[i]);
+        entry = (acpi_sdt_header_t*)((uintptr_t)acpi.xsdt->entries[i]);
         if (acpi_validate_sig(entry, sig) && acpi_validate_checksum(entry)) {
             return (acpi_sdt_header_t*)((uintptr_t)entry);
         }
@@ -104,8 +106,13 @@ void acpi_init(rsdp_t* rsdp)
   acpi.rsdp = rsdp;
   acpi.is_v2 = rsdp->revision >= 2;
 
-  acpi.rsdt = (rsdt_t*)((uintptr_t)rsdp->rsdt_addr);
+  uintptr_t sdt_addr = (acpi.is_v2) ? (uintptr_t)rsdp->xsdt_addr : (uintptr_t)rsdp->rsdt_addr;
 
+  acpi.rsdt = (rsdt_t*)(sdt_addr);
+
+  if(acpi.is_v2){
+    acpi.xsdt = (xsdt_t*)(sdt_addr);
+  }
   
 
   //just gonna id map it because we cant do anything elegant here (acpi rsdt ptr + higher half overflows!!!)
@@ -113,11 +120,12 @@ void acpi_init(rsdp_t* rsdp)
   
   assert((phys_addr_t)acpi.rsdt->header.length < PAGE_SIZE);
 
+    acpi_sdt_header_t* header = (acpi.is_v2) ? &acpi.xsdt->header :  &acpi.rsdt->header;
 
+  if(!acpi_validate_checksum(header)) panic("ACPI: invalid RSDT Checksum");
+  if( !acpi_validate_sig(header, (acpi.is_v2) ? "XSDT" : "RSDT")) panic("ACPI: invalid RSDT Sig");
 
-  if(!acpi_validate_checksum(&acpi.rsdt->header) || !acpi_validate_sig(&acpi.rsdt->header, "RSDT")) panic("ACPI: invalid RSDT");
-
-  debugf("rsdt found and validated at %lx", (uintptr_t)acpi.rsdt);
+  debugf("rsdt v%i found and validated at %lx header = %lx", rsdp->revision, (acpi.is_v2) ? acpi.xsdt :  acpi.rsdt, header);
 
   acpi.debug_madt = true;
   acpi_init_madt();

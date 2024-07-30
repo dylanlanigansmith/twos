@@ -44,4 +44,6 @@ static inline void lapic_sendEOI(){
      lapic_write(APIC_EOI_REG, 0);
 }
 
+
+
 void apic_init();

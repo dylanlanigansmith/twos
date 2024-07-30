@@ -15,7 +15,7 @@
 #include <kernel/apic/ioapic.h>
 #include <kernel/isr/idt.h>
 #include <kernel/isr/isr.h>
-
+#include <kernel/timer/hpet.h>
 
  void test_handler(registers_t* reg){
     debugf("test handler handled that shit!");        
@@ -147,6 +147,10 @@ void kmain(struct multiboot_header* header, uint64_t magic)
     BOOT_STAGE("APIC READY");
     ioapic_init();
     BOOT_STAGE("IOAPIC READY");
+    hpet_init();
+    BOOT_STAGE("TIMERS READY");
+
+
 
     __asm__ volatile ("int 3;");
 
@@ -156,8 +160,13 @@ void kmain(struct multiboot_header* header, uint64_t magic)
     enable_interupts();
 
     __asm__ volatile ("int 47;");
-    
-
+     debugf("hpet test");
+     uint8_t cycle = 0;
+    for(;;){
+        usleep(ms_to_us(500));
+        framebuffer_display_animated_pattern(kboot.fb.ptr, kboot.fb.w, kboot.fb.h, kboot.fb.pitch, cycle++);
+        if(cycle >= 255) cycle = 0;
+    }
 
 
   /*

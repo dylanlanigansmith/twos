@@ -7,6 +7,7 @@
 typedef struct {
     rsdp_t* rsdp;
     rsdt_t* rsdt;
+    xsdt_t* xsdt;
     madt_t* madt;
     
     struct{
@@ -36,7 +37,7 @@ typedef struct {
 extern acpi_inst_t acpi;
 
 void acpi_init(rsdp_t* rsdp);
-
+acpi_sdt_header_t* acpi_find_tbl(const char* sig);
 static inline int acpi_validate_rsdp(rsdp_t* rsdp){
     if(!rsdp) return 0;
     uint8_t sum = 0;

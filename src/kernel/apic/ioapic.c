@@ -5,6 +5,8 @@
 #include <kernel/apic/ioapic.h>
 //https://wiki.osdev.org/IOAPIC
 //https://wiki.osdev.org/MADT
+//https://pdos.csail.mit.edu/6.828/2014/readings/ia32/ioapic.pdf
+
 struct {
     uint64_t idx;
     uintptr_t base;
@@ -132,4 +134,6 @@ void ioapic_init(){
         }
     }
     
+
+
 }

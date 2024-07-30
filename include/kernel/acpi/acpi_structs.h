@@ -44,6 +44,11 @@ typedef struct {
 } __attribute__((packed)) rsdt_t;
 
 typedef struct {
+    acpi_sdt_header_t header;
+    uint64_t entries[];
+} __attribute__((packed)) xsdt_t;
+
+typedef struct {
     uint8_t type;
     uint8_t length;
 } __attribute__((packed)) madt_tbl_entry_t;

@@ -6,7 +6,7 @@ BdsDxe: starting Boot0001 "UEFI QEMU DVD-ROM QM00003 " from PciRoot(0x0)/Pci(0x1
 ==init GDT, TSS==
 gdt ptr = ffffffff8020a000, tss ptr = ffffffff8020a028 tss - gdt = 28
 stack top = ffffffff80210000 end = ffffffff8020c000 size = 4000
-copied GDT tss to ffffffff8020b8e8
+copied GDT tss to ffffffff8020b988
 ==Reloaded GDT, Loaded TSS==
 PARSING BOOTLOADER INFO
 cmdline=serial=1 dbg=1 dumpmem=1
@@ -106,7 +106,7 @@ virt_map_page(p4 = ffffffff80212000, phys = bfa00000, virt = bfa00000, flags = 1
 new_page_table -> ffffffff8a004000
 ==flushed TLB==
 invlpg vaddr bfa00000
-rsdt found and validated at bfb7d074
+rsdt v2 found and validated at bfb7d0e8 header = bfb7d0e8
 found space at 0. need size 100 found size 20c 
 using existing block at ffffffffb0200000 / block_size=524 
 we found no space to fit size 100, 
@@ -154,19 +154,25 @@ virt_map_page(p4 = ffffffff80212000, phys = fee00000, virt = fee00000, flags = 1
 ==flushed TLB==
 invlpg vaddr fee00000
 enabled LAPIC {fee00000}[0]
+registered interupt handler for [255] at ffffffff802037db
 APIC READY
 virt_map_page(p4 = ffffffff80212000, phys = fec00000, virt = fec00000, flags = 131)
 ==flushed TLB==
 invlpg vaddr fec00000
 ioapic {fec00000} max=24
 IOAPIC READY
+virt_map_page(p4 = ffffffff80212000, phys = bfa00000, virt = bfa00000, flags = 131)
+==flushed TLB==
+invlpg vaddr bfa00000
+found hpet @ bfb78000 tbl @ fed00000
+TIMERS READY
 =======
 ISR_Breakpoint = 3
 ===isr[3] err{0}====
 err_code = 0
 rbp = ffffffff8020fff0
-rip = ffffffff8020622c
-rsp = ffffffff8020ff50
+rip = ffffffff80206494
+rsp = ffffffff8020ff40
 cs = 8
 rflags = 46
 cr3 = 212000
@@ -174,18 +180,19 @@ ds = 10
 ss = 10
 rax = 0
 rbx = 20a000
-rcx = 20
+rcx = 989680
 rdx = 1
 rdi = 3f8
 rsi = a
-r8 = ffffffff80208351
-r9 = fec00000
-r10 = ffffffff80208004
+r8 = ffffffff80208937
+r9 = bfa00000
+r10 = ffffffff802082e4
 r11 = be6dcd8c
 r12 = bbe93d60
 r13 = bbc683e0
 r14 = be6dceaf
 r15 = be6eeea0
 =======
-registered interupt handler for [47] at ffffffff80205915
+registered interupt handler for [47] at ffffffff80205b52
 test handler handled that shit!
+hpet test

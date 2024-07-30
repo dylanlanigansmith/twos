@@ -4,8 +4,8 @@
 #include <kernel/printk.h>
 #include <kernel/cpuid.h>
 #include <kernel/mem/virtmem.h>
-
-
+#include <kernel/isr/isr.h>
+//https://coconucos.cs.uni-duesseldorf.de/lehre/abschlussarbeiten/BA-Urlacher-23.pdf
 extern void cpuid_proc_feat_info(cpuid_registers_t* regs);
 
 static bool apic_is_available() {
@@ -38,6 +38,13 @@ uint8_t get_lapic_id()
 static void lapic_enable() {
     lapic_write(APIC_SPURIOUS_VECTOR_REG, APIC_ENABLE | SPURIOUS_INT);
 }
+
+ void spurious_handler(registers_t* reg){
+    debugf("SPURIOUS INTERUPT");
+            
+}
+
+
 void apic_init()
 {
     assert(apic_is_available());
@@ -51,5 +58,5 @@ void apic_init()
     PIC_remap(PIC1_REMAP_OFFSET, PIC2_REMAP_OFFSET);
     PIC_disable();
     lapic_enable();
-    
+    register_interupt_handler(SPURIOUS_INT, spurious_handler);
 }
