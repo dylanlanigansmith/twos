@@ -1,5 +1,7 @@
 [bits 64]
 
+section .text
+
 global get_cr3
 
 get_cr3:

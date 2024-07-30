@@ -37,6 +37,7 @@ void idt_init(){
     typedef void (*isrfn)();
    
     load_idt((uint64_t)&idt_ptr);
-   // __asm__ volatile ("lidt %0" : : "m"(idtr)); //load new idt 
+
+
     memset(&interupt_handlers, 0, sizeof(isr_t) * IDT_MAX_DESCRIPTORS - 1);
 }

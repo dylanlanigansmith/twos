@@ -11,11 +11,15 @@
 #include <kernel/mem/kalloc.h>
 
 #include <kernel/acpi/acpi.h>
+#include <kernel/apic/apic.h>
+#include <kernel/apic/ioapic.h>
 #include <kernel/isr/idt.h>
 #include <kernel/isr/isr.h>
 
 
-
+ void test_handler(registers_t* reg){
+    debugf("test handler handled that shit!");        
+}
 
 #define BOOT_STAGE(str) serial_println(str);
 kernel_boot_t kboot;
@@ -32,7 +36,7 @@ void kmain(struct multiboot_header* header, uint64_t magic)
     int args = 0;
     size_t total_mem = 0;
     rsdp_t *rsdp = nullptr;
-
+    kboot.is_legacy_bios = true;
     memset(&kboot, 0, sizeof(kernel_boot_t));
     struct multiboot_tag *tag = (struct multiboot_tag *)((uintptr_t)header + 8);
     BOOT_STAGE("PARSING BOOTLOADER INFO");
@@ -89,13 +93,25 @@ void kmain(struct multiboot_header* header, uint64_t magic)
                 printk(LOG_INFO, "%li MiB of Physical Memory Available", BYTES_TO_MIB(total_mem));
                 continue;
             }
-
+            case MULTIBOOT_TAG_TYPE_EFI_BS:
+            case MULTIBOOT_TAG_TYPE_EFI_MMAP:
+            case MULTIBOOT_TAG_TYPE_EFI32:
+            case MULTIBOOT_TAG_TYPE_EFI64:{
+                debugf("BOOTING VIA EFI %u", tag->type); 
+                kboot.is_legacy_bios = false;
+                continue;
+            }
             case MULTIBOOT_TAG_TYPE_ACPI_NEW:
             case MULTIBOOT_TAG_TYPE_ACPI_OLD:{
-                struct multiboot_tag_old_acpi *acpi = (struct multiboot_tag_old_acpi *)tag;
-               rsdp = (rsdp_t *)acpi->rsdp;
+                struct multiboot_tag_old_acpi *acpi_tag = (struct multiboot_tag_old_acpi *)tag;
+                if(rsdp != nullptr){
+                    if(rsdp->revision > ((rsdp_t *)acpi_tag->rsdp)->revision)
+                        continue;
+                }
+
+                rsdp = (rsdp_t *)acpi_tag->rsdp;
                 if(!acpi_validate_rsdp(rsdp)) panic("ACPI - RSDP Invalid?!");
-                BOOT_STAGE("ACPI - RSDP FOUND");
+                debugf("ACPI - RSDP v%i FOUND @ %lx", rsdp->revision, (uintptr_t)rsdp );
                 continue;
             }
 
@@ -127,7 +143,20 @@ void kmain(struct multiboot_header* header, uint64_t magic)
     acpi_init(rsdp);
     BOOT_STAGE("ACPI Information READY");
 
+    apic_init();
+    BOOT_STAGE("APIC READY");
+    ioapic_init();
+    BOOT_STAGE("IOAPIC READY");
 
+    __asm__ volatile ("int 3;");
+
+   
+    register_interupt_handler(IRQ15, test_handler);
+
+    enable_interupts();
+
+    __asm__ volatile ("int 47;");
+    
 
 
 

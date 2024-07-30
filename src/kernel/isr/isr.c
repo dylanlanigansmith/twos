@@ -2,6 +2,9 @@
 #include <kernel/isr/isr.h>
 #include <kernel/printk.h>
 #include <kernel/isr/isr_exceptions.h>
+
+#include <kernel/apic/apic.h>
+
 isr_t interupt_handlers[256];
 
 
@@ -156,7 +159,7 @@ void irq_handler(uint64_t rdi, registers_t regs)
         isr_t handler = interupt_handlers[regs.int_no];
         handler(&regs);
     }
-
+    lapic_sendEOI();
    
 }
 

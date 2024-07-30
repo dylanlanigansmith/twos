@@ -32,7 +32,7 @@ typedef struct {
         size_t w, h, pitch, bpp;
     } fb;
     
-
+    bool is_legacy_bios;
 }  kernel_boot_t;
 
 extern kernel_boot_t kboot;

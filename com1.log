@@ -4,9 +4,9 @@ BdsDxe: starting Boot0001 "UEFI QEMU DVD-ROM QM00003 " from PciRoot(0x0)/Pci(0x1
 
 ==twOS==
 ==init GDT, TSS==
-gdt ptr = ffffffff80209000, tss ptr = ffffffff80209028 tss - gdt = 28
-stack top = ffffffff8020f000 end = ffffffff8020b000 size = 4000
-copied GDT tss to ffffffff8020a7a8
+gdt ptr = ffffffff8020a000, tss ptr = ffffffff8020a028 tss - gdt = 28
+stack top = ffffffff80210000 end = ffffffff8020c000 size = 4000
+copied GDT tss to ffffffff8020b8e8
 ==Reloaded GDT, Loaded TSS==
 PARSING BOOTLOADER INFO
 cmdline=serial=1 dbg=1 dumpmem=1
@@ -63,28 +63,30 @@ low addr 0x0000 high addr 140000000 in 2624 bits end = 40
 Physical Memory Manager READY
 4089 MiB of Physical Memory Available
 framebuffer c0000000 {1920x1080}(7680) [32bpp]
-ACPI - RSDP FOUND
-ACPI - RSDP FOUND
+BOOTING VIA EFI 12
+ACPI - RSDP v0 FOUND @ ffffffff80004538
+ACPI - RSDP v2 FOUND @ ffffffff80004558
+BOOTING VIA EFI 17
 virtmem_init()
 phys_malloc(8000000) found 64 ctp at 2000000
 virtmem_init() 2000000 ffffffff82000000
-dumping pt ffffffff80211000
+dumping pt ffffffff80212000
 PT entry @ 511
 total 1 entries in pt
-virt_map_page(p4 = ffffffff80211000, phys = c0000000, virt = c0000000, flags = 131)
+virt_map_page(p4 = ffffffff80212000, phys = c0000000, virt = c0000000, flags = 131)
 phys_malloc(200000) found 1 ctp at a000000
 vmm: making new pt_alloc_block
 new_page_table -> ffffffff8a000000
 new_page_table -> ffffffff8a002000
 ==flushed TLB==
 invlpg vaddr c0000000
-virt_map_page(p4 = ffffffff80211000, phys = c0200000, virt = c0200000, flags = 131)
+virt_map_page(p4 = ffffffff80212000, phys = c0200000, virt = c0200000, flags = 131)
 ==flushed TLB==
 invlpg vaddr c0200000
-virt_map_page(p4 = ffffffff80211000, phys = c0400000, virt = c0400000, flags = 131)
+virt_map_page(p4 = ffffffff80212000, phys = c0400000, virt = c0400000, flags = 131)
 ==flushed TLB==
 invlpg vaddr c0400000
-virt_map_page(p4 = ffffffff80211000, phys = c0600000, virt = c0600000, flags = 131)
+virt_map_page(p4 = ffffffff80212000, phys = c0600000, virt = c0600000, flags = 131)
 ==flushed TLB==
 invlpg vaddr c0600000
 Virtual Memory Manager READY
@@ -100,7 +102,7 @@ block freed, size of allocs = 1
 Kernel Heap READY
 Framebuffer READY
 rsdp = ffffffff80004558
-virt_map_page(p4 = ffffffff80211000, phys = bfa00000, virt = bfa00000, flags = 131)
+virt_map_page(p4 = ffffffff80212000, phys = bfa00000, virt = bfa00000, flags = 131)
 new_page_table -> ffffffff8a004000
 ==flushed TLB==
 invlpg vaddr bfa00000
@@ -148,3 +150,42 @@ adding to alloc map, prev. # allocs = 6
  == end MADT dump ==
 
 ACPI Information READY
+virt_map_page(p4 = ffffffff80212000, phys = fee00000, virt = fee00000, flags = 131)
+==flushed TLB==
+invlpg vaddr fee00000
+enabled LAPIC {fee00000}[0]
+APIC READY
+virt_map_page(p4 = ffffffff80212000, phys = fec00000, virt = fec00000, flags = 131)
+==flushed TLB==
+invlpg vaddr fec00000
+ioapic {fec00000} max=24
+IOAPIC READY
+=======
+ISR_Breakpoint = 3
+===isr[3] err{0}====
+err_code = 0
+rbp = ffffffff8020fff0
+rip = ffffffff8020622c
+rsp = ffffffff8020ff50
+cs = 8
+rflags = 46
+cr3 = 212000
+ds = 10
+ss = 10
+rax = 0
+rbx = 20a000
+rcx = 20
+rdx = 1
+rdi = 3f8
+rsi = a
+r8 = ffffffff80208351
+r9 = fec00000
+r10 = ffffffff80208004
+r11 = be6dcd8c
+r12 = bbe93d60
+r13 = bbc683e0
+r14 = be6dceaf
+r15 = be6eeea0
+=======
+registered interupt handler for [47] at ffffffff80205915
+test handler handled that shit!

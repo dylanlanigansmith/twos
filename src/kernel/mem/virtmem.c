@@ -160,11 +160,10 @@ void virtmem_init()
     pagedir_t *pt = get_cr3() + KERNEL_VADDR;
 
     dump_pagetable(pt);
-
-    virt_map_page(pt, kboot.fb.addr, kboot.fb.addr, PAGE_SIZE_2MB | PAGE_PRESENT_FLAG | PAGE_WRITE_FLAG);
-    virt_map_page(pt, kboot.fb.addr + PAGE_SIZE, kboot.fb.addr + PAGE_SIZE, PAGE_SIZE_2MB |  PAGE_PRESENT_FLAG | PAGE_WRITE_FLAG );
-    virt_map_page(pt, kboot.fb.addr + (2 * PAGE_SIZE), kboot.fb.addr + (2 * PAGE_SIZE), PAGE_SIZE_2MB |  PAGE_PRESENT_FLAG | PAGE_WRITE_FLAG  );
-    virt_map_page(pt, kboot.fb.addr + (3 * PAGE_SIZE), kboot.fb.addr+ (3 * PAGE_SIZE), PAGE_SIZE_2MB |  PAGE_PRESENT_FLAG | PAGE_WRITE_FLAG  );
+    size_t fb_size = kboot.fb.h * kboot.fb.pitch;
+    assert(fb_size < (PAGE_SIZE * 4));
+    for(uint64_t i = 0; i < 4; ++i)
+        virt_map_page(pt, kboot.fb.addr + (i * PAGE_SIZE), kboot.fb.addr + (i * PAGE_SIZE), PAGE_SIZE_2MB |  PAGE_PRESENT_FLAG | PAGE_WRITE_FLAG  );
     kboot.fb.ptr = (void*)kboot.fb.addr;
 
 
