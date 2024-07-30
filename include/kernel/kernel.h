@@ -1,8 +1,9 @@
 #pragma once
 #include <kstdlib.h>
 #include <kernel/mem/page.h>
+#include <kernel/mem/kalloc.h>
 
-#define KERNEL_VADDR 0xffffffff80000000 //our higher half start point
+#define KERNEL_VADDR 0xffffffff80000000ull //our higher half start point
 #define KERNEL_VADDR_SIZE ONE_GIB //the initial ID map 
 
 

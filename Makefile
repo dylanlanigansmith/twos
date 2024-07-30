@@ -39,7 +39,7 @@ rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(su
 
 #C_SOURCES = $(wildcard src/kernel/**.c)
 C_SOURCES = $(call rwildcard,src,*.c)
-ASM_SOURCES =  $(wildcard src/kernel/asm/**.asm src/boot/*.asm )
+ASM_SOURCES =  $(wildcard src/kernel/asm/*.asm src/boot/*.asm )
 
 HEADERS = $(call rwildcard,include,*.h)
 
@@ -52,7 +52,7 @@ ASM_OBJ = ${ASM_SOURCES:.asm=.o}
 
 
 
-C_FLAGS=-masm=intel -m64 -mcmodel=large -ffreestanding -nostdlib -fno-pie -fno-stack-protector -mno-shstk -mno-red-zone -fmacro-prefix-map=$(CURDIR)=.
+C_FLAGS=-masm=intel -std=c2x -m64 -mcmodel=large -ffreestanding -nostdlib -fno-pie -fno-stack-protector -mno-shstk -mno-red-zone -fmacro-prefix-map=$(CURDIR)=.
 
 C_FLAGS+= -I./include
 
@@ -91,8 +91,15 @@ endif
 QEMU_ARGS_VM:=$(QEMU_ARGS_ACCEL) -device VGA,vgamem_mb=32 $(QEMU_ARGS_AUDIO) -machine pcspk-audiodev=speaker $(QEMU_ARGS_MEM) 
 QEMU_ARGS_DBG:=-serial file:com1.log  -monitor telnet:127.0.0.1:6969,server,nowait;
 #-d int,page,cpu_reset -s -S
-QEMU_ARGS_DBG2:=-serial file:com1.log  -no-reboot -d int,page,cpu_reset -s -S
+QEMU_ARGS_DBG2:=-serial file:com1.log  -no-reboot -d int,page,cpu_reset -s -S  -monitor telnet:127.0.0.1:6969,server,nowait;
 #,cpu_reset
+
+
+QEMU_BASE_CMD:=$(VM)  -cdrom $(ISO_OUT) $(QEMU_ARGS_VM)
+
+#			localhost tries ipv6 first 
+QEMU_CONNECT_CMD:=telnet 127.0.0.1 6969
+
 #====TARGETS======
 
 all: iso
@@ -101,18 +108,35 @@ all: iso
 qterm:
 	telnet localhost 6969 
 
+
+.PHONY: runbg
+runbg:
+	@echo "== Starting QEMU =="
+	screen -d -m $(QEMU_BASE_CMD) $(QEMU_ARGS_DBG) 
+	@echo connecting...
+	sleep 1
+	$(QEMU_CONNECT_CMD)
+
+.PHONY: rund
+rund: clean all 
+	@echo "======="
+	$(QEMU_BASE_CMD) $(QEMU_ARGS_DBG2) 
+
+.PHONY: run
 run: clean all 
 	@echo "======="
-	$(VM)  -cdrom $(ISO_OUT) $(QEMU_ARGS_VM) $(QEMU_ARGS_DBG) 
+	$(QEMU_BASE_CMD) $(QEMU_ARGS_DBG) 
 
-rund: clean all
+.PHONY: run_nor
+run_nor: clean all
 	@echo "Running With No Reboot, sorry that it's come to this"
-	$(VM)  -cdrom $(ISO_OUT) $(QEMU_ARGS_VM) $(QEMU_ARGS_DBG2) 
+	$(QEMU_BASE_CMD) $(QEMU_ARGS_DBG2) 
 
 
 urun: clean all
 	@echo "==Running in UEFI==="
-	$(VM)  -cdrom $(ISO_OUT) $(QEMU_ARGS_VM) -bios $(QEMU_UEFI) $(QEMU_ARGS_DBG) 
+	@echo "Using BIOS File $(QEMU_UEFI)"
+	$(QEMU_BASE_CMD) -bios $(QEMU_UEFI) $(QEMU_ARGS_DBG) 
 
 runb: clean all
 #todo make this build with bochs flags for e9 hack or somethin

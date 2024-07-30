@@ -16,5 +16,4 @@ uint8_t printk(uint8_t level, const char* fmt, ...);
 
 void _printk_vm(char* str);
 
-
-#define debugf(fmt, ...) printk(LOG_DEBUG, fmt, __VA_ARGS__); 
+#define debugf(...) printk(LOG_DEBUG, __VA_ARGS__); 

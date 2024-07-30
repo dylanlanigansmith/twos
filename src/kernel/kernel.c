@@ -1,11 +1,21 @@
 #include <kernel/kernel.h>
 #include <boot/multiboot2.h>
 #include <boot/cmdline.h>
+#include <boot/gdt.h>
 
 #include <kernel/printk.h>
 #include <kernel/driver/drivers.h>
 #include <kernel/port/port.h>
 #include <kernel/mem/physmem.h>
+#include <kernel/mem/virtmem.h>
+#include <kernel/mem/kalloc.h>
+
+#include <kernel/acpi/acpi.h>
+#include <kernel/isr/idt.h>
+#include <kernel/isr/isr.h>
+
+
+
 
 #define BOOT_STAGE(str) serial_println(str);
 kernel_boot_t kboot;
@@ -16,9 +26,13 @@ void kmain(struct multiboot_header* header, uint64_t magic)
         panic("MB MAGIC MISMATCH");
     serial_init(); //we are in development
     BOOT_STAGE("==twOS==")
+    init_gdt_tss(0);
+    idt_init();
 
-    
     int args = 0;
+    size_t total_mem = 0;
+    RSDP_t *rsdp = nullptr;
+
     memset(&kboot, 0, sizeof(kernel_boot_t));
     struct multiboot_tag *tag = (struct multiboot_tag *)((uintptr_t)header + 8);
     BOOT_STAGE("PARSING BOOTLOADER INFO");
@@ -68,38 +82,65 @@ void kmain(struct multiboot_header* header, uint64_t magic)
                         mmap.addr, mmap.addr + mmap.len, mmap.len, mmap_types[type], mmap.type);
                 }
                 //PMM INIT
-                size_t total_mem = physmem_init(mmaps, kboot.mb.mmap_size);
+                total_mem = physmem_init(mmaps, kboot.mb.mmap_size);
+                if(!total_mem)  panic("PMM Fail - Init Failed");
+
                 BOOT_STAGE("Physical Memory Manager READY");
                 printk(LOG_INFO, "%li MiB of Physical Memory Available", BYTES_TO_MIB(total_mem));
 
-                
+               
                 continue;
+            }
+
+            case MULTIBOOT_TAG_TYPE_ACPI_NEW:
+            case MULTIBOOT_TAG_TYPE_ACPI_OLD:{
+                struct multiboot_tag_old_acpi *acpi = (struct multiboot_tag_old_acpi *)tag;
+               rsdp = (RSDP_t *)acpi->rsdp;
+                if(!validate_rsdp(rsdp)) panic("ACPI - RSDP Invalid?!");
+                BOOT_STAGE("ACPI START");
             }
 
             default:{
                 continue;
             }
         }
-
     }
+    if(!total_mem)  panic("PMM Fail - No MB MMAP?");
+       
+    virtmem_init();
+    BOOT_STAGE("Virtual Memory Manager READY");
+    kalloc_init();
+    BOOT_STAGE("Kernel Heap READY");
+
     
+    void* malloc_test = kmalloc(512);
+    debugf("malloced all over the place %lx", malloc_test);
+    kfree(malloc_test);
+
+    //at this point we now have:
+    //  interupts for cpu exception handling
+    //  phys mem management
+    //  virtual memory management 
+    //  kernel heap (kmalloc)
+    //  framebuffer info, ID mapped for now
+
+
+   
     
-    //VMM should be ready to init here.
-
-    //should have kmalloc asap.
-
-
+    framebuffer_display_test_pattern(kboot.fb.ptr, kboot.fb.w, kboot.fb.h, kboot.fb.pitch);
   /*
         twOS bootup
-
-        - asap we bootstrap a form of printf, a console stream for us
+        - we need acpi and shit
+        - consoles and streams
+        - ring buffers
 
         - we need pmm and page managing asap 
-
-        - we need acpi and shit
     */
 
-    port_word_out(0x604, 0x0 | 0x2000);
+
+   
+    if(cmdline_hasarg("autooff"))
+        port_word_out(0x604, 0x0 | 0x2000);
     __asm__("cli");
     for (;;)
         __asm__("hlt");

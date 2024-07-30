@@ -8,8 +8,11 @@ void _printk_vm(char *str)
 }
 
 void _printk_findoutputs(const char* str){
-    serial_println(str);
-    //if() _printk_vm(str);
+
+    size_t len = strlen(str);
+    if(str[len - 1] == '\n')  serial_print(str);
+    else serial_println(str);
+
 }
 
 

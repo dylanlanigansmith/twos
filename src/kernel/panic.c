@@ -1,8 +1,8 @@
 #include <kernel/panic.h>
+#include <kernel/printk.h>
 
-
-void panic(const char* msg){
-      __asm__("mov rax, 0xcafebabe; mov rdi, 0xcafebabe; mov rbx, 0xcafebabe; cli");
+ [[noreturn]] void panic(const char* msg){
+    debugf(msg); //shout into the void!
     for (;;)
         __asm__("hlt");
     __builtin_unreachable();

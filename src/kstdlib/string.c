@@ -1,5 +1,5 @@
 #include <kstdlib/string.h>
-
+#include <kstdlib/memory.h>
 size_t strlen(const char *str)
 {
     size_t size = 0;

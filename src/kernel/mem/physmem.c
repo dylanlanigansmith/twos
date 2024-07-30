@@ -36,7 +36,9 @@ void set_phys(phys_addr_t addr, uint8_t b){
         pmm[idx] |= mask; 
     else
         pmm[idx] &= ~mask; 
-   // debugf("for addr %lx we set %i in [%li] b%li div = %lx ", addr, b, idx, bit, div);
+
+   // if( addr < 0xbffe0000 + PAGE_SIZE)
+    //debugf("for addr %lx we set %i in [%li] b%li  %lb", addr, b, idx, bit, pmm[idx]);
 
 }
 void physmem_markregion(phys_addr_t map_start, phys_addr_t map_end, uint8_t b ){
@@ -49,7 +51,7 @@ void physmem_markregion(phys_addr_t map_start, phys_addr_t map_end, uint8_t b ){
 size_t physmem_init(void *mb_mmap, size_t mmap_size)
 {
     memset(&physmem,0, sizeof(physmem));
-    memset(pmm, 0, PMM_SIZE * sizeof(uint64_t));
+    memset(&pmm[0], PHYS_USED, sizeof(pmm) );
     struct multiboot_tag_mmap *mmaps = (struct multiboot_tag_mmap *)mb_mmap;
     physmem.mb.mmaps = mmaps;
     physmem.mb.size = mmap_size;
@@ -65,31 +67,35 @@ size_t physmem_init(void *mb_mmap, size_t mmap_size)
         debugf("mmap [%i]:{ @%lx - %lx } size %lx |  %i [%s] ", i, mmap.addr, mmap.addr + mmap.len, mmap.len, mmap.type, (mmap.type == 1) ? ("AVAIL") : "USED");
     }
     highest_avail = round_up_to_page(highest_avail);
-    size_t num_bits = (highest_avail + PAGE_SIZE) / PAGE_SIZE; //bit per page
+    size_t num_bits = (highest_avail ) / PAGE_SIZE; //bit per page
     num_bits += 64; //so like at least we round up when we / sizeof int64
 
     physmem.end = highest_avail;
-    physmem.mm_end = num_bits / (sizeof(uint64_t) * CHAR_BIT);
-
+    physmem.mm_end = num_bits / (sizeof(uint64_t) * CHAR_BIT) - 1 ;
+    for(int i = 0; i < physmem.mm_end; ++i)
+        pmm[i] = UINT64_MAX;
     debugf("low addr 0x0000 high addr %lx in %li bits end = %li", highest_avail, num_bits, physmem.mm_end);
 
     for (int i = 0; i < mmap_size; ++i){
         multiboot_memory_map_t mmap = mmaps->entries[i];
         if(mmap.addr > physmem.end) break;
         
-        phys_addr_t map_start = mmap.addr;
-        phys_addr_t map_end = mmap.addr + mmap.len;
-        
-            
-        
-        size_t num_pages = round_up_to_page(map_end) / PAGE_SIZE;
+        phys_addr_t map_start = round_up_to_page(mmap.addr);
+        phys_addr_t map_end = round_up_to_page(mmap.addr + mmap.len);
 
-        for(phys_addr_t addr = round_up_to_page(map_start) - PAGE_SIZE; addr < map_end; addr += PAGE_SIZE)
-            if(get_phys(addr) != PHYS_USED) set_phys(addr, (mmap.type != MULTIBOOT_MEMORY_AVAILABLE || mmap.len < PAGE_SIZE));
+        for (phys_addr_t addr = map_start; addr < map_end; addr += PAGE_SIZE) {
+            set_phys(addr, (mmap.type != MULTIBOOT_MEMORY_AVAILABLE || addr < PAGE_SIZE));
+        }
     }
+     for(size_t i = 0; i < (16); ++i)
+        set_phys(PAGE_SIZE * i, 1); //ugh
 
-    debugf("%i %i %i %i", get_phys(0xfffc0000), get_phys(0x100000000 + (PAGE_SIZE)), get_phys(0x100000000), get_phys(0xbffe0000));
+    debugf("%i %i %i %i", get_phys(0xfffc0000), get_phys(0x100000000 + (PAGE_SIZE)), get_phys(0x100000000), get_phys(0xbffe0000 - PAGE_SIZE));
 
+
+    for(int i = 0; i < physmem.mm_end; ++i){
+        debugf("[%d] %lb  {%lx - %lx}", i, pmm[i], (uint64_t)((uint64_t)PAGE_SIZE * i * 64), (uint64_t)((uint64_t)PAGE_SIZE * (uint64_t)i * (uint64_t)64) + ((uint64_t)PAGE_SIZE * 64));
+    }
     return physmem.total_avail;
 }
 
@@ -103,7 +109,7 @@ phys_addr_t phys_malloc(size_t size) {
     for (size_t idx = 0; idx < physmem.mm_end; ++idx) {
         uint64_t mask = pmm[idx];
         
-        if (mask == LLONG_MAX) continue; // skip full blocks
+        if (mask == UINT64_MAX) continue; // skip full blocks
         
         for (size_t bit = 0; bit < (sizeof(uint64_t) * CHAR_BIT); ++bit) {
             if ((mask & ((uint64_t)1 << bit)) == 0) { 
@@ -120,6 +126,7 @@ phys_addr_t phys_malloc(size_t size) {
                         size_t alloc_bit = (start_bit + i) % (sizeof(uint64_t) * CHAR_BIT);
                         pmm[alloc_idx] |= ((uint64_t)1 << alloc_bit);
                     }
+                    debugf("phys_malloc(%lx) found %i ctp at %lx", size, contiguous_free_pages, (phys_addr_t)((start_idx * sizeof(uint64_t) * CHAR_BIT + start_bit) * PAGE_SIZE));
                     return (phys_addr_t)((start_idx * sizeof(uint64_t) * CHAR_BIT + start_bit) * PAGE_SIZE);
                 }
             } else {
@@ -127,6 +134,7 @@ phys_addr_t phys_malloc(size_t size) {
             }
         }
     }
+    debugf("phys_malloc() failed!");
     return 0; // well shit
 }
 

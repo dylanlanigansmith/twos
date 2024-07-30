@@ -1,3 +1,7 @@
+;
+;This is old from RANDOS - have not touched it, it could be better. 
+;
+;
 ;default rel
 [bits 64]
 MB_MAGIC equ 0xe85250d6
@@ -6,6 +10,7 @@ MB_ARCH equ 0
 
 KERNEL_VMA equ 0xffffffff80000000 ;p4[511] p3[510]  0 p2 0
 PAGE_SIZE equ 0x200000
+
 [extern _start]
 [extern _end]
 [extern _edata]

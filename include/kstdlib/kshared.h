@@ -5,6 +5,9 @@
 #include "kassert.h"
 #include <stdbool.h>
 
+
+#define nullptr ((void*)0)
+
 #define offsetof(type, member)  __builtin_offsetof (type, member)
 
 #define return_address(level) __builtin_return_address(level)
