@@ -2,10 +2,12 @@
 
 I write another operating system from scratch, because this is fun right?
 
+So far it is going well. Memory management all setup, ready for porting my first OS to continue! 
 
-Ideas:
 
-- memory management before anything else
+**notes to self:
+
+- memory management before anything else **mostly done**
     - pmm [**done**]
     - vmm 
         - page fault handler *todo* 
@@ -15,22 +17,28 @@ Ideas:
     - kernel heap
         - port from randos [**done**]
         - fix buggy container [**done**]
-        - add resizing *todo* 
-        - test aggresively *todo* 
+        -  features to reimplement better:
+            - resizing *todo - decide final kernel mmap* 
+            - way to test aggresively *todo*
+         
+- interrupts are lazily ported
+  
+- filesystem rewrite
+
+- better usermode gfx and posix file stuff
+
+- dont write libc yourself this time
+
             
 - streams and consoles/terminals
     - indenting even for serial
-    - printf but good
+    - printf but someone else's better one
     
-- vfs but actually fully POSIX compliant this time even though it is grindy
+
 
 - pcie / usb 
 
 - drivers as modules?
 
 
-- don't write libc all yourself this time 
-    - yes you can have a good printf
-        - but think of all the good times you have had with the one you wrote oh so long ago (and the formats u added that u use all over)
-        - "good times" as if it wasnt purely for convoluted print-statement debugging
-        - mostly want char width (%4s %04i); 
+
